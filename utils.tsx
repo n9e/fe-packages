@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { defaultPageSizeOptions } from './config';
 
 export const getPaginationOptions = (onShowSizeChange?: (size: number) => void) => {
@@ -16,25 +15,17 @@ export const getPaginationOptions = (onShowSizeChange?: (size: number) => void) 
 };
 
 export function fetchManifest(url: string, publicPath: string) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url,
-      contentType: 'text/plain',
-    }).done((data: any) => {
-      if (data) {
-        if (!data) {
-          reject(new Error('fetchManifest：数据有误'));
-        }
-        const manifest = data.match(/<meta name="manifest" content="([\w|\d|-]+.json)">/);
-        let result = '';
-        if (publicPath && manifest) {
-          result = `${publicPath}${manifest[1]}`;
-        }
-        resolve(result);
+  return fetch(url).then((res) => {
+    return res.text();
+  }).then((data) => {
+    if (data) {
+      const manifest = data.match(/<meta name="manifest" content="([\w|\d|-]+.json)">/);
+      let result = '';
+      if (publicPath && manifest) {
+        result = `${publicPath}${manifest[1]}`;
       }
-    }).fail((error: any) => {
-      reject(error);
-    });
+      return result;
+    }
   });
 }
 
@@ -54,7 +45,7 @@ export async function getPathBySuffix(systemConf: any, jsonData: any, suffix: st
   if (process.env.NODE_ENV === 'development') {
     return `${systemConf[process.env.NODE_ENV].publicPath}${targetPath}`;
   }
-  return `${systemConf[process.env.NODE_ENV].publicPath}${targetPath}`;
+  return `${systemConf[process.env.NODE_ENV as any].publicPath}${targetPath}`;
 }
 
 export function createStylesheetLink(ident: string, path: string) {
