@@ -32,7 +32,7 @@ class Multipicker extends Component {
   constructor(props) {
     super(props);
     const cached = window.localStorage.getItem('dynamic-columns-monitor-hosts');
-    let defaultKeys = ['name', 'sn'];
+    let defaultKeys = ['ident'];
     if (cached) {
       defaultKeys = JSON.parse(cached);
     }
@@ -241,7 +241,7 @@ class Multipicker extends Component {
     const optionList = [];
 
     if (type === 'host') {
-      const keys = ['name', 'ident'];
+      const keys = ['ident', 'name'];
       let columns = _.map(keys, (item) => {
         return {
           title: item,
@@ -346,7 +346,7 @@ class Multipicker extends Component {
   render() {
     const { type, manualEntry } = this.props;
     const { selected = [], dynamicColumnsValue } = this.state;
-    const keys = ['name', 'ident'];
+    const keys = ['ident', 'name'];
     const dynamicColumnsOptions = _.map(keys, (item) => {
       return {
         label: item,
