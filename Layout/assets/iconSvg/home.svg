@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="14px" viewBox="0 0 16 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>首页icon</title>
+    <g id="门户" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="左导航设计规范" transform="translate(-770.000000, -163.000000)" fill="#666666" fill-rule="nonzero">
+            <g id="首页icon" transform="translate(770.000000, 162.000000)">
+                <polygon id="路径" points="6.39999284 15 6.39999284 10.0588224 9.60000716 10.0588224 9.60000716 15 13.6000072 15 13.6000072 8.41175712 16 8.41175712 8 1 0 8.41175712 2.39999284 8.41175712 2.39999284 14.9999816 6.39999284 14.9999816"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

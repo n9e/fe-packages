@@ -1,0 +1,177 @@
+@import '~antd/lib/style/themes/default.less';
+
+@odin-primary-color: @primary-color;
+
+/**
+  * 循环 loop
+  * @param  @count 30开始，每次递减5px
+  * @return
+    .ml-5:{
+      margin-left: 5px!important;
+    };
+    .mr-5:{
+      margin-right: 5px!important;
+    };
+    ....
+ */
+ .loop( @count )when( @count >= 0 ){
+  .ml-@{count}{
+      margin-left: ( 1px * @count )!important;
+  }
+  .mr-@{count}{
+      margin-right: ( 1px * @count )!important;
+  }
+  .mb-@{count}{
+      margin-bottom: ( 1px * @count )!important;
+  }
+  .mt-@{count}{
+      margin-top: ( 1px * @count )!important;
+  }
+  .pl-@{count}{
+      padding-left: ( 1px * @count )!important;
+  }
+  .pr-@{count}{
+      padding-right: ( 1px * @count )!important;
+  }
+  .loop((@count - 5));
+}
+.loop(30);
+
+.text-overflow{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.inline-block{
+  display: inline-block;
+}
+
+.w150{
+  width: 150px;
+}
+
+.w200{
+  width: 200px;
+}
+
+
+.odin-drawer{
+  transition: none;
+
+  .ant-drawer-header{
+    .ant-drawer-title{
+      width: 600px;
+      font-size: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space:nowrap;
+    }
+  }
+  .ant-drawer-body{
+    padding: 0;
+    .odin-card{
+      border: none;
+      .ant-card-head{
+        padding: 0 30px;
+        border-bottom: 0;
+        margin-bottom: 10px;
+        // background: #3b4249;
+        background: @primary-color;
+        min-height: auto;
+        .ant-card-head-title{
+          color: #fff;
+          font-size: 12px;
+          padding: 10px 0;
+        }
+      }
+      .ant-card-body{
+        padding: 0 0 20px 0;
+        .odin-card-body{
+          margin: 0 20px;
+          .odin-info-list{
+            .ant-row{
+              padding:10px;
+              &:nth-child(even){
+                background:#f2f2f2;
+              }
+            }
+          }
+          .odin-table{
+            padding-bottom: 0;
+            .ant-table-tbody tr td{
+              padding: 10px 5px!important;
+            }
+          }
+        }
+        .odin-card-footer{
+          margin: 0 20px;
+          border-top: 0;
+          font-size: 12px;
+          padding: 10px 0 0 10px;
+        }
+      }
+      .ant-tabs{
+        .ant-tabs-bar{
+          border-bottom: 0;
+          margin-left: 10px;
+          .ant-tabs-nav{
+            .ant-tabs-tab{
+              margin-right:0;
+              border-right: 1px #949ba2 solid;
+              padding: 0 20px;
+              &:last-child{
+                border-right:0;
+                padding-right:0;
+              }
+            }
+            .ant-tabs-ink-bar{
+              background-color: transparent;
+            }
+          }
+        }
+        .ant-tabs-tabpane{
+          padding: 0 20px;
+        }
+      }
+    }
+    .odin-code-hanndle{
+      padding: 20px 20px 0;
+
+    }
+    .odin-code{
+      display: inline-block;
+      color: #949ba2;
+      padding: 20px;
+      width: 100%;
+      p{
+        word-break: break-all;
+      }
+      pre{
+        margin-bottom: 0;
+        font-size: 12px;
+      }
+
+      &.odin-code-SyntaxHighlighter{
+        background: rgb(22, 27, 29);
+        pre{
+          white-space: normal;
+          word-wrap: break-word;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+.xterm-screen{
+  background: blue;
+}

@@ -1,0 +1,65 @@
+@import "../Layout/assets/style";
+
+@login-width: 760px;
+@login-height: 500px;
+@login-prefix-cls: ~"ecmc-login";
+@register-width: 360px;
+@register-height: 613px;
+@register-prefix-cls:  ~"ecmc-register";
+
+.title() {
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.@{login-prefix-cls}-main {
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  border-radius: 16px;
+  background-color: #fff;
+}
+
+.@{login-prefix-cls}-main-right {
+  padding: 20px;
+}
+
+.@{login-prefix-cls}-main-width {
+  .single-page-wrap(@login-width);
+  overflow: unset;
+}
+
+.@{login-prefix-cls}-main-height {
+  .single-page-main(@login-height);
+  overflow: unset;
+}
+
+.@{login-prefix-cls}-title {
+  .title();
+  text-align: center;
+  margin: 50px 0;
+}
+
+.@{login-prefix-cls}-submitBtn {
+  width: 100%;
+  background: linear-gradient(270deg,rgba(32,112,254,1) 0%,rgba(50,188,210,1) 100%) !important;
+  border: 0 none !important;
+  border-radius: 16px !important;
+  margin-top: 30px;
+}
+
+.@{register-prefix-cls} {
+  .single-page-wrap(@register-width);
+}
+
+.@{register-prefix-cls}-main {
+  .single-page-main(@register-height)
+}
+
+.@{register-prefix-cls}-title {
+  .title();
+}
+
+.@{register-prefix-cls}-submitBtn {
+  width: 100%;
+}

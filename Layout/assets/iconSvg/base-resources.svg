@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>基础资源 icon</title>
+    <g id="门户" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="左导航设计规范" transform="translate(-770.000000, -202.000000)" fill="#666666">
+            <g id="基础资源-icon" transform="translate(770.000000, 202.000000)">
+                <g id="编组-26">
+                    <path d="M3.049,10.1205333 L4.096,10.7525333 L2.238,11.7472 L8.012,14.8085333 L13.766,11.7472 L11.895,10.7435333 L13.013,10.1495333 L16,11.7521662 L8.01277095,16 L0,11.7521662 L3.049,10.1205333 Z" id="形状结合" fill-rule="nonzero"></path>
+                    <path d="M8.01277095,4.26666667 L16,8.55216619 L8.01277095,12.8 L0,8.55216619 L8.01277095,4.26666667 Z M8.011,5.4592 L2.238,8.5472 L8.012,11.6085333 L13.766,8.5472 L8.011,5.4592 Z" id="路径-4备份" fill-rule="nonzero"></path>
+                    <polygon id="路径-4备份-2" points="0 4.28549953 8.01277095 8.53333333 16 4.28549953 8.01277095 0"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
