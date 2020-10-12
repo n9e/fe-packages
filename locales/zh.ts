@@ -91,6 +91,7 @@ export default {
   'node.display.path': '显示挂载节点',
   'node.id.label': '节点ID',
   'node.cate.label': '节点类别',
+  'node.ident.label': '节点标识',
   'node.note.label': '节点备注',
   'node.path.label': '节点路径',
   'node.admins': '节点管理员',

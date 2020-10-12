@@ -91,6 +91,7 @@ export default {
   'node.display.path': 'Display node',
   'node.id.label': 'ID',
   'node.cate.label': 'Cate',
+  'node.ident.label': 'Ident',
   'node.note.label': 'Note',
   'node.path.label': 'Path',
   'node.admins': 'Admins',
