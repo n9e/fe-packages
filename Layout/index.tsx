@@ -45,7 +45,7 @@ const getSymbolByLanguage = (language: string) => {
 const normalizeTenantProjectData = (
   data: any[],
   tenantIdent?: string,
-  tenantId?: number
+  tenantId?: number,
 ): any => {
   return _.map(data, (item) => {
     if (item.children) {
@@ -56,7 +56,7 @@ const normalizeTenantProjectData = (
         children: normalizeTenantProjectData(
           item.children,
           tenantIdent || item.ident,
-          tenantId || item.id
+          tenantId || item.id,
         ),
       };
     }
@@ -106,7 +106,10 @@ export default function index(props: Props) {
   const [feConf, setFeConf] = useState({});
   const treeData = normalizeTreeData(props.belongProjects);
   const cacheProject = _.attempt(
-    JSON.parse.bind(null, localStorage.getItem('icee-global-project') as string)
+    JSON.parse.bind(
+      null,
+      localStorage.getItem('icee-global-project') as string,
+    ),
   );
   const content = <p style={{ height: 0 }}>工单</p>;
   const message = <p style={{ height: 0 }}>消息</p>;
@@ -184,7 +187,7 @@ export default function index(props: Props) {
                         id: _.get(extra, 'triggerNode.props.node.tenantId'),
                         ident: _.get(
                           extra,
-                          'triggerNode.props.node.tenantIdent'
+                          'triggerNode.props.node.tenantIdent',
                         ),
                       },
                       project: {
@@ -195,11 +198,11 @@ export default function index(props: Props) {
                     props.setSelectedTenantProject(newSelectedTenantProject);
                     localStorage.setItem(
                       'icee-global-tenant',
-                      JSON.stringify(newSelectedTenantProject.tenant)
+                      JSON.stringify(newSelectedTenantProject.tenant),
                     );
                     localStorage.setItem(
                       'icee-global-project',
-                      JSON.stringify(newSelectedTenantProject.project)
+                      JSON.stringify(newSelectedTenantProject.project),
                     );
                   }}
                 >
@@ -207,8 +210,10 @@ export default function index(props: Props) {
                 </TreeSelect>
               ) : null}
               <div className={`${cPrefixCls}-header-right-links`}>
-                <a>运营后台</a>
                 <a href="/rdb">用户中心</a>
+                <a href="/mis">运营后台</a>
+                <a href="/crds">资源中心</a>
+                <a href="/portal">门户</a>
               </div>
               <Divider
                 className={`${cPrefixCls}-header-right-divider`}
