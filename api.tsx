@@ -20,6 +20,7 @@ function getAMSEEApi(path: string) {
 
 const api = {
   login: getRDBApi('/auth/login'),
+  ldap: getRDBApi('/ldap'),
   logout: getRDBApi('/auth/logout'),
   selftProfile: getRDBApi('/self/profile'),
   selftPassword: getRDBApi('/self/password'),
