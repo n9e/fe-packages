@@ -174,6 +174,7 @@ export default function index(props: Props) {
                 <TreeSelect
                   size="small"
                   showSearch
+                  className="global-tenantProject-select"
                   style={{ width: '200px', position: 'relative', top: -2 }}
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   placeholder="请选择租户和项目"
