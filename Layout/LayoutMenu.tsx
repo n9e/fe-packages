@@ -107,7 +107,13 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
         linkProps.target = nav.target;
       }
 
-      if (nav.to && utils.isAbsolutePath(nav.to)) {
+      if (
+        nav.to
+        && (
+          utils.isAbsolutePath(nav.to)
+          || nav.isAbsolutePath
+        )
+      ) {
         linkProps.href = nav.to;
         link = (
           <a {...linkProps}>

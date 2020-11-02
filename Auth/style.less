@@ -7,6 +7,7 @@
 @register-height: 613px;
 @register-prefix-cls:  ~"ecmc-register";
 
+
 .title() {
   font-size: 16px;
   line-height: 1.2;
@@ -62,4 +63,32 @@
 
 .@{register-prefix-cls}-submitBtn {
   width: 100%;
+}
+
+
+.callBack-urlImg{
+  height: 785px;
+  background: url('./assets/400icon.png') no-repeat ;
+  background-size: cover;
+  position: relative;
+
+  &-txt{
+    position: absolute;
+    left:50%;
+    top:35%;
+    width: 500px;
+    height: 300px;
+  }
+
+  &-400{
+    font-size: 70px;
+    color:#333;
+    letter-spacing: 0;
+  }
+
+  &-p{
+    font-size: 20px;
+    color:#3370FF;
+    letter-spacing: 0;
+  }
 }

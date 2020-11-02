@@ -22,7 +22,8 @@ import Settings from './Settings';
 import './style.less';
 import './assets/iconfont/iconfont.css';
 import './assets/iconfont/iconfont.js';
-// const developmentFeConf = require('../../../config/feConfig.json');
+import request from '@pkgs/request';
+import api from '@pkgs/api';
 
 interface Props {
   tenantProjectVisible: boolean;
@@ -46,6 +47,7 @@ const normalizeTenantProjectData = (
   data: any[],
   tenantIdent?: string,
   tenantId?: number,
+  tenantName?: string,
 ): any => {
   return _.map(data, (item) => {
     if (item.children) {
@@ -53,10 +55,12 @@ const normalizeTenantProjectData = (
         ...item,
         tenantIdent: tenantIdent || item.ident,
         tenantId: tenantId || item.id,
+        tenantName: tenantName || item.name,
         children: normalizeTenantProjectData(
           item.children,
           tenantIdent || item.ident,
           tenantId || item.id,
+          tenantName || item.name,
         ),
       };
     }
@@ -64,16 +68,33 @@ const normalizeTenantProjectData = (
       ...item,
       tenantIdent,
       tenantId,
+      tenantName,
     };
   });
 };
+const treeIcon: (node: any) => JSX.Element = (node) => (
+  <span
+    style={{
+      display: 'inline-block',
+      backgroundColor: node.icon_color,
+      width: 16,
+      height: 16,
+      lineHeight: '16px',
+      borderRadius: 16,
+      color: '#fff',
+    }}
+  >
+    {node.icon_char}
+  </span>
+);
 const renderTreeNodes = (nodes: any[]) => {
   return _.map(nodes, (node) => {
     if (_.isArray(node.children)) {
       return (
         <TreeSelect.TreeNode
-          title={node.ident}
-          fullTitle={`${node.tenantIdent}-${node.ident}`}
+          icon={treeIcon(node)}
+          title={node.name}
+          fullTitle={`${node.tenantName}-${node.name}`}
           key={String(node.id)}
           value={node.id}
           path={node.path}
@@ -86,8 +107,9 @@ const renderTreeNodes = (nodes: any[]) => {
     }
     return (
       <TreeSelect.TreeNode
-        title={node.ident}
-        fullTitle={`${node.tenantIdent}-${node.ident}`}
+        icon={treeIcon(node)}
+        title={node.name}
+        fullTitle={`${node.tenantName}-${node.name}`}
         key={String(node.id)}
         value={node.id}
         path={node.path}
@@ -103,7 +125,7 @@ export default function index(props: Props) {
   const [dispname, setDispname] = useState('');
   const [menusVisible, setMenusVisible] = useState(false);
   const [menusContentVsible, setMenusContentVisible] = useState(false);
-  const [feConf, setFeConf] = useState({});
+  const [feConf, setFeConf] = useState({} as any);
   const treeData = normalizeTreeData(props.belongProjects);
   const cacheProject = _.attempt(
     JSON.parse.bind(
@@ -114,6 +136,8 @@ export default function index(props: Props) {
   const content = <p style={{ height: 0 }}>工单</p>;
   const message = <p style={{ height: 0 }}>消息</p>;
   const text = <p style={{ height: 0 }}>文档中心</p>;
+
+  const [messageCount, setMessageCount] = useState();
 
   useEffect(() => {
     auth.checkAuthenticate().then(() => {
@@ -127,18 +151,16 @@ export default function index(props: Props) {
       .then((res) => {
         setFeConf(res);
       });
-    // if (process.env.NODE_ENV === 'development') {
-    //   setFeConf(developmentFeConf);
-    // } else if (process.env.NODE_ENV === 'production') {
-    //   fetch('/static/feConfig.json')
-    //     .then((res) => {
-    //       return res.json();
-    //     })
-    //     .then((res) => {
-    //       setFeConf(res);
-    //     });
-    // }
   }, []);
+
+  useEffect(() => {
+    // 获取消息的未读数量
+    if (feConf.header && feConf.header.mode === 'complicated') {
+      request(`${api.messageCount}?status=0`).then((count = 0) => {
+        setMessageCount(count);
+      });
+    }
+  }, [feConf]);
 
   return (
     <Layout className={cPrefixCls}>
@@ -174,6 +196,7 @@ export default function index(props: Props) {
                 <TreeSelect
                   size="small"
                   showSearch
+                  treeIcon
                   className="global-tenantProject-select"
                   style={{ width: '200px', position: 'relative', top: -2 }}
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
@@ -181,6 +204,7 @@ export default function index(props: Props) {
                   treeNodeLabelProp="fullTitle"
                   allowClear
                   treeDefaultExpandAll
+                  treeNodeFilterProp="fullTitle"
                   value={_.get(cacheProject, 'id')}
                   onChange={(_value, _label, extra) => {
                     const newSelectedTenantProject = {
@@ -228,13 +252,13 @@ export default function index(props: Props) {
                     </Popover>
                   </Badge>
                 </a>
-                <a className="text">
+                <a className="text" href="/portal/message">
                   <Popover content={message}>
                     <span className="iconfont iconxiaoxiicon" />
                   </Popover>
-                  <Badge count={5} className="badge"></Badge>
+                  <Badge count={messageCount} className="badge"></Badge>
                 </a>
-                <a>
+                <a href="/portal/document">
                   <Popover content={text}>
                     <span className="iconfont iconwendangicon" />
                   </Popover>
@@ -277,7 +301,7 @@ export default function index(props: Props) {
                   <a
                     onClick={() => {
                       auth.signout(() => {
-                        window.location.href = '/login';
+                        window.location.href = '/';
                       });
                     }}
                   >

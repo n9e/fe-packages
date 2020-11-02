@@ -16,6 +16,7 @@ export interface MenuConfItem {
   target?: string,
   getQuery?: (query: any) => any,
   permissionPoint?: string,
+  isAbsolutePath?: boolean,
 }
 
 export interface TreeNode {

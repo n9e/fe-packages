@@ -19,9 +19,13 @@ function getAMSEEApi(path: string) {
 }
 
 const api = {
+  settings:getRDBApi('/auth/settings'),
+  callback:getRDBApi('/auth/v2/callback'),
+  authorize: getRDBApi('/auth/v2/authorize'),
+  downloadBrowser: '/api/platform/download/browser',
   login: getRDBApi('/auth/login'),
   ldap: getRDBApi('/ldap'),
-  logout: getRDBApi('/auth/logout'),
+  logout: getRDBApi('/auth/v2/logout'),
   selftProfile: getRDBApi('/self/profile'),
   selftPassword: getRDBApi('/self/password'),
   selftToken: getRDBApi('/self/token'),
@@ -62,6 +66,7 @@ const api = {
   tagkv: getApi('index', '/tagkv'),
   fullmatch: getApi('index', '/counter/fullmatch'),
   points: getApi('transfer', '/data/ui'),
+  messageCount: getApi('platform', '/msgs/self/count'),
 };
 
 export default api;

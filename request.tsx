@@ -4,28 +4,32 @@ import Notification from 'rc-notification';
 import 'rc-notification/assets/index.css';
 import _ from 'lodash';
 import { Response } from './interface';
+import auth from './Auth/auth';
 
-const controller = new AbortController();
-const { signal } = controller;
 let notification: any;
-Notification.newInstance({
-  style: {
-    top: 24,
-    right: 0,
-    zIndex: 1001,
+Notification.newInstance(
+  {
+    style: {
+      top: 24,
+      right: 0,
+      zIndex: 1001,
+    },
   },
-}, (n: any) => { notification = n; });
+  (n: any) => {
+    notification = n;
+  }
+);
 
 /**
  * 后端接口非 5xx 都会返回 2xx
  * 异常都是通过 res.err 来判断，res.err 有值则请求失败。res.err 是具体的错误信息
  * res.err 为 'unauthorized' 约定的未授权状态
-*/
+ */
 
 interface Props {
-  duration: number,
-  msg: string,
-  onClose: () => void,
+  duration: number;
+  msg: string;
+  onClose: () => void;
 }
 
 class ErrNotifyContent extends Component<Props> {
@@ -37,7 +41,7 @@ class ErrNotifyContent extends Component<Props> {
 
   componentDidMount = () => {
     this.setUpTimer();
-  }
+  };
 
   componentWillUnmount() {
     if (this.timerId) {
@@ -141,7 +145,12 @@ export function errNotify(errMsg: string) {
   });
 }
 
-export default async function request(url: any, options?: any, isUseDefaultErrNotify = true) {
+export default async function request(
+  url: any,
+  options?: any,
+  isUseDefaultErrNotify = true,
+  redirectToLogin = true
+) {
   if (typeof url === 'object' && url.url) {
     url = url.url;
     options = url;
@@ -152,17 +161,13 @@ export default async function request(url: any, options?: any, isUseDefaultErrNo
       'content-type': 'application/json',
     },
     ...options,
-    signal,
   });
 
   const data: Response = await response.json();
 
-  if (
-    response.status < 200
-    || response.status >= 300
-  ) {
-    console.log(data.err)
-    if(data.err.indexOf('can not found') === -1){
+  if (response.status < 200 || response.status >= 300) {
+    console.log(data.err);
+    if (data.err.indexOf('can not found') === -1) {
       errNotify(response.statusText);
     }
     const error = new Error(response.statusText);
@@ -170,15 +175,21 @@ export default async function request(url: any, options?: any, isUseDefaultErrNo
   }
 
   if (typeof data === 'object' && data.err !== '') {
-    if (data.err === 'unauthorized' && window.location.pathname !== '/login') {
-      window.location.href = '/login';
+    if (data.err === 'unauthorized') {
+      if (redirectToLogin && window.location.pathname !== './login') {
+        try {
+          await auth.authorize({ redirect: '/' });
+        } catch (e) {
+          console.log(e);
+        }
+      }
       throw 'unauthorized';
     } else {
-      if (isUseDefaultErrNotify && data.err.indexOf('can not found') === -1) errNotify(data.err);
+      if (isUseDefaultErrNotify && data.err.indexOf('can not found') === -1)
+        errNotify(data.err);
       const error = new Error(data.err);
       throw error;
     }
   }
-
   return data.dat;
 }
