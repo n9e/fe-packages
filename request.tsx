@@ -178,7 +178,8 @@ export default async function request(
     if (data.err === 'unauthorized') {
       if (redirectToLogin && window.location.pathname !== './login') {
         try {
-          await auth.authorize({ redirect: '/' });
+          const redirect = window.location.pathname;
+          await auth.authorize({ redirect: redirect });
         } catch (e) {
           console.log(e);
         }
