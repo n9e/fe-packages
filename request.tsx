@@ -23,7 +23,7 @@ Notification.newInstance(
 /**
  * 后端接口非 5xx 都会返回 2xx
  * 异常都是通过 res.err 来判断，res.err 有值则请求失败。res.err 是具体的错误信息
- * res.err 为 'unauthorized' 约定的未授权状态
+ * res.err 为 'und' 约定的未授权状态
  */
 
 interface Props {
@@ -178,7 +178,8 @@ export default async function request(
     if (data.err === 'unauthorized') {
       if (redirectToLogin && window.location.pathname !== './login') {
         try {
-          await auth.authorize({ redirect: '/' });
+          const redirect = window.location.pathname;
+          await auth.authorize({ redirect: redirect });
         } catch (e) {
           console.log(e);
         }
