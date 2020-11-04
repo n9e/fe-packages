@@ -30,7 +30,7 @@ export default function StarMenus(props: Props) {
         [`${cPrefixCls}-menus-sider-menus-item`]: true,
         // [`${cPrefixCls}-menus-sider-menus-item-inSort`]: inSort,
       })}>
-        <a href={`/${value.path}`} className={`${cPrefixCls}-menus-sider-menus-item-link`}>
+        <a href={`${value.path}`} className={`${cPrefixCls}-menus-sider-menus-item-link`}>
           <svg className={`${cPrefixCls}-menus-icon`} aria-hidden="true">
             <use xlinkHref={value.icon}></use>
           </svg>

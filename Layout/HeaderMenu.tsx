@@ -131,7 +131,7 @@ export default function HeaderMen(props: any) {
                   [`${cPrefixCls}-menus-content-starMenu`]: stared,
                 })}
               >
-                <a href={`/${item.path}`}>
+                <a href={`${item.path}`}>
                   {_.get(item, 'show.length') === 2 ? (
                     <span>
                       {_.get(item, 'show[0]')}
