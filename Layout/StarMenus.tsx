@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import _ from 'lodash'
 import { Icon } from 'antd';
 import classnames from 'classnames'
 import { SortableContainer, SortableElement, SortableHandle, arrayMove } from 'react-sortable-hoc';
 import { MenuChild, prefixCls } from './config';
+import { isAbsolutePath } from './utils';
 
 interface Props {
   items: MenuChild[];
@@ -30,7 +31,7 @@ export default function StarMenus(props: Props) {
         [`${cPrefixCls}-menus-sider-menus-item`]: true,
         // [`${cPrefixCls}-menus-sider-menus-item-inSort`]: inSort,
       })}>
-        <a href={`${value.path}`} className={`${cPrefixCls}-menus-sider-menus-item-link`}>
+        <a href={isAbsolutePath(value.path) ? value.path : `/${value.path}`} className={`${cPrefixCls}-menus-sider-menus-item-link`}>
           <svg className={`${cPrefixCls}-menus-icon`} aria-hidden="true">
             <use xlinkHref={value.icon}></use>
           </svg>

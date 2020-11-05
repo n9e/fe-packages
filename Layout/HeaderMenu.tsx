@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { getIntl } from '../hooks/useFormatMessage';
 import { prefixCls } from './config';
 import StarMenus from './StarMenus';
+import { isAbsolutePath } from './utils';
 
 const cPrefixCls = `${prefixCls}-layout`;
 const { Sider, Content } = Layout;
@@ -131,7 +132,7 @@ export default function HeaderMen(props: any) {
                   [`${cPrefixCls}-menus-content-starMenu`]: stared,
                 })}
               >
-                <a href={`${item.path}`}>
+                <a href={isAbsolutePath(item.path) ? item.path : `/${item.path}`}>
                   {_.get(item, 'show.length') === 2 ? (
                     <span>
                       {_.get(item, 'show[0]')}
