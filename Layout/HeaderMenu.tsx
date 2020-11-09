@@ -16,12 +16,17 @@ export default function HeaderMen(props: any) {
   const [value, setValue] = useState('');
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
-  // const [historyList, setHistoryList] = useState([]);
 
   const setLocal = (name: any) => {
     setStars(name);
     const jsonArrayString = JSON.stringify(name);
     localStorage.setItem('stars', jsonArrayString);
+  };
+
+  const setHistoryLocal = (name: any) => {
+    setHistoryList(name);
+    const jsonArrayString = JSON.stringify(name);
+    localStorage.setItem('menusHistory', jsonArrayString);
   };
 
   const [stars, setStars] = useState([
@@ -50,20 +55,23 @@ export default function HeaderMen(props: any) {
       icon: '#iconjiankonggaojingxitongicon',
     },
   ]);
-  // const historyData = [{
-  //   name: '最近访问',
-  //   nameEn: 'History',
-  //   type: 'group',
-  //   children: historyList,
-  // }];
+  const [historyList, setHistoryList] = useState([]);
+  const historyData = [
+    {
+      name: '最近访问',
+      nameEn: 'History',
+      type: 'group',
+      children: historyList,
+    },
+  ];
 
-  // const changeShow = (list: any) => {
-  //   for (let i = 0; i < list.length; i++) {
-  //     list[i].show = [];
-  //     list[i].show[0] = locale === 'en' ? list[i].nameEn : list[i].name;
-  //   }
-  //   return list;
-  // }
+  const changeShow = (list: any) => {
+    for (let i = 0; i < list.length; i++) {
+      list[i].show = [];
+      list[i].show[0] = locale === 'en' ? list[i].nameEn : list[i].name;
+    }
+    return list;
+  };
 
   const changeMenuShow = (list: any) => {
     for (let i = 0; i < list.length; i++) {
@@ -78,17 +86,24 @@ export default function HeaderMen(props: any) {
     return list;
   };
 
-    useEffect(() => {
-      // setHistoryList(changeShow(historyList));
-      changeMenuShow(menus);
-      forceUpdate();
-    }, [locale]);
+  useEffect(() => {
+    setHistoryList(changeShow(historyList));
+    changeMenuShow(menus);
+    forceUpdate();
+  }, [locale]);
 
   useEffect(() => {
     const cacheStars = localStorage.getItem('stars');
+    const menusHistory = localStorage.getItem('menusHistory');
     let defaultStars = [];
+    let defaultHistory = [];
     try {
       defaultStars = JSON.parse(cacheStars || '');
+    } catch (e) {
+      console.log(e);
+    }
+    try {
+      defaultHistory = JSON.parse(menusHistory || '');
     } catch (e) {
       console.log(e);
     }
@@ -96,7 +111,11 @@ export default function HeaderMen(props: any) {
     if (defaultStars.length) {
       setStars(defaultStars);
     }
-    // setHistoryList(changeShow(historyList));
+    setHistoryList(changeShow(historyList));
+
+    if (defaultHistory.length) {
+      setHistoryList(defaultHistory);
+    }
     fetch('/static/menusConfig.json')
       .then((res) => {
         return res.json();
@@ -131,7 +150,17 @@ export default function HeaderMen(props: any) {
                   [`${cPrefixCls}-menus-content-starMenu`]: stared,
                 })}
               >
-                <a href={`/${item.path}`}>
+                <a
+                  href={`/${item.path}`}
+                  onClick={() => {
+                    let newHistory = _.concat(historyList, item);
+                    let reverse = _.reverse(newHistory)
+                    let newArr = _.filter(reverse, (item, index, arr) => {
+                      return _.findIndex(arr,item) === index; 
+                    })
+                    setHistoryLocal(newArr);
+                  }}
+                >
                   {_.get(item, 'show.length') === 2 ? (
                     <span>
                       {_.get(item, 'show[0]')}
@@ -151,6 +180,7 @@ export default function HeaderMen(props: any) {
                     let newStars;
                     if (stared) {
                       newStars = _.remove(stars, (star) => {
+                        console.log(star.path !== item.path)
                         return star.path !== item.path;
                       });
                     } else {
@@ -214,23 +244,23 @@ export default function HeaderMen(props: any) {
               setValue(e.target.value);
               if (e.target.value === '') {
                 setIcon(false);
-                // changeShow(historyList);
+                changeShow(historyList);
                 changeMenuShow(menus);
               } else {
                 setIcon(true);
-                // for (let i = 0; i < historyList.length; i++) {
-                //   if (locale === 'en') {
-                // let en = historyList[i].nameEn.split(e.target.value);
-                // historyList[i].show = en;
-                //   const en = _.get(historyList, `[${i}].nameEn`).split(e.target.value);
-                //   _.set(historyList, `[${i}].show`, en);
-                // } else {
-                // let zh = historyList[i].name.split(e.target.value);
-                // historyList[i].show = zh;
-                //     const zh = _.get(historyList, `[${i}].name`).split(e.target.value);
-                //     _.set(historyList, `[${i}].show`, zh);
-                //   }
-                // }
+                for (let i = 0; i < historyList.length; i++) {
+                  if (locale === 'en') {
+                    const en = _.get(historyList, `[${i}].nameEn`).split(
+                      e.target.value
+                    );
+                    _.set(historyList, `[${i}].show`, en);
+                  } else {
+                    const zh = _.get(historyList, `[${i}].name`).split(
+                      e.target.value
+                    );
+                    _.set(historyList, `[${i}].show`, zh);
+                  }
+                }
                 for (let i = 0; i < menus.length; i++) {
                   for (let j = 0; j < _.get(menus[i], 'children.length'); j++) {
                     if (locale === 'en') {
@@ -254,9 +284,9 @@ export default function HeaderMen(props: any) {
             }}
           />
         </div>
-        {/* <div className={`${cPrefixCls}-menus-content-menus-history`}>
+        <div className={`${cPrefixCls}-menus-content-menus-history`}>
           {renderContentMenus(historyData)}
-        </div> */}
+        </div>
         <div className={`${cPrefixCls}-menus-content-menus`}>
           {renderContentMenus(menus)}
         </div>
