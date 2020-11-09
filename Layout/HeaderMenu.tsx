@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { getIntl } from '../hooks/useFormatMessage';
 import { prefixCls } from './config';
 import StarMenus from './StarMenus';
+import { isAbsolutePath } from './utils';
 
 const cPrefixCls = `${prefixCls}-layout`;
 const { Sider, Content } = Layout;
@@ -151,7 +152,7 @@ export default function HeaderMen(props: any) {
                 })}
               >
                 <a
-                  href={`/${item.path}`}
+                  href={isAbsolutePath(item.path) ? item.path : `/${item.path}`}
                   onClick={() => {
                     let newHistory = _.concat(historyList, item);
                     let reverse = _.reverse(newHistory)

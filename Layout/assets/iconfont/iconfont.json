@@ -1,10 +1,31 @@
 {
   "id": "1971045",
-  "name": "电科院项目",
+  "name": "icee",
   "font_family": "iconfont",
   "css_prefix_text": "icon",
   "description": "",
   "glyphs": [
+    {
+      "icon_id": "17929097",
+      "name": "弹性云服务icon",
+      "font_class": "danxingyunfuwuicon",
+      "unicode": "e6f5",
+      "unicode_decimal": 59125
+    },
+    {
+      "icon_id": "17929098",
+      "name": "数据库mySQL版icon",
+      "font_class": "shujukumySQLbanicon",
+      "unicode": "e6f6",
+      "unicode_decimal": 59126
+    },
+    {
+      "icon_id": "5625943",
+      "name": "提示",
+      "font_class": "tishi",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
     {
       "icon_id": "17232066",
       "name": "容器平台icon",
