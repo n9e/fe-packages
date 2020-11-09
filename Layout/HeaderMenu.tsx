@@ -180,7 +180,6 @@ export default function HeaderMen(props: any) {
                     let newStars;
                     if (stared) {
                       newStars = _.remove(stars, (star) => {
-                        console.log(star.path !== item.path)
                         return star.path !== item.path;
                       });
                     } else {
