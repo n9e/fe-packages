@@ -205,6 +205,10 @@ export default function index(props: Props) {
                   allowClear
                   treeDefaultExpandAll
                   treeNodeFilterProp="fullTitle"
+                  filterTreeNode={(inputValue: string, treeNode: any) => {
+                    const { fullTitle = '', path = '' } = treeNode.props;
+                    return fullTitle.indexOf(inputValue) > -1 || path.indexOf(inputValue) > -1;
+                  }}
                   value={_.get(cacheProject, 'id')}
                   onChange={(_value, _label, extra) => {
                     const newSelectedTenantProject = {
