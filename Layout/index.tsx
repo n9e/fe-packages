@@ -214,14 +214,12 @@ export default function index(props: Props) {
                     const newSelectedTenantProject = {
                       tenant: {
                         id: _.get(extra, 'triggerNode.props.node.tenantId'),
-                        ident: _.get(
-                          extra,
-                          'triggerNode.props.node.tenantIdent',
-                        ),
+                        ident: _.get( extra, 'triggerNode.props.node.tenantIdent'),
                       },
                       project: {
                         id: _.get(extra, 'triggerNode.props.node.id'),
                         ident: _.get(extra, 'triggerNode.props.node.ident'),
+                        path: _.get(extra, 'triggerNode.props.node.path'),
                       },
                     };
                     props.setSelectedTenantProject(newSelectedTenantProject);
