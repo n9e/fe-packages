@@ -16,7 +16,7 @@ export default function HeaderMen(props: any) {
   const [value, setValue] = useState('');
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
-  // const [historyList, setHistoryList] = useState([]);
+  const [historyList, setHistoryList] = useState([] as any);
 
   const setLocal = (name: any) => {
     setStars(name);
@@ -50,20 +50,20 @@ export default function HeaderMen(props: any) {
       icon: '#iconjiankonggaojingxitongicon',
     },
   ]);
-  // const historyData = [{
-  //   name: '最近访问',
-  //   nameEn: 'History',
-  //   type: 'group',
-  //   children: historyList,
-  // }];
+  const historyData = [{
+    name: '最近访问',
+    nameEn: 'History',
+    type: 'group',
+    children: historyList,
+  }];
 
-  // const changeShow = (list: any) => {
-  //   for (let i = 0; i < list.length; i++) {
-  //     list[i].show = [];
-  //     list[i].show[0] = locale === 'en' ? list[i].nameEn : list[i].name;
-  //   }
-  //   return list;
-  // }
+  const changeShow = (list: any) => {
+    for (let i = 0; i < list.length; i++) {
+      list[i].show = [];
+      list[i].show[0] = locale === 'en' ? list[i].nameEn : list[i].name;
+    }
+    return list;
+  }
 
   const changeMenuShow = (list: any) => {
     for (let i = 0; i < list.length; i++) {
@@ -79,7 +79,7 @@ export default function HeaderMen(props: any) {
   };
 
     useEffect(() => {
-      // setHistoryList(changeShow(historyList));
+      setHistoryList(changeShow(historyList));
       changeMenuShow(menus);
       forceUpdate();
     }, [locale]);
@@ -96,7 +96,7 @@ export default function HeaderMen(props: any) {
     if (defaultStars.length) {
       setStars(defaultStars);
     }
-    // setHistoryList(changeShow(historyList));
+    setHistoryList(changeShow(historyList));
     fetch('/static/menusConfig.json')
       .then((res) => {
         return res.json();
@@ -214,23 +214,19 @@ export default function HeaderMen(props: any) {
               setValue(e.target.value);
               if (e.target.value === '') {
                 setIcon(false);
-                // changeShow(historyList);
+                changeShow(historyList);
                 changeMenuShow(menus);
               } else {
                 setIcon(true);
-                // for (let i = 0; i < historyList.length; i++) {
-                //   if (locale === 'en') {
-                // let en = historyList[i].nameEn.split(e.target.value);
-                // historyList[i].show = en;
-                //   const en = _.get(historyList, `[${i}].nameEn`).split(e.target.value);
-                //   _.set(historyList, `[${i}].show`, en);
-                // } else {
-                // let zh = historyList[i].name.split(e.target.value);
-                // historyList[i].show = zh;
-                //     const zh = _.get(historyList, `[${i}].name`).split(e.target.value);
-                //     _.set(historyList, `[${i}].show`, zh);
-                //   }
-                // }
+                for (let i = 0; i < historyList.length; i++) {
+                  if (locale === 'en') {
+                  const en = _.get(historyList, `[${i}].nameEn`).split(e.target.value);
+                  _.set(historyList, `[${i}].show`, en);
+                } else {
+                    const zh = _.get(historyList, `[${i}].name`).split(e.target.value);
+                    _.set(historyList, `[${i}].show`, zh);
+                  }
+                }
                 for (let i = 0; i < menus.length; i++) {
                   for (let j = 0; j < _.get(menus[i], 'children.length'); j++) {
                     if (locale === 'en') {
@@ -254,9 +250,9 @@ export default function HeaderMen(props: any) {
             }}
           />
         </div>
-        {/* <div className={`${cPrefixCls}-menus-content-menus-history`}>
+        <div className={`${cPrefixCls}-menus-content-menus-history`}>
           {renderContentMenus(historyData)}
-        </div> */}
+        </div>
         <div className={`${cPrefixCls}-menus-content-menus`}>
           {renderContentMenus(menus)}
         </div>

@@ -156,11 +156,15 @@ export default async function request(
     options = url;
     delete options.url;
   }
+  const {headers = {}, ...props} = options
   const response = await fetch(url, {
-    headers: {
+    headers: headers ? {
+      'content-type': 'application/json',
+      ...headers
+    } : {
       'content-type': 'application/json',
     },
-    ...options,
+    ...props,
   });
 
   const data: Response = await response.json();
@@ -178,7 +182,8 @@ export default async function request(
     if (data.err === 'unauthorized') {
       if (redirectToLogin && window.location.pathname !== './login') {
         try {
-          await auth.authorize({ redirect: '/' });
+          const redirect = window.location.pathname;
+          await auth.authorize({ redirect: redirect });
         } catch (e) {
           console.log(e);
         }
