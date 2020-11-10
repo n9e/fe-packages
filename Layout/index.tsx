@@ -138,6 +138,7 @@ export default function index(props: Props) {
   const text = <p style={{ height: 0 }}>文档中心</p>;
 
   const [messageCount, setMessageCount] = useState();
+  const [ticketMessageCount, setTicketMessageCount] = useState();
 
   useEffect(() => {
     auth.checkAuthenticate().then(() => {
@@ -158,6 +159,9 @@ export default function index(props: Props) {
     if (feConf.header && feConf.header.mode === 'complicated') {
       request(`${api.messageCount}?status=0`).then((count = 0) => {
         setMessageCount(count);
+      });
+      request(`${api.ticketMessageCount}?limit=1000&p=1&onlyApprovePending=true`).then(res => {
+        res.total && setTicketMessageCount(res.total)
       });
     }
   }, [feConf]);
@@ -214,7 +218,7 @@ export default function index(props: Props) {
                     const newSelectedTenantProject = {
                       tenant: {
                         id: _.get(extra, 'triggerNode.props.node.tenantId'),
-                        ident: _.get( extra, 'triggerNode.props.node.tenantIdent'),
+                        ident: _.get(extra, 'triggerNode.props.node.tenantIdent'),
                       },
                       project: {
                         id: _.get(extra, 'triggerNode.props.node.id'),
@@ -247,12 +251,11 @@ export default function index(props: Props) {
                 type="vertical"
               />
               <div className={`${cPrefixCls}-header-right-icons`}>
-                <a>
-                  <Badge dot>
-                    <Popover content={content}>
-                      <span className="iconfont icongongdanicon" />
-                    </Popover>
-                  </Badge>
+                <a className="text ticket-icon" href="/rdb/ticket/my-ticket">
+                  <Popover content={content}>
+                    <span className="iconfont icongongdanicon" />
+                  </Popover>
+                  <Badge count={ticketMessageCount} className="badge"></Badge>
                 </a>
                 <a className="text" href="/portal/message">
                   <Popover content={message}>

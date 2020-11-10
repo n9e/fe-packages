@@ -67,6 +67,7 @@ const api = {
   fullmatch: getApi('index', '/counter/fullmatch'),
   points: getApi('transfer', '/data/ui'),
   messageCount: getApi('platform', '/msgs/self/count'),
+  ticketMessageCount: getApi('ticket', '/tickets'),
 };
 
 export default api;
