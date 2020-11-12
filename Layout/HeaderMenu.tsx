@@ -17,6 +17,10 @@ export default function HeaderMen(props: any) {
   const [value, setValue] = useState('');
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
+<<<<<<< HEAD
+=======
+  const [historyList, setHistoryList] = useState([] as any);
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
 
   const setLocal = (name: any) => {
     setStars(name);
@@ -56,6 +60,7 @@ export default function HeaderMen(props: any) {
       icon: '#iconjiankonggaojingxitongicon',
     },
   ]);
+<<<<<<< HEAD
   const [historyList, setHistoryList] = useState([]);
   const historyData = [
     {
@@ -65,6 +70,14 @@ export default function HeaderMen(props: any) {
       children: historyList,
     },
   ];
+=======
+  const historyData = [{
+    name: '最近访问',
+    nameEn: 'History',
+    type: 'group',
+    children: historyList,
+  }];
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
 
   const changeShow = (list: any) => {
     for (let i = 0; i < list.length; i++) {
@@ -72,7 +85,11 @@ export default function HeaderMen(props: any) {
       list[i].show[0] = locale === 'en' ? list[i].nameEn : list[i].name;
     }
     return list;
+<<<<<<< HEAD
   };
+=======
+  }
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
 
   const changeMenuShow = (list: any) => {
     for (let i = 0; i < list.length; i++) {
@@ -87,11 +104,19 @@ export default function HeaderMen(props: any) {
     return list;
   };
 
+<<<<<<< HEAD
   useEffect(() => {
     setHistoryList(changeShow(historyList));
     changeMenuShow(menus);
     forceUpdate();
   }, [locale]);
+=======
+    useEffect(() => {
+      setHistoryList(changeShow(historyList));
+      changeMenuShow(menus);
+      forceUpdate();
+    }, [locale]);
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
 
   useEffect(() => {
     const cacheStars = localStorage.getItem('stars');
@@ -113,10 +138,13 @@ export default function HeaderMen(props: any) {
       setStars(defaultStars);
     }
     setHistoryList(changeShow(historyList));
+<<<<<<< HEAD
 
     if (defaultHistory.length) {
       setHistoryList(defaultHistory);
     }
+=======
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
     fetch('/static/menusConfig.json')
       .then((res) => {
         return res.json();
@@ -250,6 +278,7 @@ export default function HeaderMen(props: any) {
                 setIcon(true);
                 for (let i = 0; i < historyList.length; i++) {
                   if (locale === 'en') {
+<<<<<<< HEAD
                     const en = _.get(historyList, `[${i}].nameEn`).split(
                       e.target.value
                     );
@@ -258,6 +287,12 @@ export default function HeaderMen(props: any) {
                     const zh = _.get(historyList, `[${i}].name`).split(
                       e.target.value
                     );
+=======
+                  const en = _.get(historyList, `[${i}].nameEn`).split(e.target.value);
+                  _.set(historyList, `[${i}].show`, en);
+                } else {
+                    const zh = _.get(historyList, `[${i}].name`).split(e.target.value);
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
                     _.set(historyList, `[${i}].show`, zh);
                   }
                 }
