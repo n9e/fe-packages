@@ -5,6 +5,7 @@ import request from '../request';
 import api from '../api';
 
 interface IProps {
+  valueMode: 'mine' | 'all';
   valueKey?: 'id' | 'ident';
   style?: object;
   value?: any;
@@ -18,13 +19,20 @@ interface ITenant {
 }
 
 export default function TenantSelect(props: IProps) {
+  const valueMode = props.valueMode || 'mine';
   const valueKey = props.valueKey || 'ident';
   const [data, setData] = useState<ITenant[]>([]);
 
   useEffect(() => {
-    request(`${api.tree}/projs`).then((res) => {
-      setData(_.filter(res, (item) => item.cate === 'tenant'));
-    });
+    if (valueMode === 'mine') {
+      request(`${api.tree}/projs`).then((res) => {
+        setData(_.filter(res, (item) => item.cate === 'tenant'));
+      });
+    } else if (valueMode === 'all') {
+      request(`${api.nodes}?cate=tenant&inner=1`).then((res) => {
+        setData(res);
+      });
+    }
   }, []);
 
   return (
