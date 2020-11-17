@@ -18,6 +18,14 @@ export default function HeaderMen(props: any) {
   const [value, setValue] = useState('');
   const [search, setSearch] = useState(true);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
+<<<<<<< HEAD
+=======
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+<<<<<<< HEAD
+=======
+  const [historyList, setHistoryList] = useState([] as any);
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
+>>>>>>> d2cc2734bc1b1f2dcef38c5acc55ee160db4ee81
 
   const setLocal = (name: any) => {
     setStars(name);
@@ -58,11 +66,64 @@ export default function HeaderMen(props: any) {
       icon: '#iconjiankonggaojingxitongicon',
     },
   ]);
+<<<<<<< HEAD
   const [historyList, setHistoryList] = useState([]);
+<<<<<<< HEAD
+=======
+  const historyData = [
+    {
+      name: '最近访问',
+      nameEn: 'History',
+      type: 'group',
+      children: historyList,
+    },
+  ];
+=======
+  const historyData = [{
+    name: '最近访问',
+    nameEn: 'History',
+    type: 'group',
+    children: historyList,
+  }];
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
 
+  const changeShow = (list: any) => {
+    for (let i = 0; i < list.length; i++) {
+      list[i].show = [];
+      list[i].show[0] = locale === 'en' ? list[i].nameEn : list[i].name;
+    }
+    return list;
+<<<<<<< HEAD
+  };
+=======
+  }
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
+
+  const changeMenuShow = (list: any) => {
+    for (let i = 0; i < list.length; i++) {
+      for (let j = 0; j < list[i].children.length; j++) {
+        list[i].children[j].show = [];
+        list[i].children[j].show[0] =
+          locale === 'en'
+            ? list[i].children[j].nameEn
+            : list[i].children[j].name;
+      }
+    }
+    return list;
+  };
+>>>>>>> d2cc2734bc1b1f2dcef38c5acc55ee160db4ee81
+
+<<<<<<< HEAD
   useEffect(() => {
     setHistoryList(historyList);
   }, [locale]);
+=======
+    useEffect(() => {
+      setHistoryList(changeShow(historyList));
+      changeMenuShow(menus);
+      forceUpdate();
+    }, [locale]);
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
 
   useEffect(() => {
     const cacheStars = localStorage.getItem('stars');
@@ -83,11 +144,18 @@ export default function HeaderMen(props: any) {
     if (defaultStars.length) {
       setStars(defaultStars);
     }
+<<<<<<< HEAD
     setHistoryList(historyList);
+=======
+    setHistoryList(changeShow(historyList));
+<<<<<<< HEAD
+>>>>>>> d2cc2734bc1b1f2dcef38c5acc55ee160db4ee81
 
     if (defaultHistory.length) {
       setHistoryList(defaultHistory);
     }
+=======
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
     fetch('/static/menusConfig.json')
       .then((res) => {
         return res.json();
@@ -217,6 +285,7 @@ export default function HeaderMen(props: any) {
                 setIcon(false);
               } else {
                 setIcon(true);
+<<<<<<< HEAD
                 _.filter(menus, (item) => {
                   _.filter(item?.children, (items) => {
                     let menuss = [] as any;
@@ -227,6 +296,44 @@ export default function HeaderMen(props: any) {
                     } else if (items?.name.indexOf(e.target.value) === -1) {
                       setValue(e.target.value);
                       setSearch(false);
+=======
+                for (let i = 0; i < historyList.length; i++) {
+                  if (locale === 'en') {
+<<<<<<< HEAD
+                    const en = _.get(historyList, `[${i}].nameEn`).split(
+                      e.target.value
+                    );
+                    _.set(historyList, `[${i}].show`, en);
+                  } else {
+                    const zh = _.get(historyList, `[${i}].name`).split(
+                      e.target.value
+                    );
+=======
+                  const en = _.get(historyList, `[${i}].nameEn`).split(e.target.value);
+                  _.set(historyList, `[${i}].show`, en);
+                } else {
+                    const zh = _.get(historyList, `[${i}].name`).split(e.target.value);
+>>>>>>> 999c1bf44e04769bea09309dc8fccacc85e11438
+                    _.set(historyList, `[${i}].show`, zh);
+                  }
+                }
+                for (let i = 0; i < menus.length; i++) {
+                  for (let j = 0; j < _.get(menus[i], 'children.length'); j++) {
+                    if (locale === 'en') {
+                      const en = _.get(
+                        menus,
+                        `[${i}].children.[${j}].nameEn`,
+                        ''
+                      ).split(e.target.value);
+                      _.set(menus, `[${i}].children[${j}].show`, en);
+                    } else {
+                      const zh = _.get(
+                        menus,
+                        `[${i}].children.[${j}].name`,
+                        ''
+                      ).split(e.target.value);
+                      _.set(menus, `[${i}].children[${j}].show`, zh);
+>>>>>>> d2cc2734bc1b1f2dcef38c5acc55ee160db4ee81
                     }
                   })
                 })
