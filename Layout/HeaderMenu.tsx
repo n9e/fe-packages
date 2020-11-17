@@ -9,6 +9,8 @@ import { isAbsolutePath } from './utils';
 
 const cPrefixCls = `${prefixCls}-layout`;
 const { Sider, Content } = Layout;
+let menuss = [] as any;
+
 
 export default function HeaderMen(props: any) {
   const { locale } = getIntl();
@@ -220,12 +222,11 @@ export default function HeaderMen(props: any) {
                 setIcon(false);
               } else {
                 setIcon(true);
-                _.filter(menus, (item) => {
-                  _.filter(item?.children, (items) => {
-                    let menuss = [] as any;
+                _.map(menus, (item) => {
+                  _.map(item?.children, (items) => {
                     if (items?.name.indexOf(e.target.value) !== -1) {
-                      const arr = _.concat(menuss, items);
-                      newarr = _.set(item, `children`, arr);
+                      menuss = _.concat(menuss, items);
+                      newarr = _.set(item, `children`, menuss);
                     } else if (items?.name.indexOf(e.target.value) === -1) {
                       setValue(e.target.value);
                     }
