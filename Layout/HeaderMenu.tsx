@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useRef, Children } from 'react';
 import { Layout, Icon, Input } from 'antd';
 import _ from 'lodash';
 import classnames from 'classnames';
@@ -16,7 +16,7 @@ export default function HeaderMen(props: any) {
   const [menusStart, setMenusStart] = useState([] as any);
   const [icon, setIcon] = useState(false);
   const [value, setValue] = useState('');
-  const [search, setSearch] = useState(true);
+  const [search, setSearch] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
 
   const setLocal = (name: any) => {
@@ -102,10 +102,21 @@ export default function HeaderMen(props: any) {
         return res.json();
       })
       .then((res) => {
-        setMenus(res);
         setMenusStart(res);
       });
   }, [icon]);
+
+  const lock = useRef();
+
+  useEffect(() => {
+    console.log(lock)
+  }, [])
+
+
+  // const handleSearch = _.debounce(function(e) {
+  //   console.log('value is => ', e.target.value)
+  // }, 600, { leading: false, trailing: true })
+
   const renderContentMenus = (menus: any[]) => {
     return _.map(menus, (menu) => {
       return (
@@ -212,7 +223,11 @@ export default function HeaderMen(props: any) {
             className={`${cPrefixCls}-menus-content-search-input`}
             placeholder="请输入关键词"
             onChange={(e) => {
+              let newarr;
               if (e.target.value === '') {
+                _.map(menus, (items, index) => {
+                  _.set(items, `children`, menusStart[index]?.children);
+                })
                 setIcon(false);
               } else {
                 setIcon(true);
@@ -220,28 +235,30 @@ export default function HeaderMen(props: any) {
                   _.filter(item?.children, (items) => {
                     let menuss = [] as any;
                     if (items?.name.indexOf(e.target.value) !== -1) {
-                      setSearch(true);
                       const arr = _.concat(menuss, items);
-                      _.set(item, `children`, arr);
+                      newarr = _.set(item, `children`, arr);
                     } else if (items?.name.indexOf(e.target.value) === -1) {
                       setValue(e.target.value);
-                      setSearch(false);
                     }
                   })
                 })
               }
+              newarr ? setSearch(true) : setSearch(false)
             }}
           />
         </div>
-        {!icon ? <div>
-          <div className={`${cPrefixCls}-menus-content-menus`}>
-            {renderContentMenus(menusStart)}
+        {!icon ?
+          <div>
+            <div className={`${cPrefixCls}-menus-content-menus`}>
+              {renderContentMenus(menus)}
+            </div>
           </div>
-        </div> : search ? <div>
-          <div className={`${cPrefixCls}-menus-content-menus`}>
-            {renderContentMenus(menus)}
-          </div>
-        </div> : <div style={{color:'#333', fontSize:14, marginTop:20 }}>未找到与"<span style={{color:'#FB4E57'}}>{value}</span>"相关的产品</div>}
+          : search ? <div>
+            <div className={`${cPrefixCls}-menus-content-menus`}>
+              {renderContentMenus(menus)}
+            </div>
+          </div> : <div style={{ color: '#333', fontSize: 14, marginTop: 20 }}>未找到与"<span style={{ color: '#FB4E57' }}>{value}</span>"相关的产品</div>
+        }
 
         <Icon
           type="close"
