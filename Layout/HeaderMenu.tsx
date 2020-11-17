@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Children } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Icon, Input } from 'antd';
 import _ from 'lodash';
 import classnames from 'classnames';
@@ -105,17 +105,6 @@ export default function HeaderMen(props: any) {
         setMenusStart(res);
       });
   }, [icon]);
-
-  const lock = useRef();
-
-  useEffect(() => {
-    console.log(lock)
-  }, [])
-
-
-  // const handleSearch = _.debounce(function(e) {
-  //   console.log('value is => ', e.target.value)
-  // }, 600, { leading: false, trailing: true })
 
   const renderContentMenus = (menus: any[]) => {
     return _.map(menus, (menu) => {
