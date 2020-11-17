@@ -23,6 +23,7 @@ export default function HeaderMen(props: any) {
     setStars(name);
     const jsonArrayString = JSON.stringify(name);
     localStorage.setItem('stars', jsonArrayString);
+    console.log();
   };
 
   const setHistoryLocal = (name: any) => {
