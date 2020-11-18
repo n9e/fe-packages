@@ -9,7 +9,6 @@ import { isAbsolutePath } from './utils';
 
 const cPrefixCls = `${prefixCls}-layout`;
 const { Sider, Content } = Layout;
-let menuss = [] as any;
 
 
 export default function HeaderMen(props: any) {
@@ -20,6 +19,7 @@ export default function HeaderMen(props: any) {
   const [value, setValue] = useState('');
   const [search, setSearch] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
+  let menuss = [] as any;
 
   const setLocal = (name: any) => {
     setStars(name);
@@ -240,7 +240,7 @@ export default function HeaderMen(props: any) {
         {!icon ?
           <div>
             <div className={`${cPrefixCls}-menus-content-menus`}>
-              {renderContentMenus(menus)}
+              {renderContentMenus(menusStart)}
             </div>
           </div>
           : search ? <div>

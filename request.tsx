@@ -156,15 +156,11 @@ export default async function request(
     options = url;
     delete options.url;
   }
-  const {headers = {}, ...props} = options
   const response = await fetch(url, {
-    headers: headers ? {
-      'content-type': 'application/json',
-      ...headers
-    } : {
+    headers: {
       'content-type': 'application/json',
     },
-    ...props,
+    ...options,
   });
 
   const data: Response = await response.json();
