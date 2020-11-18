@@ -85,13 +85,24 @@ body {
     .ant-menu-inline.ant-menu-sub {
       box-shadow: none;
       position: relative;
+      &:before {
+        content: ''; 
+        z-index: 10; 
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        height: 100%;
+        left: 30px;
+        width: 2px;
+        background-color: #ccc;
+      }
     }
     .ant-menu-item-selected {
       &:before {
         position: absolute;
         top: 0;
-        left: 0;
         bottom: 0;
+        left: 5px;
         border-left: 3px solid @primary-color;
         content: '';
         transform: scaleY(1);
@@ -108,7 +119,7 @@ body {
         &:before {
           position: absolute;
           top: 0;
-          left: 0;
+          left: 5px;
           bottom: 0;
           border-left: 3px solid @primary-color;
           content: '';
@@ -119,6 +130,15 @@ body {
       }
       .ant-menu-item-selected:before {
         border: 0 none;
+        content: ''; 
+        position: absolute;
+        top: 0;
+        left: 30px;
+        bottom: 0;
+        z-index: 10; 
+        height: 100%;
+        width: 2px;
+        background-color:#3370FF;
       }
     }
     .ant-layout-sider-trigger {
