@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Icon, Input } from 'antd';
 import _ from 'lodash';
 import classnames from 'classnames';
@@ -10,13 +10,16 @@ import { isAbsolutePath } from './utils';
 const cPrefixCls = `${prefixCls}-layout`;
 const { Sider, Content } = Layout;
 
+
 export default function HeaderMen(props: any) {
   const { locale } = getIntl();
-  const [menus, setMenus] = useState([]);
+  const [menus, setMenus] = useState([] as any);
+  const [menusStart, setMenusStart] = useState([] as any);
   const [icon, setIcon] = useState(false);
   const [value, setValue] = useState('');
+  const [search, setSearch] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+  let menuss = [] as any;
 
   const setLocal = (name: any) => {
     setStars(name);
@@ -57,40 +60,9 @@ export default function HeaderMen(props: any) {
     },
   ]);
   const [historyList, setHistoryList] = useState([]);
-  const historyData = [
-    {
-      name: '最近访问',
-      nameEn: 'History',
-      type: 'group',
-      children: historyList,
-    },
-  ];
-
-  const changeShow = (list: any) => {
-    for (let i = 0; i < list.length; i++) {
-      list[i].show = [];
-      list[i].show[0] = locale === 'en' ? list[i].nameEn : list[i].name;
-    }
-    return list;
-  };
-
-  const changeMenuShow = (list: any) => {
-    for (let i = 0; i < list.length; i++) {
-      for (let j = 0; j < list[i].children.length; j++) {
-        list[i].children[j].show = [];
-        list[i].children[j].show[0] =
-          locale === 'en'
-            ? list[i].children[j].nameEn
-            : list[i].children[j].name;
-      }
-    }
-    return list;
-  };
 
   useEffect(() => {
-    setHistoryList(changeShow(historyList));
-    changeMenuShow(menus);
-    forceUpdate();
+    setHistoryList(historyList);
   }, [locale]);
 
   useEffect(() => {
@@ -112,7 +84,7 @@ export default function HeaderMen(props: any) {
     if (defaultStars.length) {
       setStars(defaultStars);
     }
-    setHistoryList(changeShow(historyList));
+    setHistoryList(historyList);
 
     if (defaultHistory.length) {
       setHistoryList(defaultHistory);
@@ -121,11 +93,20 @@ export default function HeaderMen(props: any) {
       .then((res) => {
         return res.json();
       })
-      .then(async (res) => {
-        const data = changeMenuShow(res);
-        await setMenus(data);
+      .then((res) => {
+        setMenus(res);
       });
   }, []);
+
+  useEffect(() => {
+    fetch('/static/menusConfig.json')
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        setMenusStart(res);
+      });
+  }, [icon]);
 
   const renderContentMenus = (menus: any[]) => {
     return _.map(menus, (menu) => {
@@ -157,20 +138,12 @@ export default function HeaderMen(props: any) {
                     let newHistory = _.concat(historyList, item);
                     let reverse = _.reverse(newHistory)
                     let newArr = _.filter(reverse, (item, index, arr) => {
-                      return _.findIndex(arr,item) === index; 
+                      return _.findIndex(arr, item) === index;
                     })
                     setHistoryLocal(newArr);
                   }}
                 >
-                  {_.get(item, 'show.length') === 2 ? (
-                    <span>
-                      {_.get(item, 'show[0]')}
-                      <span className="valueColor">{value}</span>
-                      {_.get(item, 'show[1]')}
-                    </span>
-                  ) : (
-                    _.get(item, 'show[0]')
-                  )}
+                  {locale === 'en' ? item.nameEn : item.name}
                 </a>
                 <Icon
                   title={stared ? '取消收藏' : '添加收藏'}
@@ -241,55 +214,42 @@ export default function HeaderMen(props: any) {
             className={`${cPrefixCls}-menus-content-search-input`}
             placeholder="请输入关键词"
             onChange={(e) => {
-              setValue(e.target.value);
+              let newarr;
               if (e.target.value === '') {
+                _.map(menus, (items, index) => {
+                  _.set(items, `children`, menusStart[index]?.children);
+                })
                 setIcon(false);
-                changeShow(historyList);
-                changeMenuShow(menus);
               } else {
                 setIcon(true);
-                for (let i = 0; i < historyList.length; i++) {
-                  if (locale === 'en') {
-                    const en = _.get(historyList, `[${i}].nameEn`).split(
-                      e.target.value
-                    );
-                    _.set(historyList, `[${i}].show`, en);
-                  } else {
-                    const zh = _.get(historyList, `[${i}].name`).split(
-                      e.target.value
-                    );
-                    _.set(historyList, `[${i}].show`, zh);
-                  }
-                }
-                for (let i = 0; i < menus.length; i++) {
-                  for (let j = 0; j < _.get(menus[i], 'children.length'); j++) {
-                    if (locale === 'en') {
-                      const en = _.get(
-                        menus,
-                        `[${i}].children.[${j}].nameEn`,
-                        ''
-                      ).split(e.target.value);
-                      _.set(menus, `[${i}].children[${j}].show`, en);
-                    } else {
-                      const zh = _.get(
-                        menus,
-                        `[${i}].children.[${j}].name`,
-                        ''
-                      ).split(e.target.value);
-                      _.set(menus, `[${i}].children[${j}].show`, zh);
+                _.map(menus, (item) => {
+                  _.map(item?.children, (items) => {
+                    if (items?.name.indexOf(e.target.value) !== -1) {
+                      menuss = _.concat(menuss, items);
+                      newarr = _.set(item, `children`, menuss);
+                    } else if (items?.name.indexOf(e.target.value) === -1) {
+                      setValue(e.target.value);
                     }
-                  }
-                }
+                  })
+                })
               }
+              newarr ? setSearch(true) : setSearch(false)
             }}
           />
         </div>
-        <div className={`${cPrefixCls}-menus-content-menus-history`}>
-          {renderContentMenus(historyData)}
-        </div>
-        <div className={`${cPrefixCls}-menus-content-menus`}>
-          {renderContentMenus(menus)}
-        </div>
+        {!icon ?
+          <div>
+            <div className={`${cPrefixCls}-menus-content-menus`}>
+              {renderContentMenus(menusStart)}
+            </div>
+          </div>
+          : search ? <div>
+            <div className={`${cPrefixCls}-menus-content-menus`}>
+              {renderContentMenus(menus)}
+            </div>
+          </div> : <div style={{ color: '#333', fontSize: 14, marginTop: 20 }}>未找到与"<span style={{ color: '#FB4E57' }}>{value}</span>"相关的产品</div>
+        }
+
         <Icon
           type="close"
           className={`${cPrefixCls}-menus-close`}
