@@ -16,8 +16,6 @@ export default function HeaderMen(props: any) {
   const [menus, setMenus] = useState([] as any);
   const [menusStart, setMenusStart] = useState([] as any);
   const [icon, setIcon] = useState(false);
-  // const [value, setValue] = useState('');
-  // const [search, setSearch] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
 
   const setLocal = (name: any) => {
@@ -235,37 +233,10 @@ export default function HeaderMen(props: any) {
                 setIcon(false);
               } else {
                 setIcon(true);
-                // console.log('one ===> ', one)
-
-                //   _.filter(menus, (item) => {
-                //     let menuss = [] as any;
-                //     _.filter(item?.children, (items) => {
-                //       if (items?.name.indexOf(value) !== -1) {
-                //         menuss = _.concat(menuss, items);
-                //         newarr = _.set(item, `children`, menuss);
-                //       } else if (items?.name.indexOf(value) === -1) {
-                //         setValue(e.target.value);
-                //       }
-                //     })
-                //   })
               }
-              // newarr ? setSearch(true) : setSearch(false)
             }}
           />
         </div>
-        {/* {!icon ?
-          <div>
-            <div className={`${cPrefixCls}-menus-content-menus`}>
-              {renderContentMenus(menusStart)}
-            </div>
-          </div>
-          : search ? <div>
-            <div className={`${cPrefixCls}-menus-content-menus`}>
-              {renderContentMenus(menus)}
-            </div>
-          </div> : <div style={{ color: '#333', fontSize: 14, marginTop: 20 }}>未找到与"<span style={{ color: '#FB4E57' }}>{value}</span>"相关的产品</div>
-        } */}
-
         <div className={`${cPrefixCls}-menus-content-menus`}>
           {renderContentMenus(menus)}
         </div>
