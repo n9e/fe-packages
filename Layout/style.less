@@ -330,15 +330,14 @@ body {
   }
 
   .ant-layout.ant-layout-has-sider > .ant-layout, .ant-layout.ant-layout-has-sider > .ant-layout-content {
-    overflow: auto;
-    height: calc(~"100vh - @{layout-header-height} - 20px");
+    height: 100%;
   }
 
-  > .@{layout-prefix-cls}-main {
+  .@{layout-prefix-cls}-main {
     border: 0 none;
     height: calc(~"100vh - @{layout-header-height}");
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
   }
 
   .ant-layout {
@@ -388,6 +387,7 @@ body {
         background: #fff;
         padding: 24px;
         margin: 10px;
+        height: calc(~"100vh - @{layout-header-height} - 20px");
         overflow-x: hidden;
         overflow-y: auto;
       }
