@@ -19,7 +19,6 @@ export default function HeaderMen(props: any) {
   const [value, setValue] = useState('');
   const [search, setSearch] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
-  let menuss = [] as any;
 
   const setLocal = (name: any) => {
     setStars(name);
@@ -135,9 +134,8 @@ export default function HeaderMen(props: any) {
                 <a
                   href={isAbsolutePath(item.path) ? item.path : `/${item.path}`}
                   onClick={() => {
-                    let newHistory = _.concat(historyList, item);
-                    let reverse = _.reverse(newHistory)
-                    let newArr = _.filter(reverse, (item, index, arr) => {
+                    let newHistory = _.concat(item, historyList);
+                    let newArr = _.filter(newHistory, (item, index, arr) => {
                       return _.findIndex(arr, item) === index;
                     })
                     setHistoryLocal(newArr);
@@ -223,6 +221,7 @@ export default function HeaderMen(props: any) {
               } else {
                 setIcon(true);
                 _.map(menus, (item) => {
+                  let menuss = [] as any;
                   _.map(item?.children, (items) => {
                     if (items?.name.indexOf(e.target.value) !== -1) {
                       menuss = _.concat(menuss, items);
