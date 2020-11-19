@@ -19,7 +19,6 @@ export default function HeaderMen(props: any) {
   const [value, setValue] = useState('');
   const [search, setSearch] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
-  let menuss = [] as any;
 
   const setLocal = (name: any) => {
     setStars(name);
@@ -122,7 +121,7 @@ export default function HeaderMen(props: any) {
           <dt className={`${cPrefixCls}-menus-content-menu-group-title`}>
             {locale === 'en' ? menu.nameEn : menu.name}
           </dt>
-          {_.map(menu.children, (item) => {
+          {_.map(menu.children, (item: any) => {
             const stared = !!_.find(stars, { name: item.name });
             return (
               <dd
@@ -135,9 +134,8 @@ export default function HeaderMen(props: any) {
                 <a
                   href={isAbsolutePath(item.path) ? item.path : `/${item.path}`}
                   onClick={() => {
-                    let newHistory = _.concat(historyList, item);
-                    let reverse = _.reverse(newHistory)
-                    let newArr = _.filter(reverse, (item, index, arr) => {
+                    let newHistory = _.concat(item, historyList);
+                    let newArr = _.filter(newHistory, (item, index, arr) => {
                       return _.findIndex(arr, item) === index;
                     })
                     setHistoryLocal(newArr);
@@ -170,6 +168,20 @@ export default function HeaderMen(props: any) {
     });
   };
 
+
+  const onPressEnter = (e: any) => {
+    console.log(e.target.value)
+    const one = menus.map((first: any) => {
+      const two = first?.children.filter((second: any) => {
+        return second.name.indexOf(e.target.value) !== -1
+      })
+        // console.log(two)
+        const arr = _.set(first, `children`, two)
+        return arr;
+    })
+    // console.log(one)
+    setMenus(one);
+  }
   return (
     <Layout className={`${cPrefixCls}-menus`}>
       <Sider width={190} style={{ background: '#fff' }}>
@@ -213,31 +225,35 @@ export default function HeaderMen(props: any) {
           <Input
             className={`${cPrefixCls}-menus-content-search-input`}
             placeholder="请输入关键词"
+            onPressEnter={onPressEnter}
             onChange={(e) => {
-              let newarr;
-              if (e.target.value === '') {
+              const value = e.target.value;
+              if (value === '') {
                 _.map(menus, (items, index) => {
                   _.set(items, `children`, menusStart[index]?.children);
                 })
                 setIcon(false);
               } else {
                 setIcon(true);
-                _.map(menus, (item) => {
-                  _.map(item?.children, (items) => {
-                    if (items?.name.indexOf(e.target.value) !== -1) {
-                      menuss = _.concat(menuss, items);
-                      newarr = _.set(item, `children`, menuss);
-                    } else if (items?.name.indexOf(e.target.value) === -1) {
-                      setValue(e.target.value);
-                    }
-                  })
-                })
+                // console.log('one ===> ', one)
+
+                //   _.filter(menus, (item) => {
+                //     let menuss = [] as any;
+                //     _.filter(item?.children, (items) => {
+                //       if (items?.name.indexOf(value) !== -1) {
+                //         menuss = _.concat(menuss, items);
+                //         newarr = _.set(item, `children`, menuss);
+                //       } else if (items?.name.indexOf(value) === -1) {
+                //         setValue(e.target.value);
+                //       }
+                //     })
+                //   })
               }
-              newarr ? setSearch(true) : setSearch(false)
+              // newarr ? setSearch(true) : setSearch(false)
             }}
           />
         </div>
-        {!icon ?
+        {/* {!icon ?
           <div>
             <div className={`${cPrefixCls}-menus-content-menus`}>
               {renderContentMenus(menusStart)}
@@ -248,7 +264,11 @@ export default function HeaderMen(props: any) {
               {renderContentMenus(menus)}
             </div>
           </div> : <div style={{ color: '#333', fontSize: 14, marginTop: 20 }}>未找到与"<span style={{ color: '#FB4E57' }}>{value}</span>"相关的产品</div>
-        }
+        } */}
+
+        <div className={`${cPrefixCls}-menus-content-menus`}>
+          {renderContentMenus(menus)}
+        </div>
 
         <Icon
           type="close"
