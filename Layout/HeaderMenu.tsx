@@ -16,8 +16,8 @@ export default function HeaderMen(props: any) {
   const [menus, setMenus] = useState([] as any);
   const [menusStart, setMenusStart] = useState([] as any);
   const [icon, setIcon] = useState(false);
-  const [value, setValue] = useState('');
-  const [search, setSearch] = useState(false);
+  // const [value, setValue] = useState('');
+  // const [search, setSearch] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
 
   const setLocal = (name: any) => {
