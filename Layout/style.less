@@ -86,8 +86,8 @@ body {
       box-shadow: none;
       position: relative;
       &:before {
-        content: ''; 
-        z-index: 10; 
+        content: '';
+        z-index: 10;
         position: absolute;
         top: 0;
         bottom: 0;
@@ -130,12 +130,12 @@ body {
       }
       .ant-menu-item-selected:before {
         border: 0 none;
-        content: ''; 
+        content: '';
         position: absolute;
         top: 0;
         left: 30px;
         bottom: 0;
-        z-index: 10; 
+        z-index: 10;
         height: 100%;
         width: 2px;
         background-color:#3370FF;
@@ -330,14 +330,15 @@ body {
   }
 
   .ant-layout.ant-layout-has-sider > .ant-layout, .ant-layout.ant-layout-has-sider > .ant-layout-content {
-    height: 100%;
+    overflow: auto;
+    height: calc(~"100vh - @{layout-header-height} - 20px");
   }
 
-  .@{layout-prefix-cls}-main {
+  > .@{layout-prefix-cls}-main {
     border: 0 none;
     height: calc(~"100vh - @{layout-header-height}");
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: hidden;
   }
 
   .ant-layout {
@@ -387,7 +388,6 @@ body {
         background: #fff;
         padding: 24px;
         margin: 10px;
-        height: calc(~"100vh - @{layout-header-height} - 20px");
         overflow-x: hidden;
         overflow-y: auto;
       }
