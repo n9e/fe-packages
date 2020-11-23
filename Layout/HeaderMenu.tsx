@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Layout, Icon, Input } from 'antd';
 import _ from 'lodash';
 import classnames from 'classnames';
@@ -11,15 +11,21 @@ const cPrefixCls = `${prefixCls}-layout`;
 const { Sider, Content } = Layout;
 
 
-export default function HeaderMen(props: any) {
+export default function HeaderMenu(props: any) {
   const { locale } = getIntl();
   const [menus, setMenus] = useState([] as any);
-  const [menusStart, setMenusStart] = useState([] as any);
   const [icon, setIcon] = useState(false);
-  const [value, setValue] = useState('');
-  const [search, setSearch] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
-
+  const [queryParams, setQueryParams] = useState('');
+  const showMenus = useMemo(
+    () => menus.map((item: any) =>
+      ({
+        ...item, children: item?.children.filter((item: any) =>
+          item.name.includes(queryParams) || !queryParams
+        )
+      }))
+    , [queryParams, menus]
+  );
   const setLocal = (name: any) => {
     setStars(name);
     const jsonArrayString = JSON.stringify(name);
@@ -97,18 +103,16 @@ export default function HeaderMen(props: any) {
       });
   }, []);
 
-  useEffect(() => {
-    fetch('/static/menusConfig.json')
-      .then((res) => {
-        return res.json();
-      })
-      .then((res) => {
-        setMenusStart(res);
-      });
-  }, [icon]);
+  const hasChildren = (menus: any): boolean => {
+    let lock = false;
+    menus.map((item: any) => {
+      item?.children.length !== 0 && (lock = true)
+    })
+    return lock;
+  }
 
   const renderContentMenus = (menus: any[]) => {
-    return _.map(menus, (menu) => {
+    return hasChildren(menus) ? _.map(menus, (menu) => {
       return (
         <dl
           key={menu.name}
@@ -165,7 +169,7 @@ export default function HeaderMen(props: any) {
           })}
         </dl>
       );
-    });
+    }) : <div style={{ color: '#333', fontSize: 14, marginTop: 20 }}>未找到与"<span style={{ color: '#FB4E57' }}>{queryParams}</span>"相关的产品</div>;
   };
 
   return (
@@ -212,42 +216,14 @@ export default function HeaderMen(props: any) {
             className={`${cPrefixCls}-menus-content-search-input`}
             placeholder="请输入关键词"
             onChange={(e) => {
-              let newarr;
-              if (e.target.value === '') {
-                _.map(menus, (items, index) => {
-                  _.set(items, `children`, menusStart[index]?.children);
-                })
-                setIcon(false);
-              } else {
-                setIcon(true);
-                _.map(menus, (item) => {
-                  let menuss = [] as any;
-                  _.map(item?.children, (items) => {
-                    if (items?.name.indexOf(e.target.value) !== -1) {
-                      menuss = _.concat(menuss, items);
-                      newarr = _.set(item, `children`, menuss);
-                    } else if (items?.name.indexOf(e.target.value) === -1) {
-                      setValue(e.target.value);
-                    }
-                  })
-                })
-              }
-              newarr ? setSearch(true) : setSearch(false)
+              setQueryParams(e.target.value);
+              e.target.value === '' ? setIcon(false) : setIcon(true)
             }}
           />
         </div>
-        {!icon ?
-          <div>
-            <div className={`${cPrefixCls}-menus-content-menus`}>
-              {renderContentMenus(menusStart)}
-            </div>
-          </div>
-          : search ? <div>
-            <div className={`${cPrefixCls}-menus-content-menus`}>
-              {renderContentMenus(menus)}
-            </div>
-          </div> : <div style={{ color: '#333', fontSize: 14, marginTop: 20 }}>未找到与"<span style={{ color: '#FB4E57' }}>{value}</span>"相关的产品</div>
-        }
+        <div className={`${cPrefixCls}-menus-content-menus`}>
+          {renderContentMenus(showMenus)}
+        </div>
 
         <Icon
           type="close"
