@@ -430,7 +430,7 @@ body {
     border: 0 none;
     height: calc(~"100vh - @{layout-header-height}");
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
   }
 
   .ant-layout {
@@ -488,6 +488,7 @@ body {
         background: #fff;
         padding: 24px;
         margin: 10px;
+        height: calc(~"100vh - @{layout-header-height} - 20px");
         overflow-x: hidden;
         overflow-y: auto;
       }
