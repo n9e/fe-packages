@@ -98,6 +98,7 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
               </>
             )}
           >
+           {/* children  */}
             {this.getNavMenuItems(nav.children, true, `${prefix}.${nav.name}`)}
           </SubMenu>
         );
@@ -123,7 +124,6 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
         );
       } else {
         if (nav.to && this.isActive(nav.to)) this.selectedKeys = [nav.to];
-
         linkProps.to = {
           pathname: nav.to,
         };

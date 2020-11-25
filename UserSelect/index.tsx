@@ -1,33 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Select, Input, Modal } from 'antd';
-import map from 'lodash/map';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Input, Table, Col, Row } from 'antd';
 import unionBy from 'lodash/unionBy';
 import isArray from 'lodash/isArray';
-import split from 'lodash/split';
 import request from '@pkgs/request';
 import api from '@pkgs/api';
 import { UserProfile } from '../interface';
+import _ from 'lodash';
 
-interface Props {
+interface IProps {
   batchInputEnabled?: boolean;
   mode?: any;
   optionKey?: string;
   value?: any;
-  onChange?: any;
+  onChange?: (data: any) => void;
 }
 
-export default function index(props: Props) {
-  const [visible, setVisible] = useState(false);
+export default function Index(props: IProps) {
   const [data, setData] = useState<UserProfile[]>([]);
-  const handleSearch = (value: string) => {
+  const [query, setQuery] = useState('');
+  const [org, setOrg] = useState('');
+  const handleSearch = (value: string, org: string) => {
     if (value) {
-      request(`${api.users}?limit=1000&query=${value}`).then((res) => {
+      request(`${api.users}?limit=1000&query=${value}&org=${org}`).then((res) => {
         setData(res.list);
       });
     } else {
       setData([]);
     }
   };
+
+  const throttleData = useCallback(_.throttle(handleSearch, 600), []);
+
+  useMemo(() => throttleData(query, org), [query, org]);
+
 
   useEffect(() => {
     let isEmpty = true;
@@ -45,57 +50,50 @@ export default function index(props: Props) {
     }
   }, [props.value]);
 
+  const rowSelection = {
+    onChange: (selectedRowKeys: any, selectedRows: any) => {
+      props.batchInputEnabled && props.optionKey === 'username' ?
+        props.onChange(selectedRows.map((item: any) => item.username)) :
+        props.onChange(selectedRows.map((item: any) => item.id));
+    },
+  };
+
+  const columns = [
+    {
+      title: '显示名',
+      dataIndex: 'dispname',
+    },
+    {
+      title: '用户名',
+      dataIndex: 'username',
+    },
+    {
+      title: '组织',
+      dataIndex: 'organization',
+    }, {
+      title: '邮箱',
+      dataIndex: 'email',
+    }
+  ];
+
   return (
     <>
-      <Select
-        style={{ minWidth: 150 }}
-        allowClear
-        showSearch
-        onSearch={handleSearch}
-        placeholder="input seach text"
-        filterOption={false}
-        notFoundContent={null}
-        defaultActiveFirstOption={false}
-        showArrow={false}
+      <Row>
+        <Col span={12}>
+          <Input style={{ width: 290 }} addonBefore="用户名" onChange={e => setQuery(e.target.value)} />
+        </Col>
+        <Col span={10}>
+          <Input style={{ width: 295 }} addonBefore="组织" onChange={e => setOrg(e.target.value)} />
+        </Col>
+      </Row>
+      <Table
+        style={{ marginTop: 20 }}
+        rowSelection={rowSelection}
+        columns={columns}
+        dataSource={data}
+        size="small"
         {...props}
-      >
-        {
-          map(data, (item) => {
-            return (
-              <Select.Option
-                key={item[(props.optionKey || 'id') as 'id']}
-                value={item[(props.optionKey || 'id') as 'id']}
-              >
-                {item.dispname}({item.username})
-              </Select.Option>
-            );
-          })
-        }
-      </Select>
-      {
-        props.batchInputEnabled && props.optionKey === 'username' ?
-          <>
-            <a style={{ marginTop: 5, display: 'inline-block' }} onClick={() => { setVisible(true); }}>批量录入</a>
-            <Modal
-              title="批量录入"
-              visible={visible}
-              onOk={() => {
-                setVisible(false);
-              }}
-              onCancel={() => {
-                setVisible(false);
-              }}
-            >
-              <Input.TextArea
-                placeholder="多个用户名，换行分割"
-                onChange={(e: any) => {
-                  const value = split(e.target.value, '\n');
-                  props.onChange(value);
-                }}
-              />
-            </Modal>
-          </> : null
-      }
+      />
     </>
   )
 }

@@ -10,7 +10,7 @@ import { isAbsolutePath } from './utils';
 const cPrefixCls = `${prefixCls}-layout`;
 const { Sider, Content } = Layout;
 
-export default function HeaderMen(props: any) {
+export default function HeaderMenu(props: any) {
   const { locale } = getIntl();
   const [menus, setMenus] = useState([]);
   const [icon, setIcon] = useState(false);

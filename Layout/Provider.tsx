@@ -23,6 +23,7 @@ export interface State {
 }
 
 export interface NsTreeContextData {
+  id: number;
   data: State,
   nsTreeVisible: boolean,
   nsTreeArrowVisible: boolean;
