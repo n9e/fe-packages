@@ -107,7 +107,7 @@ export default class FetchTable extends Component<Props, State> {
       let newPagination = pagination;
       let data = [];
       try {
-        const res = await request(`${url}?${queryString.stringify(fetchQuery)}`);
+        const res = await request(`${url}?${queryString.stringify(fetchQuery)}`, {}, false);
         if (res) {
           if ('total' in res) {
             newPagination = {
