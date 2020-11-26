@@ -22,6 +22,7 @@ export default function Index(props: IProps) {
   const [limit, setLimit] = useState(10)
   const [query, setQuery] = useState('');
   const [org, setOrg] = useState('');
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const handleSearch = (currentPage: Number, limit: number, value?: string, org?: string) => {
     if (currentPage) {
       request(`${api.users}?limit=${limit}&p=${currentPage}&query=${value}&org=${org}`).then((res) => {
@@ -58,6 +59,10 @@ export default function Index(props: IProps) {
   }, [limit, currentPage]);
 
   useEffect(() => {
+    setSelectedRowKeys([]);
+  }, [query, org])
+
+  useEffect(() => {
     let isEmpty = true;
     let limit = 1;
     if (isArray(props.value)) {
@@ -68,9 +73,11 @@ export default function Index(props: IProps) {
     }
   }, [props.value]);
 
- 
+
   const rowSelection = {
-    onChange: (selectedRowKeys: any, selectedRows: any) => {
+    selectedRowKeys,
+    onChange: (selectedRowKeys: [], selectedRows: any) => {
+      setSelectedRowKeys(selectedRowKeys);
       props.batchInputEnabled && props.optionKey === 'username' ?
         props.onChange(selectedRows.map((item: any) => item.username)) :
         props.onChange(selectedRows.map((item: any) => item.id));
@@ -81,10 +88,12 @@ export default function Index(props: IProps) {
     {
       title: '显示名',
       dataIndex: 'dispname',
+      key: 'dispname',
     },
     {
       title: '用户名',
       dataIndex: 'username',
+      key: 'username',
     },
     {
       title: '组织',
@@ -106,6 +115,7 @@ export default function Index(props: IProps) {
         </Col>
       </Row>
       <Table
+        rowKey={'id'}
         style={{ marginTop: 20 }}
         rowSelection={rowSelection}
         columns={columns}
@@ -113,7 +123,7 @@ export default function Index(props: IProps) {
         size="small"
         scroll={{ y: 380 }}
         pagination={{
-          defaultCurrent:1,
+          defaultCurrent: 1,
           total: total,
           showTotal: showTotal,
           showSizeChanger: true,

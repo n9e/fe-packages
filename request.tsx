@@ -79,8 +79,8 @@ class ErrNotifyContent extends Component<Props> {
         onMouseOut={() => {
           this.setUpTimer();
         }}
-        onFocus={() => { }}
-        onBlur={() => { }}
+        onFocus={() => {}}
+        onBlur={() => {}}
       >
         <Progress
           className="ecmc-errNotify-progress"
@@ -159,9 +159,7 @@ export default async function request(
   const response = await fetch(url, {
     headers: {
       'content-type': 'application/json',
-      // 'Cookie': 'ecmc-user=4bc37f6f54c254bd4724470b650acfa2'
     },
-    // credentials: 'include',
     ...options,
   });
 

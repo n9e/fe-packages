@@ -18,10 +18,6 @@ function getAMSEEApi(path: string) {
   return `${prefix}${path}`;
 }
 
-function getZstack(path: string) {
-  const prefix = '/zstack/v1';
-  return `${prefix}${path}`;
-}
 const api = {
   settings:getRDBApi('/auth/settings'),
   callback:getRDBApi('/auth/v2/callback'),
@@ -72,9 +68,6 @@ const api = {
   points: getApi('transfer', '/data/ui'),
   messageCount: getApi('platform', '/msgs/self/count'),
   ticketMessageCount: getApi('ticket', '/tickets'),
-
-  zstack: getZstack('/accounts/quota'),
-  updateZstack: getZstack('/accounts/quotas'),
 };
 
 export default api;

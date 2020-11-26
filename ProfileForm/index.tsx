@@ -89,7 +89,7 @@ class ProfileForm extends Component<Props & FormProps> {
         </FormItem>
         <FormItem label="组织">
           {getFieldDecorator('organization', {
-            initialValue: initialValue.im,
+            initialValue: initialValue.organization,
           })(
             <Input />,
           )}
