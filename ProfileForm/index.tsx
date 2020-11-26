@@ -87,6 +87,13 @@ class ProfileForm extends Component<Props & FormProps> {
             <Input />,
           )}
         </FormItem>
+        <FormItem label="组织">
+          {getFieldDecorator('organization', {
+            initialValue: initialValue.organization,
+          })(
+            <Input />,
+          )}
+        </FormItem>
         {
           type !== 'register' ?
             <>
