@@ -143,6 +143,8 @@ export default function index(props: Props) {
   useEffect(() => {
     auth.checkAuthenticate().then(() => {
       setDispname(_.get(auth.getSelftProfile(), 'dispname'));
+      const _paq = window._paq = window._paq || [];
+      _paq.push(['setUserId', _.get(auth.getSelftProfile(), 'username')]);
       props.onMount();
     });
     fetch('/static/feConfig.json')
@@ -182,7 +184,7 @@ export default function index(props: Props) {
           >
             <Icon type={!menusVisible ? 'menu' : 'close'} />
           </div>
-          <Link to="/" className={`${cPrefixCls}-logo`}>
+          <Link to={_.get(feConf, 'header.mode') === 'complicated' ? '/console' : '/rdb' } className={`${cPrefixCls}-logo`}>
             <img
               src={_.get(feConf, 'header.logo')}
               alt="logo"

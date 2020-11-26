@@ -14,8 +14,6 @@ interface Props {
   systemName: string,
   systemNameChn: string,
   isroot?: boolean,
-  isAdminops?: boolean,
-  isHspnetworkops?: boolean,
   className?: string,
   menuMode?: 'vertical' | 'vertical-left' | 'vertical-right' | 'horizontal' | 'inline' | undefined,
   menuTheme?: 'dark' | 'light' | undefined,
@@ -43,7 +41,7 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
     this.selectedKeys = [];
   }
 
-  getNavMenuItems(navs: MenuConfItem[], isChildren = false, prefix: string) {
+  getNavMenuItems(navs: MenuConfItem[], prefix: string) {
     const { location, collapsed, permissionPoints } = this.props;
     const permissionedNavs = _.filter(navs, (nav) => {
       if (!this.props.isroot && nav.rootVisible) {
@@ -60,7 +58,6 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
         return <MenuDivider key={index} />;
       }
 
-      // const icon = nav.icon ? <span className={`font_ecmc ${nav.icon} sider-menu-icon`} /> : null;
       const icon = nav.icon ?
         <svg className={`${prefixCls}-layout-menus-icon`} aria-hidden="true">
           <use xlinkHref={nav.icon}></use>
@@ -83,7 +80,7 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
                 collapsed ? '/' : this.props.intl.formatMessage({ id: `${prefix}.${nav.name}` })
               }
             >
-              {this.getNavMenuItems(nav.children, false, `${prefix}.${nav.name}`)}
+              {this.getNavMenuItems(nav.children, `${prefix}.${nav.name}`)}
             </ItemGroup>
           );
         }
@@ -98,8 +95,7 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
               </>
             )}
           >
-           {/* children  */}
-            {this.getNavMenuItems(nav.children, true, `${prefix}.${nav.name}`)}
+            {this.getNavMenuItems(nav.children, `${prefix}.${nav.name}`)}
           </SubMenu>
         );
       }
@@ -156,11 +152,6 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
     return !!matchPath(location.pathname, { path });
   }
 
-  isActiveOfChildren(children: MenuConfItem[]) {
-    const { menuMode } = this.props;
-    return _.some(children, (item) => item.to && this.isActive(item.to) && menuMode === 'inline');
-  }
-
   render() {
     const {
       menuMode,
@@ -171,21 +162,19 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
     const { menuConf, className, systemName, collapsed } = this.props;
     const realMenuConf = _.isFunction(menuConf) ? menuConf(location) : menuConf;
     const normalizedMenuConf = utils.normalizeMenuConf(realMenuConf);
-    const menus = this.getNavMenuItems(normalizedMenuConf, false, `menu.${systemName}`);
+    const menus = this.getNavMenuItems(normalizedMenuConf, `menu.${systemName}`);
 
     return (
-      <>
-        <Menu
-          defaultOpenKeys={collapsed ? [] : this.defaultOpenKeys}
-          selectedKeys={this.selectedKeys}
-          theme={menuTheme}
-          mode={menuMode}
-          style={menuStyle}
-          className={className}
-        >
-          {menus}
-        </Menu>
-      </>
+      <Menu
+        defaultOpenKeys={collapsed ? [] : this.defaultOpenKeys}
+        selectedKeys={this.selectedKeys}
+        theme={menuTheme}
+        mode={menuMode}
+        style={menuStyle}
+        className={className}
+      >
+        {menus}
+      </Menu>
     );
   }
 }
