@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Input, Table, Col, Row } from 'antd';
-import unionBy from 'lodash/unionBy';
 import isArray from 'lodash/isArray';
 import request from '@pkgs/request';
 import api from '@pkgs/api';
@@ -15,24 +14,48 @@ interface IProps {
   onChange?: (data: any) => void;
 }
 
+
 export default function Index(props: IProps) {
   const [data, setData] = useState<UserProfile[]>([]);
+  const [total, setTotal] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10)
   const [query, setQuery] = useState('');
   const [org, setOrg] = useState('');
-  const handleSearch = (value: string, org: string) => {
-    if (value) {
-      request(`${api.users}?limit=1000&query=${value}&org=${org}`).then((res) => {
+  const handleSearch = (currentPage: Number, limit: number, value?: string, org?: string) => {
+    if (currentPage) {
+      request(`${api.users}?limit=${limit}&p=${currentPage}&query=${value}&org=${org}`).then((res) => {
         setData(res.list);
+        setTotal(res.total);
       });
     } else {
       setData([]);
     }
   };
 
+  const onShowSizeChange = (current: number, pageSize: number) => {
+    setCurrentPage(current);
+    setLimit(pageSize);
+  };
+
+  const currentOnChange = (current: number) => {
+    setCurrentPage(current);
+  }
+
+  const showTotal = (total: number) => {
+    return `共${total}条`
+  }
+
   const throttleData = useCallback(_.throttle(handleSearch, 600), []);
 
-  useMemo(() => throttleData(query, org), [query, org]);
+  useMemo(() => throttleData(currentPage, limit, query, org), [query, org]);
 
+  useEffect(() => {
+    request(`${api.users}?limit=${limit}&p=${currentPage}`).then((res) => {
+      setData(res.list);
+      setTotal(res.total);
+    });
+  }, [limit, currentPage]);
 
   useEffect(() => {
     let isEmpty = true;
@@ -43,13 +66,9 @@ export default function Index(props: IProps) {
     } else {
       isEmpty = props.value === undefined;
     }
-    if (!isEmpty) {
-      request(`${api.users}?limit=${limit}&ids=${props.value}`).then((res) => {
-        setData(unionBy(data, res.list, 'id'));
-      });
-    }
   }, [props.value]);
 
+ 
   const rowSelection = {
     onChange: (selectedRowKeys: any, selectedRows: any) => {
       props.batchInputEnabled && props.optionKey === 'username' ?
@@ -92,6 +111,16 @@ export default function Index(props: IProps) {
         columns={columns}
         dataSource={data}
         size="small"
+        scroll={{ y: 380 }}
+        pagination={{
+          defaultCurrent:1,
+          total: total,
+          showTotal: showTotal,
+          showSizeChanger: true,
+          onShowSizeChange: onShowSizeChange,
+          onChange: currentOnChange,
+          pageSizeOptions: ['10', '50', '100', '500', '1000'],
+        }}
         {...props}
       />
     </>
