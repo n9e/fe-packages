@@ -52,7 +52,7 @@ export default function index(props: Props) {
         allowClear
         showSearch
         onSearch={handleSearch}
-        placeholder="input seach text"
+        placeholder="请输入用户名"
         filterOption={false}
         notFoundContent={null}
         defaultActiveFirstOption={false}
