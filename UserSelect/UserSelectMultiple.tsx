@@ -52,7 +52,7 @@ export default function Index(props: IProps) {
   useMemo(() => throttleData(currentPage, limit, query, org), [query, org]);
 
   useEffect(() => {
-    request(`${api.users}?limit=${limit}&p=${currentPage}`).then((res) => {
+    request(`${api.users}?limit=${limit}&p=${currentPage}&query=${query}&org=${org}`).then((res) => {
       setData(res.list);
       setTotal(res.total);
     });
@@ -108,10 +108,16 @@ export default function Index(props: IProps) {
     <>
       <Row>
         <Col span={12}>
-          <Input style={{ width: 290 }} addonBefore="用户名" onChange={e => setQuery(e.target.value)} />
+          <Input style={{ width: 290 }} addonBefore="用户名" onChange={e => {
+            setQuery(e.target.value);
+            setCurrentPage(1);
+          }} />
         </Col>
         <Col span={10}>
-          <Input style={{ width: 295 }} addonBefore="组织" onChange={e => setOrg(e.target.value)} />
+          <Input style={{ width: 295 }} addonBefore="组织" onChange={e => {
+            setOrg(e.target.value);
+            setCurrentPage(1);
+          }} />
         </Col>
       </Row>
       <Table
@@ -123,7 +129,7 @@ export default function Index(props: IProps) {
         size="small"
         scroll={{ y: 380 }}
         pagination={{
-          defaultCurrent: 1,
+          current: currentPage,
           total: total,
           showTotal: showTotal,
           showSizeChanger: true,
