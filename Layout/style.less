@@ -559,13 +559,13 @@ body {
     .@{layout-prefix-cls}-menus-content-menu {
       line-height: 30px;
       margin-right: 30px;
-      padding-left: 10px;
       width: 270px !important;
       position: relative;
       a { color: #333 };
 
       &:hover {
         background: #EDF0F2;
+        border-bottom: 1px solid @primary-color;
         a { color: @primary-color; }
         .@{layout-prefix-cls}-menus-content-menu-star {
           display: block;
@@ -582,7 +582,7 @@ body {
       position: absolute;
       right: 10px;
       top: 7px;
-      color: #FFAB0A;
+      color: @primary-color;
       display: none;
     }
   }
