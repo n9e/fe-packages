@@ -31,7 +31,7 @@ class ProfileForm extends Component<Props & FormProps> {
   }
 
   validateUserName = (rule: string, value: string, callback: any) => {
-    const regex = /^[a-zA-Z][a-zA-Z0-9_]{2,29}$/
+    const regex = /^[a-zA-Z][a-zA-Z0-9_]{3,29}$/
     if (!regex.test(value) && value !== '') {
       callback('请输入小于30字符，大于3字符，限字符a-z,A-Z,下划线，以字母开头的用户名!');
     }
@@ -43,10 +43,10 @@ class ProfileForm extends Component<Props & FormProps> {
 
     if (value) {
       if (!passwordReg.test(value)) {
-        callback('密码必须同时包含大写字母、小写字母、数字和符号且长度为8-20个单位长度！');
+        callback('密码必须同时包含大写字母、小写字母、数字和符号且长度为8~20个字符！');
       }
       if (value.length < 8 || value.length > 20) {
-        callback('密码长度8-20位')
+        callback('密码长度8~20位')
       }
     }
     callback();
@@ -80,7 +80,7 @@ class ProfileForm extends Component<Props & FormProps> {
                       <Input
                         type="password"
                         autoComplete="new-password"
-                        placeholder="小于20字符，大于8字符，必须同时包含大写字母、小写字母、数字和符号！" />,
+                        placeholder="长度8~20字符，必须同时包含大写字母、小写字母、数字和符号！" />,
                     )}
                   </FormItem>
               </>
