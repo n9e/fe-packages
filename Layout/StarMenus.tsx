@@ -5,6 +5,7 @@ import classnames from 'classnames'
 import { SortableContainer, SortableElement, SortableHandle, arrayMove } from 'react-sortable-hoc';
 import { MenuChild, prefixCls } from './config';
 import { isAbsolutePath } from './utils';
+import { parseJSON } from '@pkgs/utils';
 
 interface Props {
   items: MenuChild[];
@@ -14,7 +15,7 @@ interface Props {
 const cPrefixCls = `${prefixCls}-layout`;
 
 export default function StarMenus(props: Props) {
-  const [historyList, setHistoryList] = useState([]);
+  const [historyList, setHistoryList] = useState(parseJSON(localStorage.getItem('menusHistory') as string));
 
   const setLocal = (name: any) => {
     props.setItems(name);
@@ -27,19 +28,6 @@ export default function StarMenus(props: Props) {
     const jsonArrayString = JSON.stringify(name);
     localStorage.setItem('menusHistory', jsonArrayString);
   };
-
-  useEffect(() => {
-    const menusHistory = localStorage.getItem('menusHistory');
-    let defaultHistory = [];
-    try {
-      defaultHistory = JSON.parse(menusHistory || '');
-    } catch (e) {
-      console.log(e);
-    }
-    if (defaultHistory.length) {
-      setHistoryList(defaultHistory);
-    }
-  }, [])
 
   const DragHandle = SortableHandle(() =>
     <svg className="icontuozhuai" aria-hidden="true">
@@ -56,10 +44,8 @@ export default function StarMenus(props: Props) {
           href={isAbsolutePath(value.path) ? value.path : `/${value.path}`}
           className={`${cPrefixCls}-menus-sider-menus-item-link`}
           onClick={() => {
-            let newHistory = _.concat(value, historyList);
-            let newArr = _.filter(newHistory, (item, index, arr) => {
-              return _.findIndex(arr, item) === index;
-            })
+            const newHistory = _.concat(value, historyList);
+            const newArr = _.unionBy(newHistory, 'name');
             setHistoryLocal(newArr);
           }}
         >
