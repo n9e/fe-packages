@@ -184,7 +184,7 @@ export default function index(props: Props) {
           >
             <Icon type={!menusVisible ? 'menu' : 'close'} />
           </div>
-          <Link to={_.get(feConf, 'header.mode') === 'complicated' ? '/console' : '/rdb' } className={`${cPrefixCls}-logo`}>
+          <Link to={_.get(feConf, 'header.mode') === 'complicated' ? '/portal/home' : '/rdb'} className={`${cPrefixCls}-logo`}>
             <img
               src={_.get(feConf, 'header.logo')}
               alt="logo"
@@ -246,7 +246,13 @@ export default function index(props: Props) {
                 <a href="/rdb">用户中心</a>
                 <a href="/mis">运营后台</a>
                 <a href="/crds">资源中心</a>
-                <a href="/portal">门户</a>
+                <a href="/console">
+                  <Popover content="控制台">
+                    <svg className={`${cPrefixCls}-header-menus-icon`} aria-hidden="true">
+                      <use xlinkHref='#iconkongzhitaiicon'></use>
+                    </svg>
+                  </Popover>
+                </a>
               </div>
               <Divider
                 className={`${cPrefixCls}-header-right-divider`}

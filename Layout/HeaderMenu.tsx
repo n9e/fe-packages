@@ -17,6 +17,8 @@ export default function HeaderMenu(props: any) {
   const [icon, setIcon] = useState(false);
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
   const [queryParams, setQueryParams] = useState('');
+  const [historyList, setHistoryList] = useState([]);
+
   const showMenus = useMemo(
     () => menus.map((item: any) =>
       ({
@@ -64,7 +66,6 @@ export default function HeaderMenu(props: any) {
       icon: '#iconjiankonggaojingxitongicon1',
     },
   ]);
-  const [historyList, setHistoryList] = useState([]);
 
   useEffect(() => {
     setHistoryList(historyList);
