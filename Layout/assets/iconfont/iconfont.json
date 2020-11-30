@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "18527842",
+      "name": "控制台icon",
+      "font_class": "kongzhitaiicon",
+      "unicode": "e73c",
+      "unicode_decimal": 59196
+    },
+    {
+      "icon_id": "18524411",
+      "name": "展开icon2",
+      "font_class": "zhankaiicon2",
+      "unicode": "e73b",
+      "unicode_decimal": 59195
+    },
+    {
       "icon_id": "18504391",
       "name": "数据梦工厂 icon",
       "font_class": "shujumenggongchangicon1",

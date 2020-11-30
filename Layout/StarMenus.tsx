@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash'
 import { Icon } from 'antd';
 import classnames from 'classnames'
 import { SortableContainer, SortableElement, SortableHandle, arrayMove } from 'react-sortable-hoc';
 import { MenuChild, prefixCls } from './config';
 import { isAbsolutePath } from './utils';
+import { parseJSON } from '@pkgs/utils';
 
 interface Props {
   items: MenuChild[];
@@ -14,10 +15,18 @@ interface Props {
 const cPrefixCls = `${prefixCls}-layout`;
 
 export default function StarMenus(props: Props) {
+  const [historyList, setHistoryList] = useState(parseJSON(localStorage.getItem('menusHistory') as string));
+
   const setLocal = (name: any) => {
     props.setItems(name);
     const jsonArrayString = JSON.stringify(name);
     localStorage.setItem('stars', jsonArrayString);
+  };
+
+  const setHistoryLocal = (name: any) => {
+    setHistoryList(name);
+    const jsonArrayString = JSON.stringify(name);
+    localStorage.setItem('menusHistory', jsonArrayString);
   };
 
   const DragHandle = SortableHandle(() =>
@@ -31,7 +40,15 @@ export default function StarMenus(props: Props) {
         [`${cPrefixCls}-menus-sider-menus-item`]: true,
         // [`${cPrefixCls}-menus-sider-menus-item-inSort`]: inSort,
       })}>
-        <a href={isAbsolutePath(value.path) ? value.path : `/${value.path}`} className={`${cPrefixCls}-menus-sider-menus-item-link`}>
+        <a
+          href={isAbsolutePath(value.path) ? value.path : `/${value.path}`}
+          className={`${cPrefixCls}-menus-sider-menus-item-link`}
+          onClick={() => {
+            const newHistory = _.concat(value, historyList);
+            const newArr = _.unionBy(newHistory, 'name');
+            setHistoryLocal(newArr);
+          }}
+        >
           <svg className={`${cPrefixCls}-menus-icon`} aria-hidden="true">
             <use xlinkHref={value.icon}></use>
           </svg>
