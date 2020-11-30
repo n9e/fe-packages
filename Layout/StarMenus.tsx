@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash'
 import { Icon } from 'antd';
 import classnames from 'classnames'
@@ -14,7 +14,7 @@ interface Props {
 const cPrefixCls = `${prefixCls}-layout`;
 
 export default function StarMenus(props: Props) {
-  const [historyList, setHistoryList] = useState(JSON.parse(localStorage.getItem('menusHistory') || '') || []);
+  const [historyList, setHistoryList] = useState([]);
 
   const setLocal = (name: any) => {
     props.setItems(name);
@@ -27,6 +27,19 @@ export default function StarMenus(props: Props) {
     const jsonArrayString = JSON.stringify(name);
     localStorage.setItem('menusHistory', jsonArrayString);
   };
+
+  useEffect(() => {
+    const menusHistory = localStorage.getItem('menusHistory');
+    let defaultHistory = [];
+    try {
+      defaultHistory = JSON.parse(menusHistory || '');
+    } catch (e) {
+      console.log(e);
+    }
+    if (defaultHistory.length) {
+      setHistoryList(defaultHistory);
+    }
+  }, [])
 
   const DragHandle = SortableHandle(() =>
     <svg className="icontuozhuai" aria-hidden="true">
