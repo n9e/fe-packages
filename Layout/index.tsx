@@ -184,7 +184,7 @@ export default function index(props: Props) {
           >
             <Icon type={!menusVisible ? 'menu' : 'close'} />
           </div>
-          <Link to='/' className={`${cPrefixCls}-logo`}>
+          <a href='/' className={`${cPrefixCls}-logo`}>
             <img
               src={_.get(feConf, 'header.logo')}
               alt="logo"
@@ -193,7 +193,7 @@ export default function index(props: Props) {
               }}
             />
             {_.get(feConf, 'header.subTitle')}
-          </Link>
+          </a>
         </div>
         <div className={`${cPrefixCls}-header-right`}>
           {_.get(feConf, 'header.mode') === 'complicated' ? (
