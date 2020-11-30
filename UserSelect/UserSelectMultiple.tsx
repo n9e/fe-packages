@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Input, Table, Col, Row } from 'antd';
+import { Input, Table, Col, Row, Select } from 'antd';
 import isArray from 'lodash/isArray';
 import request from '@pkgs/request';
 import api from '@pkgs/api';
@@ -14,18 +14,25 @@ interface IProps {
   onChange?: (data: any) => void;
 }
 
-
+interface IParams {
+  org: string;
+  query: string;
+  limit: number;
+  currentPage: number;
+}
 export default function Index(props: IProps) {
+  const { Option } = Select;
   const [data, setData] = useState<UserProfile[]>([]);
   const [total, setTotal] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(10)
-  const [query, setQuery] = useState('');
-  const [org, setOrg] = useState('');
+  const [selectValue, setSelectValue] = useState('');
+  const [params, setParams] = useState({ query: '', org: '', limit: 10, currentPage: 1 });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const handleSearch = (currentPage: Number, limit: number, value?: string, org?: string) => {
-    if (currentPage) {
-      request(`${api.users}?limit=${limit}&p=${currentPage}&query=${value}&org=${org}`).then((res) => {
+  const [team, setTeam] = useState({ list: [] });
+  const [teamMer, setTeamMer] = useState<number>();
+
+  const handleSearch = (params: IParams) => {
+    if (params.currentPage) {
+      request(`${api.users}?limit=${params.limit}&p=${params.currentPage}&query=${params.query}&org=${params.org}`).then((res) => {
         setData(res.list);
         setTotal(res.total);
       });
@@ -34,13 +41,19 @@ export default function Index(props: IProps) {
     }
   };
 
+  const handleTeam = (params: IParams) => {
+    teamMer ? request(`${api.team}/${teamMer}?limit=${params.limit}&p=${params.currentPage}`).then((res) => {
+      setData(res.list);
+      setTotal(res.total);
+    }) : null;
+  };
+
   const onShowSizeChange = (current: number, pageSize: number) => {
-    setCurrentPage(current);
-    setLimit(pageSize);
+    setParams({ ...params, limit: pageSize, currentPage: current });
   };
 
   const currentOnChange = (current: number) => {
-    setCurrentPage(current);
+    setParams({ ...params, currentPage: current })
   }
 
   const showTotal = (total: number) => {
@@ -49,18 +62,20 @@ export default function Index(props: IProps) {
 
   const throttleData = useCallback(_.throttle(handleSearch, 600), []);
 
-  useMemo(() => throttleData(currentPage, limit, query, org), [query, org]);
+  useMemo(() => throttleData(params), [params]);
 
   useEffect(() => {
-    request(`${api.users}?limit=${limit}&p=${currentPage}`).then((res) => {
-      setData(res.list);
-      setTotal(res.total);
-    });
-  }, [limit, currentPage]);
+    selectValue === 'team' ? handleTeam(params) : handleSearch(params)
+  }, [params.limit, params.currentPage]);
+
+  useEffect(() => {
+    handleTeam(params);
+    setSelectedRowKeys([]);
+  }, [teamMer]);
 
   useEffect(() => {
     setSelectedRowKeys([]);
-  }, [query, org])
+  }, [params])
 
   useEffect(() => {
     let isEmpty = true;
@@ -73,6 +88,11 @@ export default function Index(props: IProps) {
     }
   }, [props.value]);
 
+  useEffect(() => {
+    request(`${api.teams}/all?limit=1000&p=1`).then((res) => {
+      setTeam(res)
+    });
+  }, [])
 
   const rowSelection = {
     selectedRowKeys,
@@ -107,11 +127,31 @@ export default function Index(props: IProps) {
   return (
     <>
       <Row>
-        <Col span={12}>
-          <Input style={{ width: 290 }} addonBefore="用户名" onChange={e => setQuery(e.target.value)} />
+        <Col span={6}>
+          <Select
+            value='username'
+            style={{ width: 140 }}
+            placeholder="请选择筛选方式"
+            onChange={(value: string) => { setSelectValue(value); setParams({ org: '', query: '', limit: 10, currentPage: 1 }) }} >
+            <Option value="username">用户名</Option>
+            <Option value="organization">组织</Option>
+            <Option value="team">团队</Option>
+          </Select>
         </Col>
-        <Col span={10}>
-          <Input style={{ width: 295 }} addonBefore="组织" onChange={e => setOrg(e.target.value)} />
+        <Col span={18}>
+          {
+            selectValue === 'team' ?
+              <Select placeholder="请选择团队" onChange={(value: number) => setTeamMer(value)}>
+                {
+                  team?.list.map((item: { name: string, id: number }) => {
+                    return <Option value={item.id}>{item.name}</Option>
+                  })
+                }
+              </Select>
+              : selectValue === 'organization'
+                ? <Input onChange={e => setParams({ ...params, org: e.target.value })} placeholder="请输入组织名称" />
+                : <Input onChange={e => setParams({ ...params, query: e.target.value })} placeholder="请输入用户名称" />
+          }
         </Col>
       </Row>
       <Table
