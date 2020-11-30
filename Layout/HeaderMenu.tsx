@@ -43,25 +43,25 @@ export default function HeaderMenu(props: any) {
       name: '用户资源中心',
       nameEn: 'RDB',
       path: 'rdb',
-      icon: '#iconyonghuziyuanzhongxinicon',
+      icon: '#iconyonghuziyuanzhongxinicon1',
     },
     {
       name: '资产管理系统',
       nameEn: 'AMS',
       path: 'ams',
-      icon: '#iconzichanguanlixitongicon',
+      icon: '#iconzichanguanlixitongicon1',
     },
     {
       name: '任务执行中心',
       nameEn: 'JOB',
       path: 'job',
-      icon: '#iconrenwuzhongxinicon',
+      icon: '#iconrenwuzhongxinicon1',
     },
     {
       name: '监控告警系统',
       nameEn: 'MON',
       path: 'mon',
-      icon: '#iconjiankonggaojingxitongicon',
+      icon: '#iconjiankonggaojingxitongicon1',
     },
   ]);
   const [historyList, setHistoryList] = useState([]);
@@ -137,6 +137,7 @@ export default function HeaderMenu(props: any) {
               >
                 <a
                   href={isAbsolutePath(item.path) ? item.path : `/${item.path}`}
+                  target={item.target}
                   onClick={() => {
                     let newHistory = _.concat(item, historyList);
                     let newArr = _.filter(newHistory, (item, index, arr) => {
