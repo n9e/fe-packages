@@ -163,7 +163,7 @@ export default function Index(props: IProps) {
         size="small"
         scroll={{ y: 380 }}
         pagination={{
-          defaultCurrent: 1,
+          current: params.currentPage,
           total: total,
           showTotal: showTotal,
           showSizeChanger: true,

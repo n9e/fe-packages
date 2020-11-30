@@ -374,7 +374,13 @@ body {
   }
 
   .ant-layout {
+    .@{layout-prefix-cls}-has-sider {
+      .@{layout-prefix-cls}-sider-nstree {
+        display: block;
+      }
+    }
     > .@{layout-prefix-cls}-sider-nstree {
+      display: none;
       background: #fff;
       .@{layout-prefix-cls}-nsTree {
         height: 100%;
