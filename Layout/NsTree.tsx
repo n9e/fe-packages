@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import {
-  Tree, Spin, Input, Modal, Form, Checkbox, Select, message,
+  Tree, Spin, Input, Modal, Form, Checkbox, Select, message, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
@@ -16,6 +16,7 @@ import clipboard from '../clipboard';
 import request from '../request';
 import api from '../api';
 import UserSelect from '../UserSelect';
+import './style.less';
 
 interface Node {
   ident: string,
@@ -30,7 +31,7 @@ interface NodeEditorModalProps {
   type: 'create' | 'modify',
   pid?: number,
   initialValues?: Node,
-  onOk: (values: any, destroy?: () => void) => void,
+  onOk: (values: any, destroy?: () => void ) => void,
 }
 
 type Handle = (context: NsTreeContextData, p2?: any) => void;
@@ -70,14 +71,15 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
     }
   }
 
-  handleOk = () => {
+  handleOk = (value: string) => {
     this.props.form!.validateFields((err, values) => {
       if (!err) {
         this.props.onOk({
           ...values,
           leaf: values.leaf ? 1 : 0,
-        }, this.props.destroy);
+        }, value === 'close' ? this.props.destroy : null);
       }
+      this.props.form?.resetFields();
     });
   }
 
@@ -102,14 +104,14 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
       <Modal
         title={this.titleMap[type]}
         visible={visible}
-        onOk={this.handleOk}
+        footer={null}
         onCancel={this.handleCancel}
+        className="NsTreeModal"
       >
         <Form
           layout="vertical"
           onSubmit={(e) => {
             e.preventDefault();
-            this.handleOk();
           }}
         >
           <FormItem label={<FormattedMessage id="node.ident" />}>
@@ -153,8 +155,8 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
                 optionFilterProp="children"
               >
                 {
-                _.map(this.state.nodeCateData, (item) => <Select.Option key={item.ident} value={item.ident}>{item.name}({item.ident})</Select.Option>)
-              }
+                  _.map(this.state.nodeCateData, (item) => <Select.Option key={item.ident} value={item.ident}>{item.name}({item.ident})</Select.Option>)
+                }
               </Select>,
             )}
           </FormItem>
@@ -171,6 +173,11 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
             })(
               <Input />,
             )}
+          </FormItem>
+          <FormItem label={<FormattedMessage id="node.note" />}>
+            <Button onClick={this.handleCancel}>取消</Button>
+            <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存并关闭弹层</Button>
+            <Button type="primary" onClick={() => this.handleOk('open')} className="NsTreeModal-button">保存并继续添加</Button>
           </FormItem>
         </Form>
       </Modal>
@@ -269,7 +276,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
         }).then((res: any) => {
           message.success(this.props.intl.formatMessage({ id: 'msg.create.success' }));
           treeData = context.appendTreeNode(res, treeData as any) as any;
-          // destroy();
+          destroy();
         });
       },
     });
@@ -369,33 +376,33 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
                   <div className={`${prefixCls}-nsTree-content`}>
                     <NsTreeContext.Consumer>
                       {
-                      (context) => {
-                        return <Tree
-                          showLine
-                          showIcon
-                          selectedKeys={context.data.selectedNode ? [_.toString(context.data.selectedNode.id)] : undefined}
-                          expandedKeys={expandedKeys}
-                          onSelect={(selectedKeys) => {
-                            this.handleNodeSelect(context, selectedKeys);
-                          }}
-                          onExpand={(newExpandedKeys) => {
-                            this.props.onExpandedKeys(newExpandedKeys);
-                          }}
-                          onRightClick={(e) => {
-                            e.event.stopPropagation();
-                            this.setState({
-                              contextMenuVisiable: true,
-                              contextMenuLeft: e.event.clientX,
-                              contextMenuTop: e.event.clientY,
-                              contextMenuType: 'operate',
-                              contextMenuSelectedNode: e.node.props,
-                            });
-                          }}
-                        >
-                          {renderTreeNodes(treeNodes)}
-                        </Tree>
+                        (context) => {
+                          return <Tree
+                            showLine
+                            showIcon
+                            selectedKeys={context.data.selectedNode ? [_.toString(context.data.selectedNode.id)] : undefined}
+                            expandedKeys={expandedKeys}
+                            onSelect={(selectedKeys) => {
+                              this.handleNodeSelect(context, selectedKeys);
+                            }}
+                            onExpand={(newExpandedKeys) => {
+                              this.props.onExpandedKeys(newExpandedKeys);
+                            }}
+                            onRightClick={(e) => {
+                              e.event.stopPropagation();
+                              this.setState({
+                                contextMenuVisiable: true,
+                                contextMenuLeft: e.event.clientX,
+                                contextMenuTop: e.event.clientY,
+                                contextMenuType: 'operate',
+                                contextMenuSelectedNode: e.node.props,
+                              });
+                            }}
+                          >
+                            {renderTreeNodes(treeNodes)}
+                          </Tree>
+                        }
                       }
-                    }
                     </NsTreeContext.Consumer>
                   </div>
                 )
