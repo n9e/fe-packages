@@ -129,7 +129,7 @@ export default function Index(props: IProps) {
       <Row>
         <Col span={6}>
           <Select
-            value='username'
+            defaultValue='username'
             style={{ width: 140 }}
             placeholder="请选择筛选方式"
             onChange={(value: string) => { setSelectValue(value); setParams({ org: '', query: '', limit: 10, currentPage: 1 }) }} >
@@ -141,7 +141,7 @@ export default function Index(props: IProps) {
         <Col span={18}>
           {
             selectValue === 'team' ?
-              <Select placeholder="请选择团队" onChange={(value: number) => setTeamMer(value)}>
+              <Select placeholder="请选择团队" onChange={(value: number) => { setTeamMer(value); setParams({ ...params, currentPage: 1 }) }}>
                 {
                   team?.list.map((item: { name: string, id: number }) => {
                     return <Option value={item.id}>{item.name}</Option>
@@ -149,8 +149,8 @@ export default function Index(props: IProps) {
                 }
               </Select>
               : selectValue === 'organization'
-                ? <Input onChange={e => setParams({ ...params, org: e.target.value })} placeholder="请输入组织名称" />
-                : <Input onChange={e => setParams({ ...params, query: e.target.value })} placeholder="请输入用户名称" />
+                ? <Input onChange={e => setParams({ ...params, org: e.target.value, currentPage: 1 })} placeholder="请输入组织名称" />
+                : <Input onChange={e => setParams({ ...params, query: e.target.value, currentPage: 1 })} placeholder="请输入用户名称" />
           }
         </Col>
       </Row>
