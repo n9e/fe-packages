@@ -149,8 +149,8 @@ export default function Index(props: IProps) {
                 }
               </Select>
               : selectValue === 'organization'
-                ? <Input onChange={e => setParams({ ...params, org: e.target.value, currentPage: 1 })} placeholder="请输入组织名称" />
-                : <Input onChange={e => setParams({ ...params, query: e.target.value, currentPage: 1 })} placeholder="请输入用户名称" />
+                ? <Input value={params.org} onChange={e => setParams({ ...params, org: e.target.value, currentPage: 1 })} placeholder="请输入组织名称" />
+                : <Input value={params.query} onChange={e => setParams({ ...params, query: e.target.value, currentPage: 1 })} placeholder="请输入用户名称" />
           }
         </Col>
       </Row>
