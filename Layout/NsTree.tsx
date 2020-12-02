@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import {
@@ -31,7 +32,7 @@ interface NodeEditorModalProps {
   type: 'create' | 'modify',
   pid?: number,
   initialValues?: Node,
-  onOk: (values: any, destroy?: () => void) => void,
+  onOk: (values: any, destroy?: () => void ) => void,
 }
 
 type Handle = (context: NsTreeContextData, p2?: any) => void;
@@ -77,7 +78,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
         this.props.onOk({
           ...values,
           leaf: values.leaf ? 1 : 0,
-        }, value === 'close' ? this.props.destroy() : null);
+        }, value === 'close' ? this.props.destroy : null);
       }
       this.props.form?.resetFields();
     });
@@ -104,8 +105,6 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
       <Modal
         title={this.titleMap[type]}
         visible={visible}
-<<<<<<< HEAD
-=======
         footer={
           this.props.type !== 'modify' ?
           [
@@ -118,13 +117,8 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
             <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存</Button>,
           ]
       }
->>>>>>> upstream/master
         onCancel={this.handleCancel}
-        footer={[
-          <Button onClick={this.handleCancel}>取消</Button>,
-          <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存并关闭弹层</Button>,
-          <Button type="primary" onClick={() => this.handleOk('open')} className="NsTreeModal-button">保存并继续添加</Button>
-        ]}
+        className="NsTreeModal"
       >
         <Form
           layout="vertical"
