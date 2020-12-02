@@ -104,6 +104,21 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
       <Modal
         title={this.titleMap[type]}
         visible={visible}
+<<<<<<< HEAD
+=======
+        footer={
+          this.props.type !== 'modify' ?
+          [
+            <Button onClick={this.handleCancel}>取消</Button>,
+            <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存并关闭弹层</Button>,
+            <Button type="primary" onClick={() => this.handleOk('open')} className="NsTreeModal-button">保存并继续添加</Button>
+          ] :
+          [
+            <Button onClick={this.handleCancel}>取消</Button>,
+            <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存</Button>,
+          ]
+      }
+>>>>>>> upstream/master
         onCancel={this.handleCancel}
         footer={[
           <Button onClick={this.handleCancel}>取消</Button>,
@@ -120,7 +135,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
           <FormItem label={<FormattedMessage id="node.ident" />}>
             {getFieldDecorator('ident', {
               initialValue: initialValues ? initialValues.ident : '',
-              rules: [{ required: true }],
+              rules: [{ required: true }, { pattern: /^[a-z0-9_-]+$/ }],
             })(
               <Input disabled={type === 'modify'} />,
             )}
@@ -228,7 +243,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
       window.postMessage({
         type: 'nid',
         value: _.get(currentNode, 'id'),
-      }, window.origin);
+      }, window.location.origin);
     }
   }
 
@@ -249,7 +264,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
         }).then((res: any) => {
           message.success(this.props.intl.formatMessage({ id: 'msg.create.success' }));
           context.appendTreeNode(res);
-          destroy();
+          if (destroy) destroy();
         });
       },
     });
@@ -274,7 +289,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
         }).then((res: any) => {
           message.success(this.props.intl.formatMessage({ id: 'msg.create.success' }));
           treeData = context.appendTreeNode(res, treeData as any) as any;
-          destroy();
+          if (destroy) destroy();
         });
       },
     });
@@ -283,7 +298,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
   handleModifyNode: Handle = (context) => {
     this.setState({ contextMenuVisiable: false });
     const selectedNode = this.state.contextMenuSelectedNode as { node: TreeNode };
-    const { id, name, cate, note } = selectedNode.node;
+    const { id } = selectedNode.node;
     nodeEditorModal({
       language: this.props.intl.locale,
       type: 'modify',
@@ -295,8 +310,16 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
         }).then((res: any) => {
           message.success(this.props.intl.formatMessage({ id: 'msg.modify.success' }));
           context.updateTreeNode(id, res);
-          destroy();
+          if (destroy) destroy();
         });
+        window.postMessage({
+          type: 'resourceTreeUpdated',
+          value: {
+            type: 'nodeUpdated',
+            id,
+            value: values,
+          },
+        }, window.location.origin);
       },
     });
   }
