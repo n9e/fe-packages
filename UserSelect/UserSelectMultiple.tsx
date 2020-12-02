@@ -60,7 +60,7 @@ export default function Index(props: IProps) {
     return `共${total}条`
   }
 
-  const throttleData = useCallback(_.throttle(handleSearch, 600), []);
+  const throttleData = useCallback(_.throttle(handleSearch, 300), []);
 
   useMemo(() => throttleData(params), [params]);
 
