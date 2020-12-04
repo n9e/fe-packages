@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import classnames from 'classnames';
-import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import {
   Layout,
@@ -38,11 +37,6 @@ interface Props {
 
 const userIconSrc = require('./assets/avatars.png');
 const { Header } = Layout;
-const getSymbolByLanguage = (language: string) => {
-  if (language === 'zh') return '#iconzhongwenicon';
-  if (language === 'en') return '#iconyingwenicon';
-  return '';
-};
 const normalizeTenantProjectData = (
   data: any[],
   tenantIdent?: string,
@@ -143,8 +137,6 @@ export default function index(props: Props) {
   useEffect(() => {
     auth.checkAuthenticate().then(() => {
       setDispname(_.get(auth.getSelftProfile(), 'dispname'));
-      const _paq = window._paq = window._paq || [];
-      _paq.push(['setUserId', _.get(auth.getSelftProfile(), 'username')]);
       props.onMount();
     });
     fetch('/static/feConfig.json')
