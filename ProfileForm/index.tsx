@@ -31,9 +31,9 @@ class ProfileForm extends Component<Props & FormProps> {
   }
 
   validateUserName = (rule: string, value: string, callback: any) => {
-    const regex = /^[a-zA-Z][a-zA-Z0-9_]{3,29}$/
+    const regex = /^[a-zA-Z][a-zA-Z0-9_.]{3,29}$/
     if (!regex.test(value) && value !== '') {
-      callback('请输入小于30字符，大于3字符，限字符a-z,A-Z,下划线，以字母开头的用户名!');
+      callback('请输入小于30字符，大于3字符，限字符a-zA-Z_.，以字母开头的用户名!');
     }
     callback();
   }
@@ -66,7 +66,7 @@ class ProfileForm extends Component<Props & FormProps> {
             <Input
               autoComplete="off"
               disabled={type === 'put'}
-              placeholder="小于30字符，大于3字符，限字符a-z,A-Z,下划线，请以字母开头" />,
+              placeholder="小于30字符，大于3字符，限字符a-zA-Z_.，请以字母开头" />,
           )}
         </FormItem>
         {
