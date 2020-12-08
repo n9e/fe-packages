@@ -24,21 +24,24 @@ class ProfileForm extends Component<Props & FormProps> {
 
   state = {
     tenantData: [] as any[],
+    feConf: {},
   };
+
+  componentDidMount() {
+    fetch('/static/feConfig.json').then((res) => {
+      return res.json();
+    }).then((res) => {
+      this.setState({
+        feConf: res,
+      });
+    });
+  }
 
   validateFields() {
     return this.props.form!.validateFields;
   }
 
-  validateUserName = (rule: string, value: string, callback: any) => {
-    const regex = /^[a-zA-Z][a-zA-Z0-9_.]{3,29}$/
-    if (!regex.test(value) && value !== '') {
-      callback('请输入小于30字符，大于3字符，限字符a-zA-Z_.，以字母开头的用户名!');
-    }
-    callback();
-  }
-
-  validatePassword = (rule: string, value: string, callback: any) => {
+  validatePassword = (_rule: string, value: string, callback: any) => {
     const passwordReg = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*,\.])[0-9a-zA-Z!@#$%^&*,\\.].*$/
 
     if (value) {
@@ -55,18 +58,21 @@ class ProfileForm extends Component<Props & FormProps> {
   render() {
     const { type, isrootVsible, initialValue } = this.props;
     const { getFieldDecorator } = this.props.form!;
+    const { feConf } = this.state;
+    const usernameRules = _.get(feConf, 'rdb.username.rules', []);
+    const usernamePlaceholder = _.get(feConf, 'rdb.username.placeholder', '');
 
     return (
       <Form layout="vertical">
         <FormItem label={<FormattedMessage id="user.username" />} required>
           {getFieldDecorator('username', {
             initialValue: initialValue.username,
-            rules: [{ required: true }, { validator: this.validateUserName }],
+            rules: _.concat([{ required: true, message: '用户名必填' }], usernameRules),
           })(
             <Input
               autoComplete="off"
               disabled={type === 'put'}
-              placeholder="小于30字符，大于3字符，限字符a-zA-Z_.，请以字母开头" />,
+              placeholder={usernamePlaceholder} />,
           )}
         </FormItem>
         {
