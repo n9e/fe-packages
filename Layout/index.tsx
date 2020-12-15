@@ -334,7 +334,7 @@ export default function index(props: Props) {
         <div className={`${cPrefixCls}-main`}>{props.children}</div>
         <Drawer
           placement="left"
-          width={menusContentVsible ? 1190 : 190}
+          width={menusContentVsible ? 1230 : 190}
           closable={false}
           visible={menusVisible}
           getContainer={false}
