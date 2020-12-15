@@ -62,14 +62,13 @@ export default function Index(props: IProps) {
 
   const throttleData = useCallback(_.throttle(handleSearch, 300), []);
 
-  useMemo(() => throttleData(params), [params]);
+  // useMemo(() => throttleData(params), [params]);
 
   useEffect(() => {
-    selectValue === 'team' ? handleTeam(params) : handleSearch(params)
-  }, [params.limit, params.currentPage]);
+    selectValue === 'team' ? handleTeam(params) : throttleData(params)
+  }, [params]);
 
   useEffect(() => {
-    handleTeam(params);
     setSelectedRowKeys([]);
   }, [teamMer]);
 

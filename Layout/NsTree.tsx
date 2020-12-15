@@ -48,7 +48,6 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
   state = {
     nodeCateData: [] as TreeNode[],
     selectedAdminIds: [] as number[],
-    checked: false,
   };
 
   componentDidMount() {
@@ -81,7 +80,6 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
           leaf: values.leaf ? 1 : 0,
         }, value === 'close' ? this.props.destroy : null);
       }
-      this.setState({ checked: false })
       this.props.form?.resetFields();
     });
   }
@@ -149,13 +147,11 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
               ? (
                 <FormItem>
                   {getFieldDecorator('leaf', {
+                    valuePropName:'checked',
                     initialValue: initialValues ? initialValues.leaf : 0,
                     rules: [{ required: true }],
                   })(
-                    <Checkbox
-                      onChange={(e) => this.setState({ checked: e.target.checked })}
-                      checked={this.state.checked}
-                    ><FormattedMessage id="node.isLeaf" /></Checkbox>,
+                    <Checkbox><FormattedMessage id="node.isLeaf" /></Checkbox>,
                   )}
                 </FormItem>
               ) : null

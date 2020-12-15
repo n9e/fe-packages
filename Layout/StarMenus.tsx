@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash'
 import { Icon } from 'antd';
 import classnames from 'classnames'
