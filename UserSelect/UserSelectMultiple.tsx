@@ -62,8 +62,6 @@ export default function Index(props: IProps) {
 
   const throttleData = useCallback(_.throttle(handleSearch, 300), []);
 
-  // useMemo(() => throttleData(params), [params]);
-
   useEffect(() => {
     selectValue === 'team' ? handleTeam(params) : throttleData(params)
   }, [params]);
@@ -131,7 +129,13 @@ export default function Index(props: IProps) {
             defaultValue='username'
             style={{ width: 140 }}
             placeholder="请选择筛选方式"
-            onChange={(value: string) => { setSelectValue(value); setParams({ org: '', query: '', limit: 10, currentPage: 1 }) }} >
+            onChange={(value: string) => {
+              setData([]);
+              setSelectValue(value);
+              setParams({ org: '', query: '', limit: 10, currentPage: 1 });
+              setTeamMer(undefined);
+            }}
+          >
             <Option value="username">用户名</Option>
             <Option value="organization">组织</Option>
             <Option value="team">团队</Option>
