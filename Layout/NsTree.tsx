@@ -32,7 +32,7 @@ interface NodeEditorModalProps {
   type: 'create' | 'modify',
   pid?: number,
   initialValues?: Node,
-  onOk: (values: any, destroy?: () => void ) => void,
+  onOk: (values: any, destroy?: () => void) => void,
 }
 
 type Handle = (context: NsTreeContextData, p2?: any) => void;
@@ -107,16 +107,16 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
         visible={visible}
         footer={
           this.props.type !== 'modify' ?
-          [
-            <Button onClick={this.handleCancel}>取消</Button>,
-            <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存并关闭弹层</Button>,
-            <Button type="primary" onClick={() => this.handleOk('open')} className="NsTreeModal-button">保存并继续添加</Button>
-          ] :
-          [
-            <Button onClick={this.handleCancel}>取消</Button>,
-            <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存</Button>,
-          ]
-      }
+            [
+              <Button onClick={this.handleCancel}>取消</Button>,
+              <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存并关闭弹层</Button>,
+              <Button type="primary" onClick={() => this.handleOk('open')} className="NsTreeModal-button">保存并继续添加</Button>
+            ] :
+            [
+              <Button onClick={this.handleCancel}>取消</Button>,
+              <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存</Button>,
+            ]
+        }
         onCancel={this.handleCancel}
         className="NsTreeModal"
       >
