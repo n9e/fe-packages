@@ -95,7 +95,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
     const { selectedAdminIds } = this.state;
     const { getFieldDecorator } = this.props.form!;
     const isLeafVisible = type === 'create' && pid !== 0;
-    let defaultCate = initialValues ? initialValues.cate : ''
+    let defaultCate = initialValues ? initialValues.cate : '';
 
     if (pid === 0) {
       defaultCate = 'tenant';
@@ -147,7 +147,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
               ? (
                 <FormItem>
                   {getFieldDecorator('leaf', {
-                    valuePropName:'checked',
+                    valuePropName: 'checked',
                     initialValue: initialValues ? initialValues.leaf : 0,
                     rules: [{ required: true }],
                   })(
