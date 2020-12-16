@@ -236,7 +236,7 @@ export default function index(props: Props) {
               ) : null}
               <div className={`${cPrefixCls}-header-right-links`}>
                 <a href="/rdb">用户中心</a>
-                <a href="/mis">运营后台</a>
+                <a href="/mis">运营中心</a>
                 <a href="/crds">资源中心</a>
                 <a href="/console">
                   <Popover content="控制台">
