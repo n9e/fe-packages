@@ -19,13 +19,12 @@ export default function HeaderMenu(props: any) {
   const [queryParams, setQueryParams] = useState('');
   const [historyList, setHistoryList] = useState([]);
 
-  const showMenus = useMemo(
-    () => menus.map((item: any) =>
-      ({
-        ...item, children: item?.children.filter((item: any) =>
-          item.name.includes(queryParams) || !queryParams
-        )
-      }))
+  const showMenus = useMemo(() => menus.map((item: any) =>
+    ({
+      ...item, children: item?.children.filter((item: any) =>
+        item.name.includes(queryParams) || !queryParams
+      )
+    })).filter((item: any) => item.children.length > 0)
     , [queryParams, menus]
   );
   const setLocal = (name: any) => {
