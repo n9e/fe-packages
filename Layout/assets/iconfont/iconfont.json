@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "18961880",
+      "name": "title decorate",
+      "font_class": "titledecorate",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "18635625",
+      "name": "返回页面",
+      "font_class": "fanhuiyemian",
+      "unicode": "e73d",
+      "unicode_decimal": 59197
+    },
+    {
       "icon_id": "18527842",
       "name": "控制台icon",
       "font_class": "kongzhitaiicon",
