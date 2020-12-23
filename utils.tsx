@@ -1,5 +1,4 @@
 import { defaultPageSizeOptions } from './config';
-import auth from './Auth/auth';
 
 export const getPaginationOptions = (onShowSizeChange?: (size: number) => void) => {
   const _defaultPageSize = window.localStorage.getItem('ecmc-global-pagesize');
