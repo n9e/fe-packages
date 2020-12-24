@@ -54,7 +54,7 @@ const api = {
   host: getAMSCEApi('/host'),
   hosts: getAMSCEApi('/hosts'),
   nethw: getAMSEEApi('/nethw'),
-  nethws: getAMSEEApi('/nethws'),
+  nethws: getAMSEEApi('/nws'),
   mibs: getAMSEEApi('/mibs'),
 
   cluster: getApi('ccpapi', '/cluster'),

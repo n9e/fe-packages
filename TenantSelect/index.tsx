@@ -26,7 +26,9 @@ export default function TenantSelect(props: IProps) {
   useEffect(() => {
     if (valueMode === 'mine') {
       request(`${api.tree}/projs`).then((res) => {
-        setData(_.filter(res, (item) => item.cate === 'tenant'));
+        const unTenant = [{pid: 0, ident: '0' ,name: '未分配租户', cate:'tenant'}]
+        const resAdd = unTenant.concat(res);
+        setData(_.filter(resAdd, (item) => item.cate === 'tenant'));
       });
     } else if (valueMode === 'all') {
       request(`${api.nodes}?cate=tenant&inner=1`).then((res) => {
@@ -45,7 +47,7 @@ export default function TenantSelect(props: IProps) {
         _.map(data, (item) => {
           return (
             <Select.Option key={item.id} value={item[valueKey]}>
-              {item.name}({item.ident})
+              {item.name}{!item.id ? null : <span>({item.ident})</span>}
             </Select.Option>
           );
         })
