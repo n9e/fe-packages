@@ -121,12 +121,12 @@ export default function index(props: Props) {
   const [menusContentVsible, setMenusContentVisible] = useState(false);
   const [feConf, setFeConf] = useState({} as any);
   const treeData = normalizeTreeData(props.belongProjects);
-  const cacheProject = _.attempt(
+  const defaultProject = _.attempt(
     JSON.parse.bind(
       null,
       localStorage.getItem('icee-global-project') as string,
     ),
-  );
+  ) || _.find(_.sortBy(props.belongProjects, 'id'), { cate: 'project' });
   const content = <p style={{ height: 0 }}>工单</p>;
   const message = <p style={{ height: 0 }}>消息</p>;
   const text = <p style={{ height: 0 }}>文档中心</p>;
@@ -207,7 +207,7 @@ export default function index(props: Props) {
                     const { fullTitle = '', path = '' } = treeNode.props;
                     return fullTitle.indexOf(inputValue) > -1 || path.indexOf(inputValue) > -1;
                   }}
-                  value={_.get(cacheProject, 'id')}
+                  value={_.get(defaultProject, 'id')}
                   onChange={(_value, _label, extra) => {
                     const newSelectedTenantProject = {
                       tenant: {
