@@ -95,7 +95,6 @@ class NILayout extends Component<Props & RouteComponentProps, State> {
                 width={this.sidebarWidth}
                 style={{
                   display: context.nsTreeVisible ? 'block' : 'none',
-                  height: '100%',
                 }}
               >
                 <NsTree
