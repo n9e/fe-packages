@@ -8,6 +8,7 @@ import { auth } from '../Auth';
 import LayoutMenu from './LayoutMenu';
 import Provider, { NsTreeContext } from './Provider';
 import NsTree from './NsTree';
+import Splitter from './Splitter';
 import './assets/iconfont/iconfont.css';
 import './assets/iconfont/iconfont.js';
 
@@ -41,7 +42,10 @@ class NILayout extends Component<Props & RouteComponentProps, State> {
     collapsed: defaultCollapsed,
     isMenuNecessary: this.props.isMenuNecessary === undefined ? true : this.props.isMenuNecessary,
     permissionPoints: {},
+    diff: 0,
   };
+
+  sidebarWidth = 230
 
   constructor(props: Props & RouteComponentProps) {
     super(props);
@@ -88,7 +92,11 @@ class NILayout extends Component<Props & RouteComponentProps, State> {
             >
               <Sider
                 className={`${cPrefixCls}-sider-nstree`}
-                width={context.nsTreeVisible ? 230 : 0}
+                width={this.sidebarWidth}
+                style={{
+                  display: context.nsTreeVisible ? 'block' : 'none',
+                  height: '100%',
+                }}
               >
                 <NsTree
                   prefixCls={cPrefixCls}
@@ -103,6 +111,19 @@ class NILayout extends Component<Props & RouteComponentProps, State> {
                     context.setExpandedKeys(val);
                   }}
                 />
+                  <Splitter
+                      onResize={diff => {
+                        this.setState(
+                          {
+                            diff,
+                          },
+                          () => {
+                            this.sidebarWidth = this.sidebarWidth - this.state.diff;
+                            this.sidebarWidth = this.sidebarWidth < 230 ? 230 : this.sidebarWidth;
+                          },
+                        );
+                      }}
+                    />
               </Sider>
               <Content className={`${cPrefixCls}-content`} style={{ position: 'relative' }}>
                 <div className={classNames({
