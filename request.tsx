@@ -17,7 +17,7 @@ Notification.newInstance(
   },
   (n: any) => {
     notification = n;
-  }
+  },
 );
 
 /**
@@ -64,6 +64,8 @@ class ErrNotifyContent extends Component<Props> {
   }
 
   render() {
+    const { msg } = this.props;
+    const { percent } = this.state;
     return (
       <div
         style={{
@@ -84,7 +86,7 @@ class ErrNotifyContent extends Component<Props> {
       >
         <Progress
           className="ecmc-errNotify-progress"
-          percent={this.state.percent}
+          percent={percent}
           showInfo={false}
           style={{
             position: 'absolute',
@@ -116,7 +118,7 @@ class ErrNotifyContent extends Component<Props> {
             marginLeft: 35,
           }}
         >
-          {this.props.msg}
+          {msg}
         </div>
       </div>
     );
@@ -149,29 +151,35 @@ export default async function request(
   url: any,
   options?: any,
   isUseDefaultErrNotify = true,
-  redirectToLogin = true
+  redirectToLogin = true,
 ) {
+  let realUrl = url;
+  let realOptions = options;
   if (typeof url === 'object' && url.url) {
-    url = url.url;
-    options = url;
-    delete options.url;
+    realUrl = url.url;
+    realOptions = url;
+    delete realOptions.url;
   }
-  const response = await fetch(url, {
+  const response = await fetch(realUrl, {
     headers: {
       'content-type': 'application/json',
     },
-    ...options,
+    ...realOptions,
   });
 
   const data: Response = await response.json();
 
   if (response.status < 200 || response.status >= 300) {
-    console.log(data.err);
+    if (response.status === 401) {
+      window.location.href = '/login';
+    }
+    if (response.status === 403) {
+      window.location.href = '/403';
+    }
     if (data.err.indexOf('can not found') === -1) {
       errNotify(response.statusText);
     }
-    const error = new Error(response.statusText);
-    throw error;
+    throw new Error(response.statusText);
   }
 
   if (typeof data === 'object' && data.err !== '') {
@@ -179,17 +187,17 @@ export default async function request(
       if (redirectToLogin && window.location.pathname !== './login') {
         try {
           const redirect = window.location.pathname;
-          await auth.authorize({ redirect: redirect });
+          await auth.authorize({ redirect });
         } catch (e) {
           console.log(e);
         }
       }
-      throw 'unauthorized';
+      throw new Error('unauthorized');
     } else {
-      if (isUseDefaultErrNotify && data.err.indexOf('can not found') === -1)
+      if (isUseDefaultErrNotify && data.err.indexOf('can not found') === -1) {
         errNotify(data.err);
-      const error = new Error(data.err);
-      throw error;
+      }
+      throw new Error(data.err);
     }
   }
   return data.dat;

@@ -48,6 +48,13 @@ class Login extends Component<
     request(`${api.ldap}/used`).then((res) => {
       this.setState({ ldapUsed: res });
     });
+    // TODO: 如果开启了 sso 则自动跳转到 sso
+    const redirect = window.location.pathname;
+    request(api.authorize + '?redirect=' + redirect).then((res) => {
+      if (res && res.redirect && res.redirect !== '/login') {
+        window.location.href = res.redirect;
+      }
+    });
   }
 
   handleSubmit = (e: React.FormEvent) => {
