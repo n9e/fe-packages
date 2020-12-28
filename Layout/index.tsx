@@ -200,7 +200,6 @@ export default function index(props: Props) {
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   placeholder="请选择租户和项目"
                   treeNodeLabelProp="fullTitle"
-                  allowClear
                   treeDefaultExpandAll
                   treeNodeFilterProp="fullTitle"
                   filterTreeNode={(inputValue: string, treeNode: any) => {
