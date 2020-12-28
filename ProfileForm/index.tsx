@@ -70,13 +70,12 @@ class ProfileForm extends Component<Props & FormProps> {
     }
   }
 
-
   render() {
     const { type, isrootVsible, initialValue } = this.props;
     const { getFieldDecorator } = this.props.form!;
 
     return (
-      <Form layout="vertical">
+      <Form layout="vertical" >
         {
           type !== 'register' ?
             <FormItem label='账号类型' required>
@@ -94,12 +93,12 @@ class ProfileForm extends Component<Props & FormProps> {
         {
           this.state.userType === 1 ?
             <Row>
-              <Form.Item label="账号生效时间" style={{height: 50}}>
+              <Form.Item label="账号生效时间" style={{ height: 50 }}>
                 <Col span={10}>
                   <Form.Item style={{ marginTop: '3px' }}>
                     {getFieldDecorator('active_begin', {
                       initialValue: moment(initialValue.active_begin),
-                      rules: [{ required: true }],
+                      rules: [{ required: true, message:"必填项！" }],
                     })(
                       <DatePicker
                         onChange={this.handleStartDateChange}
@@ -116,7 +115,7 @@ class ProfileForm extends Component<Props & FormProps> {
                   <Form.Item style={{ marginTop: '3px' }}>
                     {getFieldDecorator('active_end', {
                       initialValue: moment(initialValue.active_end),
-                      rules: [{ required: true }],
+                      rules: [{ required: true, message:"必填项！" }],
                     })(
                       <DatePicker
                         onChange={this.handleEndDateChange}
@@ -133,7 +132,7 @@ class ProfileForm extends Component<Props & FormProps> {
         <FormItem label={<FormattedMessage id="user.username" />} required>
           {getFieldDecorator('username', {
             initialValue: initialValue.username,
-            rules: [{ required: true }],
+            rules: [{ required: true, message:"必填项！" }],
           })(
             <Input
               autoComplete="off"
@@ -147,7 +146,7 @@ class ProfileForm extends Component<Props & FormProps> {
               <>
                 <FormItem label={<FormattedMessage id="user.password" />} required>
                   {getFieldDecorator('password', {
-                    rules: [{ required: true }],
+                    rules: [{ required: true, message:"必填项！" }],
                   })(
                     <Input
                       type="password"
@@ -161,7 +160,7 @@ class ProfileForm extends Component<Props & FormProps> {
         <FormItem label={<FormattedMessage id="user.dispname" />} required>
           {getFieldDecorator('dispname', {
             initialValue: initialValue.dispname,
-            rules: [{ required: true }],
+            rules: [{ required: true, message:"必填项！" }],
           })(
             <Input />,
           )}

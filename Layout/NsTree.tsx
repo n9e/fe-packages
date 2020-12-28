@@ -129,7 +129,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
           <FormItem label={<FormattedMessage id="node.ident" />}>
             {getFieldDecorator('ident', {
               initialValue: initialValues ? initialValues.ident : '',
-              rules: [{ required: true }, { pattern: /^[a-z0-9_-]+$/ }],
+              rules: [{ required: true, message:"必填项！" }, { pattern: /^[a-z0-9_-]+$/, message:'请输入小写英文、数字、下划线、中划线!' }],
             })(
               <Input disabled={type === 'modify'} />,
             )}
@@ -137,7 +137,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
           <FormItem label={<FormattedMessage id="node.name" />}>
             {getFieldDecorator('name', {
               initialValue: initialValues ? initialValues.name : '',
-              rules: [{ required: true }],
+              rules: [{ required: true, message:"必填项！" }],
             })(
               <Input />,
             )}
@@ -149,7 +149,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
                   {getFieldDecorator('leaf', {
                     valuePropName: 'checked',
                     initialValue: initialValues ? initialValues.leaf : 0,
-                    rules: [{ required: true }],
+                    rules: [{ required: true, message:"必选项！" }],
                   })(
                     <Checkbox><FormattedMessage id="node.isLeaf" /></Checkbox>,
                   )}
@@ -159,7 +159,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
           <FormItem label={<FormattedMessage id="node.cate" />}>
             {getFieldDecorator('cate', {
               initialValue: defaultCate,
-              rules: [{ required: true }],
+              rules: [{ required: true, message:"必选项！" }],
             })(
               <Select
                 disabled={pid === 0}

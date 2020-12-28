@@ -48,7 +48,7 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
       <Form layout="vertical" onSubmit={this.handleSubmit}>
         <FormItem label={<FormattedMessage id="password.old" />} required>
           {getFieldDecorator('oldpass', {
-            rules: [{ required: true }],
+            rules: [{ required: true, message:"必填项！" }],
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -58,7 +58,7 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
         </FormItem>
         <FormItem label={<FormattedMessage id="password.new" />} required>
           {getFieldDecorator('newpass', {
-            rules: [{ required: true }, { validator: this.validatePassword }],
+            rules: [{ required: true, message:"必填项！" }, { validator: this.validatePassword }],
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
