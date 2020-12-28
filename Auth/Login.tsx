@@ -118,7 +118,7 @@ class Login extends Component<
                     <Form onSubmit={this.handleSubmit}>
                       <FormItem>
                         {getFieldDecorator('username', {
-                          rules: [{ required: true, message: 'required' }],
+                          rules: [{ required: true,  message:"必填项！" }],
                         })(
                           <Input
                             prefix={
@@ -136,7 +136,7 @@ class Login extends Component<
                       </FormItem>
                       <FormItem>
                         {getFieldDecorator('password', {
-                          rules: [{ required: true, message: 'required' }],
+                          rules: [{ required: true,  message:"必填项！" }],
                         })(
                           <Input
                             prefix={
