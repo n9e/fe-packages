@@ -77,17 +77,20 @@ class ProfileForm extends Component<Props & FormProps> {
 
     return (
       <Form layout="vertical">
-        <FormItem label='账号类型' required>
-          {getFieldDecorator('type', {
-            initialValue: initialValue.type,
-            rules: [{ required: true }],
-          })(
-            <Radio.Group defaultValue={0} disabled={type === 'put'} onChange={(e) => this.setState({ userType: e.target.value })}>
-              <Radio value={0}>长期账号</Radio>
-              <Radio value={1}>临时账号</Radio>
-            </Radio.Group>,
-          )}
-        </FormItem>
+        {
+          type !== 'register' ?
+            <FormItem label='账号类型' required>
+              {getFieldDecorator('type', {
+                initialValue: initialValue.type,
+                rules: [{ required: true }],
+              })(
+                <Radio.Group defaultValue={0} disabled={type === 'put'} onChange={(e) => this.setState({ userType: e.target.value })}>
+                  <Radio value={0}>长期账号</Radio>
+                  <Radio value={1}>临时账号</Radio>
+                </Radio.Group>,
+              )}
+            </FormItem> : null
+        }
         {
           this.state.userType === 1 ?
             <Row>
