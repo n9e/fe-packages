@@ -129,7 +129,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
           <FormItem label={<FormattedMessage id="node.ident" />}>
             {getFieldDecorator('ident', {
               initialValue: initialValues ? initialValues.ident : '',
-              rules: [{ required: true, message:"必填项！" }, { pattern: /^[a-z0-9_-]+$/ }],
+              rules: [{ required: true, message:"必填项！" }, { pattern: /^[a-z0-9_-]+$/, message:'请输入小写英文或数字!' }],
             })(
               <Input disabled={type === 'modify'} />,
             )}
