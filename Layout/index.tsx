@@ -214,14 +214,6 @@ export default function index(props: Props) {
                       },
                     };
                     props.setSelectedTenantProject(newSelectedTenantProject);
-                    localStorage.setItem(
-                      'icee-global-tenant',
-                      JSON.stringify(newSelectedTenantProject.tenant),
-                    );
-                    localStorage.setItem(
-                      'icee-global-project',
-                      JSON.stringify(newSelectedTenantProject.project),
-                    );
                   }}
                 >
                   {renderTreeNodes(normalizeTenantProjectData(treeData))}
