@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import request from '../request';
-import { Button } from 'antd';
+import { Button, Row, Col } from 'antd';
 import api from '../api';
 import './style.less';
 
+const img403 = require('./assets/400Img.png');
+
+
 const CallBack = () => {
+  const prefixCls = 'ecmc-exception';
   const [redirect, setRedirect] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [loginMsg, setLoginMsg] = useState(true);
@@ -12,7 +16,7 @@ const CallBack = () => {
 
   const value = async () => {
     try {
-      const data = await request(api.callback + search);
+      const data = await request(api.callback + search, "" , false);
       setRedirect(data.redirect);
     } catch (e) {
       setErrMsg(e.toString());
@@ -38,16 +42,27 @@ const CallBack = () => {
       {loginMsg ? (
         <div>loading.....</div>
       ) : (
-        <div className="callBack-urlImg">
-          <div className="callBack-urlImg-txt">
-            <div className="callBack-urlImg-400">400</div>
-            <p className="callBack-urlImg-p">{errMsg}</p>
-            <Button type="primary" onClick={handlerReturn}>
-              返回首页
-            </Button>
+          <div className={`${prefixCls} ${prefixCls}-400`}>
+            <div className={`${prefixCls}-main`}>
+              <Row gutter={100}>
+                <Col span={12}>
+                  <img src={img403} alt="400" />
+                </Col>
+                <Col span={12}>
+                  <div className={`${prefixCls}-title`}>400</div>
+                  <div className={`${prefixCls}-content`}>{errMsg} </div>
+                  <Button
+                    className={`${prefixCls}-btn`}
+                    type="primary"
+                    onClick={handlerReturn}
+                  >
+                    返回首页
+                  </Button>
+                </Col>
+              </Row>
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };
