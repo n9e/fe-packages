@@ -12,11 +12,13 @@ import {
   Badge,
   TreeSelect,
   Popover,
+  Modal,
 } from 'antd';
 import { normalizeTreeData } from './utils';
 import { auth } from '../Auth';
 import { prefixCls } from './config';
 import HeaderMenu from './HeaderMenu';
+import Password from './Self/Password';
 import Settings from './Settings';
 import './style.less';
 import './assets/iconfont/iconfont.css';
@@ -120,6 +122,7 @@ export default function index(props: Props) {
   const [menusVisible, setMenusVisible] = useState(false);
   const [menusContentVsible, setMenusContentVisible] = useState(false);
   const [feConf, setFeConf] = useState({} as any);
+  const [password, setPassword] = useState(false);
   const treeData = normalizeTreeData(props.belongProjects);
   const content = <p style={{ height: 0 }}>工单</p>;
   const message = <p style={{ height: 0 }}>消息</p>;
@@ -131,6 +134,8 @@ export default function index(props: Props) {
   useEffect(() => {
     auth.checkAuthenticate().then(() => {
       setDispname(_.get(auth.getSelftProfile(), 'dispname'));
+      const pwd_updated_at = _.get(auth.getSelftProfile(), 'pwd_updated_at')
+      pwd_updated_at === 0 ? setPassword(true) : setPassword(false);
       props.onMount();
     });
     fetch('/static/feConfig.json')
@@ -340,6 +345,14 @@ export default function index(props: Props) {
             setMenusVisible={setMenusVisible}
           />
         </Drawer>
+        <Modal
+          title="重置密码"
+          visible={password}
+          footer={null}
+          onCancel={() => setPassword(false)}
+        >
+          <Password />
+        </Modal>
       </div>
     </Layout>
   );
