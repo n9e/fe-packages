@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Row, Col } from 'antd';
 import _ from 'lodash';
+import queryString from 'query-string';
 import request from '../request';
 import api from '../api';
 
 const img403 = require('./imgs/403Img.png');
 
-const Page403 = () => {
+const Page403 = (props: any) => {
+  const search = _.get(props, 'location.search');
+  const query = queryString.parse(search);
   const prefixCls = 'ecmc-exception';
   const [inProject, setInProject] = useState(true);
 
   useEffect(() => {
-    request(`${api.tree}/projs`).then((res) => {
-      const projectNodes = _.filter(res, (item) => {
-        return item.cate === 'project';
+    if (query.cause === 'noproj') {
+      request(`${api.tree}/projs`).then((res) => {
+        const projectNodes = _.filter(res, (item) => {
+          return item.cate === 'project';
+        });
+        if (!projectNodes || !projectNodes.length) {
+          setInProject(false);
+        }
       });
-      if (!projectNodes || !projectNodes.length) {
-        setInProject(false);
-      }
-    });
+    }
   }, []);
 
   return (
