@@ -193,6 +193,8 @@ export default async function request(
         }
       }
       throw new Error('unauthorized');
+    } else if (data.err === 'forbidden') {
+      window.location.href = '/403';
     } else {
       if (isUseDefaultErrNotify && data.err.indexOf('can not found') === -1) {
         errNotify(data.err);
