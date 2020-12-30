@@ -6,17 +6,24 @@ import request from '../../request';
 import api from '../../api';
 
 const FormItem = Form.Item;
-
-class index extends Component<FormComponentProps & WrappedComponentProps> {
+interface IPassword {
+  close: () => void
+}
+class index extends Component<FormComponentProps & WrappedComponentProps & IPassword> {
   handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
+        if (values.newpass !== values.passwordConfirm) {
+          message.error('两次密码输入不一致!')
+          return;
+        }
         try {
           await request(api.selftPassword, {
             method: 'PUT',
             body: JSON.stringify(values),
           });
+          this.props.close();
           message.success(this.props.intl.formatMessage({ id: 'msg.modify.success' }));
         } catch (catchErr) {
           console.log(catchErr);
@@ -53,6 +60,7 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="请输入旧密码"
               type="password"
             />,
           )}
@@ -63,9 +71,19 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="请输入新密码"
               type="password"
             />,
           )}
+        </FormItem>
+        <FormItem label="确认输入新密码">
+          {getFieldDecorator("passwordConfirm", {
+            rules: [{ required: true, message: '必填项！' }],
+          })(<Input
+            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="请再次确认输入密码"
+            type="password"
+          />)}
         </FormItem>
         <FormItem>
           <Button type="primary" htmlType="submit">

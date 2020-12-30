@@ -147,6 +147,10 @@ export default function index(props: Props) {
       });
   }, []);
 
+  const close = () => {
+    setPassword(false)
+  }
+
   useEffect(() => {
     // 获取消息的未读数量
     if (feConf.header && feConf.header.mode === 'complicated') {
@@ -351,9 +355,8 @@ export default function index(props: Props) {
           closable={false}
           footer={null}
           maskClosable={false}
-          onCancel={() => setPassword(false)} 
         >
-          <Password />
+          <Password close={close}/>
         </Modal>
       </div>
     </Layout>
