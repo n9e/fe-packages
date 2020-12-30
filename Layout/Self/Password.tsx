@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Form, Input, Icon, Button, message } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
 import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
+import auth from '../../Auth/auth';
 import request from '../../request';
 import api from '../../api';
 
@@ -22,13 +23,13 @@ class index extends Component<FormComponentProps & WrappedComponentProps & IPass
           await request(api.selftPassword, {
             method: 'PUT',
             body: JSON.stringify(values),
-          });
-          this.props.close();
-          message.success(this.props.intl.formatMessage({ id: 'msg.modify.success' }));
-        } catch (catchErr) {
-          console.log(catchErr);
+          }).then(() => auth.signout(() => window.location.href = '/'));
+            this.props.close();
+            message.success(this.props.intl.formatMessage({ id: 'msg.modify.success' }));
+          } catch (catchErr) {
+            console.log(catchErr);
+          }
         }
-      }
     });
   }
 
