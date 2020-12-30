@@ -147,28 +147,8 @@ export function errNotify(errMsg: string) {
   });
 }
 
-export default async function request(
-  url: any,
-  options?: any,
-  isUseDefaultErrNotify = true,
-  redirectToLogin = true,
-) {
-  let realUrl = url;
-  let realOptions = options;
-  if (typeof url === 'object' && url.url) {
-    realUrl = url.url;
-    realOptions = url;
-    delete realOptions.url;
-  }
-  const response = await fetch(realUrl, {
-    headers: {
-      'content-type': 'application/json',
-    },
-    ...realOptions,
-  });
-
+export async function processResponse(response: any, isUseDefaultErrNotify: boolean, redirectToLogin: boolean) {
   const data: Response = await response.json();
-
   if (response.status < 200 || response.status >= 300) {
     if (response.status === 401) {
       window.location.href = '/login';
@@ -202,5 +182,30 @@ export default async function request(
       throw new Error(data.err);
     }
   }
+  return data;
+}
+
+export default async function request(
+  url: any,
+  options?: any,
+  isUseDefaultErrNotify = true,
+  redirectToLogin = true,
+) {
+  let realUrl = url;
+  let realOptions = options;
+  if (typeof url === 'object' && url.url) {
+    realUrl = url.url;
+    realOptions = url;
+    delete realOptions.url;
+  }
+  const response = await fetch(realUrl, {
+    headers: {
+      'content-type': 'application/json',
+    },
+    ...realOptions,
+  });
+
+
+  const data = await processResponse(response, isUseDefaultErrNotify, redirectToLogin);
   return data.dat;
 }
