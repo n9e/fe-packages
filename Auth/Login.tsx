@@ -45,8 +45,18 @@ class Login extends Component<
   }
 
   fetchData() {
+    const { location } = this.props;
+    const { search } = location;
+    const query = queryString.parse(search);
     request(`${api.ldap}/used`).then((res) => {
       this.setState({ ldapUsed: res });
+    });
+    // TODO: 如果开启了 sso 则自动跳转到 sso
+    const redirect = query.redirect || '/';
+    request(api.authorize + '?redirect=' + redirect).then((res) => {
+      if (res && res.redirect && res.redirect !== '/login') {
+        window.location.href = res.redirect;
+      }
     });
   }
 
@@ -65,11 +75,11 @@ class Login extends Component<
           () => {
             const query = queryString.parse(search);
             const locationState = location.state as any;
-            if (query.callback && query.sig) {
-              if (query.callback.indexOf('?') > -1) {
-                window.location.href = `${query.callback}&sig=${query.sig}`;
+            if (query.redirect && query.sig) {
+              if (query.redirect.indexOf('?') > -1) {
+                window.location.href = `${query.redirect}&sig=${query.sig}`;
               } else {
-                window.location.href = `${query.callback}?sig=${query.sig}`;
+                window.location.href = `${query.redirect}?sig=${query.sig}`;
               }
             } else if (query.redirect) {
               window.location.href = `login?redirect=${query.redirect}`;
@@ -111,7 +121,7 @@ class Login extends Component<
                     <Form onSubmit={this.handleSubmit}>
                       <FormItem>
                         {getFieldDecorator('username', {
-                          rules: [{ required: true, message: 'required' }],
+                          rules: [{ required: true,  message:"必填项！" }],
                         })(
                           <Input
                             prefix={
@@ -129,7 +139,7 @@ class Login extends Component<
                       </FormItem>
                       <FormItem>
                         {getFieldDecorator('password', {
-                          rules: [{ required: true, message: 'required' }],
+                          rules: [{ required: true,  message:"必填项！" }],
                         })(
                           <Input
                             prefix={

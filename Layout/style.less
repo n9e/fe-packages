@@ -52,6 +52,7 @@ body {
       height: calc(~"100vh - @{layout-header-height} - 106px");
       overflow-x: hidden;
       overflow-y: auto;
+      user-select: none;
 
       &::-webkit-scrollbar {
         width: 2px;
@@ -376,6 +377,23 @@ body {
     height: calc(~"100vh - @{layout-header-height}");
     overflow-x: hidden;
     overflow-y: auto;
+  }
+
+  .layout-splitter-handle {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: -6px;
+    width: 11px;
+    z-index: 1;
+    cursor: col-resize;
+    .layout-splitter-handle-highlight {
+      position: absolute;
+      top: 0;
+      left: 4px;
+      bottom: 0;
+      width: 6px;
+    }
   }
 
   .ant-layout {

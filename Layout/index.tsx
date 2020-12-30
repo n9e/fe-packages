@@ -12,11 +12,13 @@ import {
   Badge,
   TreeSelect,
   Popover,
+  Modal,
 } from 'antd';
 import { normalizeTreeData } from './utils';
 import { auth } from '../Auth';
 import { prefixCls } from './config';
 import HeaderMenu from './HeaderMenu';
+import Password from './Self/Password';
 import Settings from './Settings';
 import './style.less';
 import './assets/iconfont/iconfont.css';
@@ -120,13 +122,8 @@ export default function index(props: Props) {
   const [menusVisible, setMenusVisible] = useState(false);
   const [menusContentVsible, setMenusContentVisible] = useState(false);
   const [feConf, setFeConf] = useState({} as any);
+  const [password, setPassword] = useState(false);
   const treeData = normalizeTreeData(props.belongProjects);
-  const cacheProject = _.attempt(
-    JSON.parse.bind(
-      null,
-      localStorage.getItem('icee-global-project') as string,
-    ),
-  );
   const content = <p style={{ height: 0 }}>工单</p>;
   const message = <p style={{ height: 0 }}>消息</p>;
   const text = <p style={{ height: 0 }}>文档中心</p>;
@@ -137,6 +134,8 @@ export default function index(props: Props) {
   useEffect(() => {
     auth.checkAuthenticate().then(() => {
       setDispname(_.get(auth.getSelftProfile(), 'dispname'));
+      const pwd_updated_at = _.get(auth.getSelftProfile(), 'pwd_updated_at')
+      pwd_updated_at === 0 ? setPassword(true) : setPassword(false);
       props.onMount();
     });
     fetch('/static/feConfig.json')
@@ -200,14 +199,13 @@ export default function index(props: Props) {
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   placeholder="请选择租户和项目"
                   treeNodeLabelProp="fullTitle"
-                  allowClear
                   treeDefaultExpandAll
                   treeNodeFilterProp="fullTitle"
                   filterTreeNode={(inputValue: string, treeNode: any) => {
                     const { fullTitle = '', path = '' } = treeNode.props;
                     return fullTitle.indexOf(inputValue) > -1 || path.indexOf(inputValue) > -1;
                   }}
-                  value={_.get(cacheProject, 'id')}
+                  value={_.get(props.selectedTenantProject, 'project.id')}
                   onChange={(_value, _label, extra) => {
                     const newSelectedTenantProject = {
                       tenant: {
@@ -221,14 +219,6 @@ export default function index(props: Props) {
                       },
                     };
                     props.setSelectedTenantProject(newSelectedTenantProject);
-                    localStorage.setItem(
-                      'icee-global-tenant',
-                      JSON.stringify(newSelectedTenantProject.tenant),
-                    );
-                    localStorage.setItem(
-                      'icee-global-project',
-                      JSON.stringify(newSelectedTenantProject.project),
-                    );
                   }}
                 >
                   {renderTreeNodes(normalizeTenantProjectData(treeData))}
@@ -355,6 +345,14 @@ export default function index(props: Props) {
             setMenusVisible={setMenusVisible}
           />
         </Drawer>
+        <Modal
+          title="重置密码"
+          visible={password}
+          footer={null}
+          onCancel={() => setPassword(false)}
+        >
+          <Password />
+        </Modal>
       </div>
     </Layout>
   );

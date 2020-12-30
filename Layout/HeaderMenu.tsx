@@ -78,12 +78,12 @@ export default function HeaderMenu(props: any) {
     try {
       defaultStars = JSON.parse(cacheStars || '');
     } catch (e) {
-      console.log(e);
+      console.log('收藏菜单未缓存，或解析缓存数据失败');
     }
     try {
       defaultHistory = JSON.parse(menusHistory || '');
     } catch (e) {
-      console.log(e);
+      console.log('历史菜单未缓存，或解析缓存数据失败');
     }
 
     if (defaultStars.length) {
