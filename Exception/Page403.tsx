@@ -15,7 +15,7 @@ const Page403 = () => {
       const projectNodes = _.filter(res, (item) => {
         return item.cate === 'project';
       });
-      if (!projectNodes.length) {
+      if (!projectNodes || !projectNodes.length) {
         setInProject(false);
       }
     });
