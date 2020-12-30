@@ -346,10 +346,12 @@ export default function index(props: Props) {
           />
         </Drawer>
         <Modal
-          title="重置密码"
+          title="重置密码(首次登陆，需要修改密码)"
           visible={password}
+          closable={false}
           footer={null}
-          onCancel={() => setPassword(false)}
+          maskClosable={false}
+          onCancel={() => setPassword(false)} 
         >
           <Password />
         </Modal>
