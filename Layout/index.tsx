@@ -155,6 +155,12 @@ export default function index(props: Props) {
     }
   }, [feConf]);
 
+  const disabledSystems = ['mis', 'crds', 'rdb', 'ams', 'job', 'mon'];
+  const { pathname } = window.location;
+  const checked = _.some(disabledSystems, (item) => {
+    return pathname.indexOf(item) === 1;
+  });
+
   return (
     <Layout className={cPrefixCls}>
       <Header className={`${cPrefixCls}-header`}>
@@ -185,7 +191,7 @@ export default function index(props: Props) {
         <div className={`${cPrefixCls}-header-right`}>
           {_.get(feConf, 'header.mode') === 'complicated' ? (
             <>
-              {props.tenantProjectVisible ? (
+              {props.tenantProjectVisible && !checked ? (
                 <TreeSelect
                   size="small"
                   showSearch
