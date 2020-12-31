@@ -38,19 +38,15 @@ const Page403 = (props: any) => {
             <div className={`${prefixCls}-content`}>
               {inProject ? '抱歉，你无权访问该页面' : '请联系管理员添加项目'}
             </div>
-            {
-              inProject ? (
-                <Button
-                  className={`${prefixCls}-btn`}
-                  type="primary"
-                  onClick={() => {
-                    window.location.href = window.location.origin;
-                  }}
-                >
-                  返回首页
-                </Button>
-              ) : null
-            }
+            <Button
+              className={`${prefixCls}-btn`}
+              type="primary"
+              onClick={() => {
+                window.location.href = window.location.origin;
+              }}
+            >
+              返回首页
+            </Button>
           </Col>
         </Row>
       </div>
