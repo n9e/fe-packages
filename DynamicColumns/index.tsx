@@ -60,7 +60,7 @@ export default function index(props: IProps) {
     >
       {
         !props.targetType || props.targetType === 'button' ?
-          <Button>
+          <Button type="primary">
             {intlFmtMsg({ id: 'display.columns' })}
           </Button> :
           <a>{intlFmtMsg({ id: 'display.columns' })}</a>
