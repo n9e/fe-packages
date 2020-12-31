@@ -5,13 +5,32 @@ import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl'
 import auth from '../../Auth/auth';
 import request from '../../request';
 import api from '../../api';
+import _ from 'lodash';
 
 const FormItem = Form.Item;
-interface IPassword {
-  close: () => void
-}
-class index extends Component<FormComponentProps & WrappedComponentProps & IPassword> {
+
+class index extends Component<FormComponentProps & WrappedComponentProps> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      username: '',
+      errMessage: ''
+    };
+  }
+
+  getUserName = () => {
+    auth.checkAuthenticate().then(() => {
+      const username = _.get(auth.getSelftProfile(), 'username');
+      this.setState({ username: username });
+    });
+  }
+
+  componentDidMount = () => {
+    this.getUserName()
+  }
+
   handleSubmit = (e: React.FormEvent) => {
+    const { username } = this.state;
     e.preventDefault();
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
@@ -22,14 +41,17 @@ class index extends Component<FormComponentProps & WrappedComponentProps & IPass
         try {
           await request(api.selftPassword, {
             method: 'PUT',
-            body: JSON.stringify(values),
+            body: JSON.stringify({
+              ...values,
+              username: username
+            }),
           }).then(() => auth.signout(() => window.location.href = '/'));
-            this.props.close();
-            message.success(this.props.intl.formatMessage({ id: 'msg.modify.success' }));
-          } catch (catchErr) {
-            console.log(catchErr);
-          }
+          message.success(this.props.intl.formatMessage({ id: 'msg.modify.success' }));
+        } catch (catchErr) {
+          this.setState({ errMessage: catchErr.toString() });
+          console.log(catchErr);
         }
+      }
     });
   }
 
@@ -52,6 +74,7 @@ class index extends Component<FormComponentProps & WrappedComponentProps & IPass
   // }
 
   render() {
+    const { errMessage } = this.state;
     const { getFieldDecorator } = this.props.form;
     return (
       <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -79,13 +102,18 @@ class index extends Component<FormComponentProps & WrappedComponentProps & IPass
         </FormItem>
         <FormItem label="确认输入新密码">
           {getFieldDecorator("passwordConfirm", {
-            rules: [{ required: true, message: '必填项！' }],
+            rules: [{ required: true, message: errMessage ? ' ' : '必填项！' }],
           })(<Input
             prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="请再次确认输入密码"
             type="password"
           />)}
         </FormItem>
+        {
+          errMessage ? <div style={{ color: 'red', marginTop: '-15px' }}>
+            <Icon type="close-circle" />{errMessage?.replace('Error: ', '')}
+          </div> : null
+        }
         <FormItem>
           <Button type="primary" htmlType="submit">
             <FormattedMessage id="form.submit" />
