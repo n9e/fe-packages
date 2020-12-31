@@ -3,6 +3,7 @@ import { Button, message, Form, Input, Icon, Card, Popover, Popconfirm } from "a
 import queryString from 'query-string';
 import { RouteComponentProps } from "react-router-dom";
 import { FormComponentProps } from "antd/lib/form";
+import _ from 'lodash';
 import request from '../../request';
 import api from '../../api';
 import "./style.less";
@@ -14,7 +15,7 @@ interface IPasswordProps extends FormComponentProps { }
 const Password: React.FC<IPasswordProps & RouteComponentProps> = (props) => {
     const prefixCls = "Electric-password";
     const { getFieldDecorator } = props.form;
-    const query = queryString.parse(location.search);
+    const query = queryString.parse(location.search) || {};
     const [errMessage, setMessage] = useState('');
     const [footer, setFooter] = useState({}) as any;
     const [total, setTotal] = useState(0);
@@ -63,9 +64,9 @@ const Password: React.FC<IPasswordProps & RouteComponentProps> = (props) => {
 
     const content = (
         <div>
-            {query.pwdRules[0]}
+            {_.get(query, 'pwdRules[0]')}
             <br />
-            {query.pwdRules[1]}
+            {_.get(query, 'pwdRules[1]')}
         </div>
     )
 
