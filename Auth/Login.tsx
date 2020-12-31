@@ -22,18 +22,11 @@ class Login extends Component<
 > {
   state = {
     ldapUsed: false,
+    isRender: false,
   };
   textInput: any;
 
-  async componentDidMount() {
-    this.setState({}, () => {
-      this.textInput.focus();
-    });
-  }
-
   componentWillMount() {
-    loginBackgroundAnimation.init();
-    loginBackgroundAnimation.animate();
     this.fetchData();
   }
 
@@ -56,6 +49,10 @@ class Login extends Component<
     request(api.authorize + '?redirect=' + redirect).then((res) => {
       if (res && res.redirect && res.redirect !== '/login') {
         window.location.href = res.redirect;
+      } else {
+        loginBackgroundAnimation.init();
+        loginBackgroundAnimation.animate();
+        this.setState({ isRender: true });
       }
     });
   }
@@ -103,7 +100,9 @@ class Login extends Component<
   render() {
     const prefixCls = 'ecmc-login';
     const { getFieldDecorator } = this.props.form!;
+    const { isRender } = this.state;
 
+    if (!isRender) return null;
     return (
       <div className={prefixCls}>
         <div className={`${prefixCls}-main-width`}>
@@ -115,9 +114,6 @@ class Login extends Component<
                 </Col>
                 <Col span={12}>
                   <div className={`${prefixCls}-main-right`}>
-                    <div className={`${prefixCls}-title`}>
-                      <img width="114" src="/static/logo-opaque.png" />
-                    </div>
                     <Form onSubmit={this.handleSubmit}>
                       <FormItem>
                         {getFieldDecorator('username', {
