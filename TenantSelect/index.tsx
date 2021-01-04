@@ -7,15 +7,19 @@ import api from '../api';
 interface IProps {
   valueMode: 'mine' | 'all';
   valueKey?: 'id' | 'ident';
-  style?: object;
+  hasUnTenant?: boolean;
+  style?: Object;
   value?: any;
+  placeholder?: any;
   onChange?: (newValue: any) => void;
 }
 
 interface ITenant {
-  id: number;
+  id?: number;
+  pid: number;
   ident: string;
   name: string;
+  cate: string;
 }
 
 export default function TenantSelect(props: IProps) {
@@ -26,9 +30,12 @@ export default function TenantSelect(props: IProps) {
   useEffect(() => {
     if (valueMode === 'mine') {
       request(`${api.tree}/projs`).then((res) => {
-        const unTenant = [{pid: 0, ident: '0' ,name: '未分配租户', cate:'tenant'}]
-        const resAdd = unTenant.concat(res);
-        setData(_.filter(resAdd, (item) => item.cate === 'tenant'));
+        const unTenant = [{ pid: 0, ident: '0', name: '未分配租户', cate: 'tenant' }];
+        let newData = res;
+        if (props.hasUnTenant) {
+          newData = _.concat(unTenant, res);
+        }
+        setData(_.filter(newData, item => item.cate === 'tenant'));
       });
     } else if (valueMode === 'all') {
       request(`${api.nodes}?cate=tenant&inner=1`).then((res) => {
@@ -40,7 +47,7 @@ export default function TenantSelect(props: IProps) {
   return (
     <Select
       dropdownMatchSelectWidth={false}
-      allowClear={true}
+      allowClear
       {...props}
     >
       {
@@ -53,5 +60,5 @@ export default function TenantSelect(props: IProps) {
         })
       }
     </Select>
-  )
+  );
 }
