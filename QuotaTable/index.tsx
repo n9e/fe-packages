@@ -1,12 +1,10 @@
-import React, { useState, useEffect }  from 'react';
-import { Table } from 'antd';
+import React, { useState }  from 'react';
 import { TableProps } from 'antd/lib/table';
 import { BasicTable, useAsyncRetry } from 'antd-advanced';
 import _ from 'lodash';
 import request from '@pkgs/request';
 import api from '@pkgs/api';
 import './style.less'
-// import { Response } from '../interface';
 
 interface IQuotaTable {
   type?: 'create' | 'upgrade' | 'downgrade';
