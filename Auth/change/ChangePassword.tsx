@@ -87,14 +87,14 @@ const Password: React.FC<IPasswordProps & RouteComponentProps> = (props) => {
                 </span>
                 <a
                     className={`${prefixCls}-top-first`}
-                    href={footer.home}
+                    href='/portal/home'
                 >
                     首页
               </a>
                 <span className={`${prefixCls}-top-line`}>|</span>
                 <a
                     className={`${prefixCls}-top-second`}
-                    href={footer.document}
+                    href='/portal/document'
                 >
                     文档中心
               </a>
