@@ -50,6 +50,7 @@ const api = {
   resources: getRDBApi('/resources'),
   belongProjects: getRDBApi('/belong-projects'),
   permissionPoint: getRDBApi('/self/perms/global'),
+  organization: getRDBApi('/tree/orgs'),
 
   host: getAMSCEApi('/host'),
   hosts: getAMSCEApi('/hosts'),

@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import {
-  Form, Input, Switch, Icon, Radio, DatePicker, Row, Col
+  Form, Input, Switch, Icon, Radio, DatePicker, Row, Col, Select
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import { FormProps } from 'antd/lib/form';
 import _ from 'lodash';
 import UserSelect from '../UserSelect';
 import moment from 'moment';
+import request from '@pkgs/request';
+import api from '@pkgs/api';
 
 interface Props {
   type: 'post' | 'register' | 'put',
@@ -15,6 +17,7 @@ interface Props {
 }
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 class ProfileForm extends Component<Props & FormProps> {
   static defaultProps: Props = {
@@ -28,7 +31,17 @@ class ProfileForm extends Component<Props & FormProps> {
     userType: 0,
     startTime: '', // 开始时间
     endTime: '', // 结束时间
+    treeData: [],
   };
+  componentDidMount() {
+    this.fetchTreeData();
+  }
+
+  fetchTreeData() {
+    request(api.organization).then((res) => {
+      this.setState({ treeData: res });
+    });
+  }
 
   validateFields() {
     return this.props.form!.validateFields;
@@ -190,7 +203,20 @@ class ProfileForm extends Component<Props & FormProps> {
           {getFieldDecorator('organization', {
             initialValue: initialValue.organization,
           })(
-            <Input />,
+            <Select
+                placeholder="请选择组织！"
+                showSearch
+                allowClear
+                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              >
+                {
+                  this.state.treeData?.map((item:any) => {
+                    return (
+                    <Option value={item.name} key={item.id}>{item.name}</Option>
+                    )
+                  })
+                }
+              </Select>,
           )}
         </FormItem>
         {
