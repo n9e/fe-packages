@@ -14,6 +14,7 @@ interface Props {
   batchInputEnabled?: boolean;
   mode?: any;
   optionKey?: string;
+  placeholder?: string;
   value?: any;
   onChange?: any;
   className?: string;
@@ -25,13 +26,13 @@ export default function index(props: Props) {
   const [data, setData] = useState<UserProfile[]>([]);
   const handleSearch = debounce((value: string) => {
     if (value) {
-      request(`${api.users}?limit=1000&query=${value}`).then((res) => {
+      request(`${api.users}?limit=100&query=${value}`).then((res) => {
         setData(res.list);
       });
     } else {
       setData([]);
     }
-  }, 1000)
+  }, 500)
 
   useEffect(() => {
     let isEmpty = true;
