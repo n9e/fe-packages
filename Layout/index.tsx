@@ -158,7 +158,8 @@ export default function index(props: Props) {
   const disabledSystems = ['mis', 'crds', 'rdb', 'ams', 'job', 'mon'];
   const { pathname } = window.location;
   const checked = _.some(disabledSystems, (item) => {
-    return pathname.indexOf(item) === 1;
+    const reg = new RegExp(`^/${item}(/)?$`);
+    return reg.test(pathname);
   });
 
   return (
