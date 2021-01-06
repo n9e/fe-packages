@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { defaultPageSizeOptions } from './config';
 
 export const getPaginationOptions = (onShowSizeChange?: (size: number) => void) => {
@@ -69,5 +70,74 @@ export function parseJSON(json: string) {
     return paresed;
   }
   return undefined;
+}
+
+export function getDefaultTenantProject(data: any[]) {
+  const defaultProject = _.find(_.sortBy(data, 'id'), { cate: 'project' });
+  let defaultTenant = {};
+  const make = (data: any[], project: any) => {
+    _.forEach(data, (item) => {
+      if (item.id === project.pid) {
+        if (item.cate === 'tenant') {
+          defaultTenant = item;
+          return false;
+        }
+        make(data, item);
+      }
+    });
+  };
+  make(data, defaultProject);
+  return {
+    tenant: {
+      id: _.get(defaultTenant, 'id'),
+      ident: _.get(defaultTenant, 'ident'),
+    },
+    project: {
+      id: _.get(defaultProject, 'id'),
+      ident: _.get(defaultProject, 'ident'),
+      path: _.get(defaultProject, 'path'),
+    },
+  }
+};
+
+export function getTenantProjectByProjectId(projsData: any[], id: number) {
+  let tenantProject = {
+    tenant: {
+      id: undefined,
+      ident: undefined,
+    },
+    project: {
+      id: undefined,
+      ident: undefined,
+      path: undefined,
+    },
+  };
+  function make(nid: number, isFirst: boolean) {
+    const finded = _.find(projsData, { id: nid });
+    if (isFirst) {
+      if (finded && finded.cate === 'project') {
+        tenantProject.project = {
+          id: finded.id,
+          ident: finded.ident,
+          path: finded.path,
+        };
+        make(finded.pid, false);
+      } else {
+        const defaultTenantProject = getDefaultTenantProject(projsData);
+        tenantProject = defaultTenantProject as any;
+      }
+    } else {
+      if (finded.cate === 'tenant') {
+        tenantProject.tenant = {
+          id: finded.id,
+          ident: finded.ident,
+        };
+      } else {
+        make(finded.pid, false);
+      }
+    }
+  }
+  make(id, true);
+  return tenantProject;
 }
 
