@@ -18,6 +18,7 @@ export default function HeaderMenu(props: any) {
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
   const [queryParams, setQueryParams] = useState('');
   const [historyList, setHistoryList] = useState([]);
+  const [accessToken] = useState(_.attempt(JSON.parse.bind(null, localStorage.getItem('accessToken') as string)));
 
   const showMenus = useMemo(() => menus.map((item: any) =>
     ({
@@ -136,7 +137,7 @@ export default function HeaderMenu(props: any) {
                 })}
               >
                 <a
-                  href={isAbsolutePath(item.path) ? item.path : `/${item.path}`}
+                  href={isAbsolutePath(item.path) ?  `${item.path}?token=${accessToken}` : `/${item.path}`}
                   target={item.target}
                   onClick={() => {
                     let newHistory = _.concat(item, historyList);
