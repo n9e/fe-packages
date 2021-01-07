@@ -48,36 +48,6 @@ export default function HeaderMenu(props: any) {
 
   const [stars, setStars] = useState([]);
 
-  useEffect(()=> {
-    complicated ? [] :
-    [
-      {
-        name: '用户资源中心',
-        nameEn: 'RDB',
-        path: 'rdb',
-        icon: '#iconyonghuziyuanzhongxinicon1',
-      },
-      {
-        name: '资产管理系统',
-        nameEn: 'AMS',
-        path: 'ams',
-        icon: '#iconzichanguanlixitongicon1',
-      },
-      {
-        name: '任务执行中心',
-        nameEn: 'JOB',
-        path: 'job',
-        icon: '#iconrenwuzhongxinicon1',
-      },
-      {
-        name: '监控告警系统',
-        nameEn: 'MON',
-        path: 'mon',
-        icon: '#iconjiankonggaojingxitongicon1',
-      },
-    ]
-  }, [complicated])
-
   useEffect(() => {
     setHistoryList(historyList);
   }, [locale]);
@@ -110,29 +80,31 @@ export default function HeaderMenu(props: any) {
         return res.json();
       })
       .then((res) => {
-        res.header.mode === 'complicated'
-          ? request(`${api.menus}?onlyOnlineService=true`).then((res) => {
-              const menus = res.map((item: any) => ({
+        if (res.header.mode === 'complicated') {
+          request(`${api.menus}?onlyOnlineService=true`).then((res) => {
+            const menus = res.map((item: any) => ({
+              name: item.displayName,
+              nameEn: item.code,
+              children: item?.misService?.map((item: any) => ({
                 name: item.displayName,
+                path: item.applyUrl,
                 nameEn: item.code,
-                children: item?.misService?.map((item: any) => ({
-                  name: item.displayName,
-                  path: item.applyUrl,
-                  nameEn: item.code,
-                  icon: item.picturePath
-                })),
-              }));
-              setComplicated(true);
-              setMenus(menus);
+                icon: item.picturePath,
+              })),
+            }));
+            setComplicated(true);
+            setMenus(menus);
+          });
+        } else {
+          fetch('/static/menusConfig.json')
+            .then((res) => {
+              return res.json();
             })
-          : fetch('/static/menusConfig.json')
-              .then((res) => {
-                return res.json();
-              })
-              .then((res) => {
-                setComplicated(false);
-                setMenus(res);
-              });
+            .then((res) => {
+              setComplicated(false);
+              setMenus(res);
+            });
+        }
       });
   }, []);
   const hasChildren = (menus: any): boolean => {
@@ -169,7 +141,11 @@ export default function HeaderMenu(props: any) {
                   })}
                 >
                   <a
-                    href={isAbsolutePath(item.path) ?  `${item.path}&token=${accessToken}` : `/${item.path}`}
+                    href={
+                      isAbsolutePath(item.path)
+                        ? `${item.path}&token=${accessToken}`
+                        : `/${item.path}`
+                    }
                     target={item.target}
                     onClick={() => {
                       let newHistory = _.concat(item, historyList);
@@ -237,10 +213,15 @@ export default function HeaderMenu(props: any) {
             }}
           />
         </div>
-        {
-          stars.length === 0 ? <p style={{fontSize:18, margin: '20px 40px'}}>暂无收藏</p> 
-          : <StarMenus items={stars} setItems={setStars} complicated={complicated}/>
-        }
+        {stars.length === 0 ? (
+          <p style={{ fontSize: 18, margin: '20px 40px' }}>暂无收藏</p>
+        ) : (
+          <StarMenus
+            items={stars}
+            setItems={setStars}
+            complicated={complicated}
+          />
+        )}
       </Sider>
       <Content
         className={`${cPrefixCls}-menus-content`}
