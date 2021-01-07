@@ -18,6 +18,7 @@ const CallBack = () => {
     try {
       const data = await request(api.callback + search, "" , false);
       setRedirect(data.redirect);
+      localStorage.setItem('accessToken', data.accessToken);
     } catch (e) {
       setErrMsg(e.toString());
       setLoginMsg(false);
