@@ -137,7 +137,9 @@ export default function HeaderMenu(props: any) {
                 })}
               >
                 <a
-                  href={isAbsolutePath(item.path) ?  `${item.path}?token=${accessToken}` : `/${item.path}`}
+                  href={isAbsolutePath(item.path) ?
+                     item.path.includes('?') ? `${item.path}&token=${accessToken}` : `${item.path}?token=${accessToken}` 
+                      : `/${item.path}`}
                   target={item.target}
                   onClick={() => {
                     let newHistory = _.concat(item, historyList);
