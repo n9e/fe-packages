@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Layout, Icon, Input } from 'antd';
 import _ from 'lodash';
 import classnames from 'classnames';
+import queryString from 'query-string';
 import { getIntl } from '../hooks/useFormatMessage';
 import { prefixCls } from './config';
 import StarMenus from './StarMenus';
@@ -128,6 +129,8 @@ export default function HeaderMenu(props: any) {
           </dt>
           {_.map(menu.children, (item) => {
             const stared = !!_.find(stars, { name: item.name });
+            const query = queryString.parseUrl(item.path);
+            _.set(query.query, 'token', accessToken)
             return (
               <dd
                 key={item.name}
@@ -137,9 +140,7 @@ export default function HeaderMenu(props: any) {
                 })}
               >
                 <a
-                  href={isAbsolutePath(item.path) ?
-                     item.path.includes('?') ? `${item.path}&token=${accessToken}` : `${item.path}?token=${accessToken}` 
-                      : `/${item.path}`}
+                  href={isAbsolutePath(item.path) ? `${query.url}?${queryString.stringify(query.query)}` : `/${item.path}`}
                   target={item.target}
                   onClick={() => {
                     let newHistory = _.concat(item, historyList);
