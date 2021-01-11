@@ -2,7 +2,7 @@ export interface MenuChild {
   name: string;
   nameEn: string;
   path: string;
-  icon: string;
+  icon?: string;
 }
 export interface Menu {
   name: string;

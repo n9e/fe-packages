@@ -346,7 +346,7 @@ export default function index(props: Props) {
           onClose={() => {
             setMenusVisible(false);
           }}
-        >
+        > 
           <HeaderMenu
             menusContentVsible={menusContentVsible}
             setMenusContentVisible={setMenusContentVisible}
