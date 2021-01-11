@@ -7,8 +7,10 @@ import { MenuChild, prefixCls } from './config';
 import { isAbsolutePath } from './utils';
 import { parseJSON } from '@pkgs/utils';
 
+
 interface Props {
   items: MenuChild[];
+  complicated: boolean;
   setItems: (newItems: any) => void;
 }
 
@@ -49,9 +51,13 @@ export default function StarMenus(props: Props) {
             setHistoryLocal(newArr);
           }}
         >
-          <svg className={`${cPrefixCls}-menus-icon`} aria-hidden="true">
-            <use xlinkHref={value.icon}></use>
-          </svg>
+          {
+            props.complicated ? <img className={`${cPrefixCls}-menus-icon`} src={value.icon} />
+            : 
+             <svg className={`${cPrefixCls}-menus-icon`} aria-hidden="true">
+               <use xlinkHref={value.icon}></use>
+             </svg>
+          }   
           {value.name}
         </a>
         <span className={`${cPrefixCls}-menus-sider-menus-item-right`}>

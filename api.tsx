@@ -70,6 +70,7 @@ const api = {
   points: getApi('transfer', '/data/ui'),
   messageCount: getApi('platform', '/msgs/self/count'),
   ticketMessageCount: getApi('ticket', '/tickets'),
+  menus: getApi('platform', '/mis/services/cates'),
 };
 
 export default api;
