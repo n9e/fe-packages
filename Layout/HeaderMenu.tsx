@@ -88,7 +88,7 @@ export default function HeaderMenu(props: any) {
               nameEn: item.code,
               children: item?.misService?.map((item: any) => ({
                 name: item.displayName,
-                path: item.applyUrl,
+                path: _.replace(item.consoleUrl, /^\//, ''),
                 nameEn: item.code,
                 icon: item.picturePath,
               })),
@@ -133,7 +133,7 @@ export default function HeaderMenu(props: any) {
           {_.map(menu.children, (item) => {
             const stared = !!_.find(stars, { name: item.name });
             const query = queryString.parseUrl(item.path);
-            _.set(query.query, 'token', accessToken)
+            _.set(query.query, 'token', accessToken);
             return (
               <dd
                 key={item.name}
