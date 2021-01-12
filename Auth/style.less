@@ -4,7 +4,7 @@
 @login-height: 500px;
 @login-prefix-cls: ~"ecmc-login";
 @register-width: 360px;
-@register-height: 613px;
+@register-height: 713px;
 @register-prefix-cls:  ~"ecmc-register";
 
 
@@ -66,29 +66,45 @@
 }
 
 
-.callBack-urlImg{
-  height: 785px;
-  background: url('./assets/400icon.png') no-repeat ;
-  background-size: cover;
-  position: relative;
+@exception-prefix-cls: ~"ecmc-exception";
+@exception-prefix-cls-400: ~"ecmc-exception-400";
+@exception-height: 300px;
 
-  &-txt{
-    position: absolute;
-    left:50%;
-    top:35%;
-    width: 500px;
-    height: 300px;
+.@{exception-prefix-cls} {
+  .single-page-wrap(100%);
+  text-align: center;
+}
+
+.@{exception-prefix-cls}-main {
+  .single-page-main(@exception-height)
+}
+
+.@{exception-prefix-cls}-title {
+  font-size: 64px;
+  font-weight: 300;
+  color: #333;
+}
+
+.@{exception-prefix-cls}-content {
+  font-size: 24px;
+}
+
+.@{exception-prefix-cls-400} {
+  text-align: left;
+  .@{exception-prefix-cls}-main {
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
   }
-
-  &-400{
-    font-size: 70px;
-    color:#333;
-    letter-spacing: 0;
+  .@{exception-prefix-cls}-title {
+    margin-top: 50px;
+    margin-bottom: 20px;
   }
-
-  &-p{
-    font-size: 20px;
-    color:#3370FF;
-    letter-spacing: 0;
+  .@{exception-prefix-cls}-content {
+    color: #3370FF;
+    margin-bottom: 25px;
+  }
+  .@{exception-prefix-cls}-btn {
+    border-radius: 20px;
   }
 }

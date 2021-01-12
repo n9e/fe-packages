@@ -1,7 +1,8 @@
+
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import {
-  Tree, Spin, Input, Modal, Form, Checkbox, Select, message,
+  Tree, Spin, Input, Modal, Form, Checkbox, Select, message, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
@@ -16,6 +17,7 @@ import clipboard from '../clipboard';
 import request from '../request';
 import api from '../api';
 import UserSelect from '../UserSelect';
+import './style.less';
 
 interface Node {
   ident: string,
@@ -70,14 +72,15 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
     }
   }
 
-  handleOk = () => {
+  handleOk = (value: string) => {
     this.props.form!.validateFields((err, values) => {
       if (!err) {
         this.props.onOk({
           ...values,
           leaf: values.leaf ? 1 : 0,
-        }, this.props.destroy);
+        }, value === 'close' ? this.props.destroy : null);
       }
+      this.props.form?.resetFields();
     });
   }
 
@@ -92,7 +95,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
     const { selectedAdminIds } = this.state;
     const { getFieldDecorator } = this.props.form!;
     const isLeafVisible = type === 'create' && pid !== 0;
-    let defaultCate = initialValues ? initialValues.cate : ''
+    let defaultCate = initialValues ? initialValues.cate : '';
 
     if (pid === 0) {
       defaultCate = 'tenant';
@@ -102,20 +105,31 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
       <Modal
         title={this.titleMap[type]}
         visible={visible}
-        onOk={this.handleOk}
+        footer={
+          this.props.type !== 'modify' ?
+            [
+              <Button onClick={this.handleCancel}>取消</Button>,
+              <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存并关闭弹层</Button>,
+              <Button type="primary" onClick={() => this.handleOk('open')} className="NsTreeModal-button">保存并继续添加</Button>
+            ] :
+            [
+              <Button onClick={this.handleCancel}>取消</Button>,
+              <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存</Button>,
+            ]
+        }
         onCancel={this.handleCancel}
+        className="NsTreeModal"
       >
         <Form
           layout="vertical"
           onSubmit={(e) => {
             e.preventDefault();
-            this.handleOk();
           }}
         >
           <FormItem label={<FormattedMessage id="node.ident" />}>
             {getFieldDecorator('ident', {
               initialValue: initialValues ? initialValues.ident : '',
-              rules: [{ required: true }],
+              rules: [{ required: true, message:"必填项！" }, { pattern: /^[a-z0-9_-]+$/, message:'请输入小写英文、数字、下划线、中划线!' }],
             })(
               <Input disabled={type === 'modify'} />,
             )}
@@ -123,7 +137,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
           <FormItem label={<FormattedMessage id="node.name" />}>
             {getFieldDecorator('name', {
               initialValue: initialValues ? initialValues.name : '',
-              rules: [{ required: true }],
+              rules: [{ required: true, message:"必填项！" }],
             })(
               <Input />,
             )}
@@ -133,8 +147,9 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
               ? (
                 <FormItem>
                   {getFieldDecorator('leaf', {
+                    valuePropName: 'checked',
                     initialValue: initialValues ? initialValues.leaf : 0,
-                    rules: [{ required: true }],
+                    rules: [{ required: true, message:"必选项！" }],
                   })(
                     <Checkbox><FormattedMessage id="node.isLeaf" /></Checkbox>,
                   )}
@@ -144,7 +159,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
           <FormItem label={<FormattedMessage id="node.cate" />}>
             {getFieldDecorator('cate', {
               initialValue: defaultCate,
-              rules: [{ required: true }],
+              rules: [{ required: true, message:"必选项！" }],
             })(
               <Select
                 disabled={pid === 0}
@@ -153,8 +168,8 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
                 optionFilterProp="children"
               >
                 {
-                _.map(this.state.nodeCateData, (item) => <Select.Option key={item.ident} value={item.ident}>{item.name}({item.ident})</Select.Option>)
-              }
+                  _.map(this.state.nodeCateData, (item) => <Select.Option key={item.ident} value={item.ident}>{item.name}({item.ident})</Select.Option>)
+                }
               </Select>,
             )}
           </FormItem>
@@ -223,7 +238,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
       window.postMessage({
         type: 'nid',
         value: _.get(currentNode, 'id'),
-      }, window.origin);
+      }, window.location.origin);
     }
   }
 
@@ -244,7 +259,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
         }).then((res: any) => {
           message.success(this.props.intl.formatMessage({ id: 'msg.create.success' }));
           context.appendTreeNode(res);
-          destroy();
+          if (destroy) destroy();
         });
       },
     });
@@ -269,7 +284,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
         }).then((res: any) => {
           message.success(this.props.intl.formatMessage({ id: 'msg.create.success' }));
           treeData = context.appendTreeNode(res, treeData as any) as any;
-          // destroy();
+          if (destroy) destroy();
         });
       },
     });
@@ -278,7 +293,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
   handleModifyNode: Handle = (context) => {
     this.setState({ contextMenuVisiable: false });
     const selectedNode = this.state.contextMenuSelectedNode as { node: TreeNode };
-    const { id, name, cate, note } = selectedNode.node;
+    const { id } = selectedNode.node;
     nodeEditorModal({
       language: this.props.intl.locale,
       type: 'modify',
@@ -290,8 +305,16 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
         }).then((res: any) => {
           message.success(this.props.intl.formatMessage({ id: 'msg.modify.success' }));
           context.updateTreeNode(id, res);
-          destroy();
+          if (destroy) destroy();
         });
+        window.postMessage({
+          type: 'resourceTreeUpdated',
+          value: {
+            type: 'nodeUpdated',
+            id,
+            value: values,
+          },
+        }, window.location.origin);
       },
     });
   }
@@ -369,33 +392,33 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
                   <div className={`${prefixCls}-nsTree-content`}>
                     <NsTreeContext.Consumer>
                       {
-                      (context) => {
-                        return <Tree
-                          showLine
-                          showIcon
-                          selectedKeys={context.data.selectedNode ? [_.toString(context.data.selectedNode.id)] : undefined}
-                          expandedKeys={expandedKeys}
-                          onSelect={(selectedKeys) => {
-                            this.handleNodeSelect(context, selectedKeys);
-                          }}
-                          onExpand={(newExpandedKeys) => {
-                            this.props.onExpandedKeys(newExpandedKeys);
-                          }}
-                          onRightClick={(e) => {
-                            e.event.stopPropagation();
-                            this.setState({
-                              contextMenuVisiable: true,
-                              contextMenuLeft: e.event.clientX,
-                              contextMenuTop: e.event.clientY,
-                              contextMenuType: 'operate',
-                              contextMenuSelectedNode: e.node.props,
-                            });
-                          }}
-                        >
-                          {renderTreeNodes(treeNodes)}
-                        </Tree>
+                        (context) => {
+                          return <Tree
+                            showLine
+                            showIcon
+                            selectedKeys={context.data.selectedNode ? [_.toString(context.data.selectedNode.id)] : undefined}
+                            expandedKeys={expandedKeys}
+                            onSelect={(selectedKeys) => {
+                              this.handleNodeSelect(context, selectedKeys);
+                            }}
+                            onExpand={(newExpandedKeys) => {
+                              this.props.onExpandedKeys(newExpandedKeys);
+                            }}
+                            onRightClick={(e) => {
+                              e.event.stopPropagation();
+                              this.setState({
+                                contextMenuVisiable: true,
+                                contextMenuLeft: e.event.clientX,
+                                contextMenuTop: e.event.clientY,
+                                contextMenuType: 'operate',
+                                contextMenuSelectedNode: e.node.props,
+                              });
+                            }}
+                          >
+                            {renderTreeNodes(treeNodes)}
+                          </Tree>
+                        }
                       }
-                    }
                     </NsTreeContext.Consumer>
                   </div>
                 )

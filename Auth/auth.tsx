@@ -9,6 +9,7 @@ export interface UserProfile {
   phone: string;
   im: string;
   isroot: boolean;
+  pwd_updated_at:number;
 }
 
 export default (function auth() {

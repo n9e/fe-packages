@@ -1,22 +1,39 @@
-import React, { useState, useEffect, useReducer } from 'react';
-import { Layout, Icon, Input } from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Layout, Icon, Input, Empty } from 'antd';
 import _ from 'lodash';
 import classnames from 'classnames';
+import queryString from 'query-string';
 import { getIntl } from '../hooks/useFormatMessage';
 import { prefixCls } from './config';
 import StarMenus from './StarMenus';
 import { isAbsolutePath } from './utils';
+import request from '@pkgs/request';
+import api from '@pkgs/api';
 
 const cPrefixCls = `${prefixCls}-layout`;
 const { Sider, Content } = Layout;
 
-export default function HeaderMen(props: any) {
+export default function HeaderMenu(props: any) {
   const { locale } = getIntl();
-  const [menus, setMenus] = useState([]);
+  const [menus, setMenus] = useState([] as any);
   const [icon, setIcon] = useState(false);
-  const [value, setValue] = useState('');
   const { menusContentVsible, setMenusContentVisible, setMenusVisible } = props;
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [queryParams, setQueryParams] = useState('');
+  const [historyList, setHistoryList] = useState([]);
+  const [complicated, setComplicated] = useState(false);
+  const [accessToken] = useState(localStorage.getItem('accessToken') as string);
+  const showMenus = useMemo(
+    () =>
+      menus
+        .map((item: any) => ({
+          ...item,
+          children: item?.children?.filter(
+            (item: any) => item.name.includes(queryParams) || !queryParams
+          ),
+        }))
+        ?.filter((item: any) => item.children?.length > 0),
+    [queryParams, menus]
+  );
 
   const setLocal = (name: any) => {
     setStars(name);
@@ -30,67 +47,10 @@ export default function HeaderMen(props: any) {
     localStorage.setItem('menusHistory', jsonArrayString);
   };
 
-  const [stars, setStars] = useState([
-    {
-      name: '用户资源中心',
-      nameEn: 'RDB',
-      path: 'rdb',
-      icon: '#iconyonghuziyuanzhongxinicon',
-    },
-    {
-      name: '资产管理系统',
-      nameEn: 'AMS',
-      path: 'ams',
-      icon: '#iconzichanguanlixitongicon',
-    },
-    {
-      name: '任务执行中心',
-      nameEn: 'JOB',
-      path: 'job',
-      icon: '#iconrenwuzhongxinicon',
-    },
-    {
-      name: '监控告警系统',
-      nameEn: 'MON',
-      path: 'mon',
-      icon: '#iconjiankonggaojingxitongicon',
-    },
-  ]);
-  const [historyList, setHistoryList] = useState([]);
-  const historyData = [
-    {
-      name: '最近访问',
-      nameEn: 'History',
-      type: 'group',
-      children: historyList,
-    },
-  ];
-
-  const changeShow = (list: any) => {
-    for (let i = 0; i < list.length; i++) {
-      list[i].show = [];
-      list[i].show[0] = locale === 'en' ? list[i].nameEn : list[i].name;
-    }
-    return list;
-  };
-
-  const changeMenuShow = (list: any) => {
-    for (let i = 0; i < list.length; i++) {
-      for (let j = 0; j < list[i].children.length; j++) {
-        list[i].children[j].show = [];
-        list[i].children[j].show[0] =
-          locale === 'en'
-            ? list[i].children[j].nameEn
-            : list[i].children[j].name;
-      }
-    }
-    return list;
-  };
+  const [stars, setStars] = useState([]);
 
   useEffect(() => {
-    setHistoryList(changeShow(historyList));
-    changeMenuShow(menus);
-    forceUpdate();
+    setHistoryList(historyList);
   }, [locale]);
 
   useEffect(() => {
@@ -101,34 +61,63 @@ export default function HeaderMen(props: any) {
     try {
       defaultStars = JSON.parse(cacheStars || '');
     } catch (e) {
-      console.log(e);
+      console.log('收藏菜单未缓存，或解析缓存数据失败');
     }
     try {
       defaultHistory = JSON.parse(menusHistory || '');
     } catch (e) {
-      console.log(e);
+      console.log('历史菜单未缓存，或解析缓存数据失败');
     }
-
     if (defaultStars.length) {
       setStars(defaultStars);
     }
-    setHistoryList(changeShow(historyList));
+    setHistoryList(historyList);
 
     if (defaultHistory.length) {
       setHistoryList(defaultHistory);
     }
-    fetch('/static/menusConfig.json')
+    fetch('/static/feConfig.json')
       .then((res) => {
         return res.json();
       })
-      .then(async (res) => {
-        const data = changeMenuShow(res);
-        await setMenus(data);
+      .then((res) => {
+        if (res.header.mode === 'complicated') {
+          request(`${api.menus}?onlyOnlineService=true`).then((res) => {
+            const menus = res.map((item: any) => ({
+              name: item.displayName,
+              nameEn: item.code,
+              children: item?.misService?.map((item: any) => ({
+                name: item.displayName,
+                path: _.replace(item.consoleUrl, /^\//, ''),
+                nameEn: item.code,
+                icon: item.picturePath,
+              })),
+            }));
+            setComplicated(true);
+            setMenus(menus);
+          });
+        } else {
+          fetch('/static/menusConfig.json')
+            .then((res) => {
+              return res.json();
+            })
+            .then((res) => {
+              setComplicated(false);
+              setMenus(res);
+            });
+        }
       });
   }, []);
+  const hasChildren = (menus: any): boolean => {
+    let lock = false;
+    menus.map((item: any) => {
+      item?.children.length !== 0 && (lock = true);
+    });
+    return lock;
+  };
 
   const renderContentMenus = (menus: any[]) => {
-    return _.map(menus, (menu) => {
+    return hasChildren(menus) ? _.map(menus, (menu) => {
       return (
         <dl
           key={menu.name}
@@ -143,6 +132,8 @@ export default function HeaderMen(props: any) {
           </dt>
           {_.map(menu.children, (item) => {
             const stared = !!_.find(stars, { name: item.name });
+            const query = queryString.parseUrl(item.path);
+            _.set(query.query, 'token', accessToken);
             return (
               <dd
                 key={item.name}
@@ -152,49 +143,47 @@ export default function HeaderMen(props: any) {
                 })}
               >
                 <a
-                  href={isAbsolutePath(item.path) ? item.path : `/${item.path}`}
+                  href={isAbsolutePath(item.path) ? `${query.url}?${queryString.stringify(query.query)}` : `/${item.path}`}
+                  target={item.target}
                   onClick={() => {
-                    let newHistory = _.concat(historyList, item);
-                    let reverse = _.reverse(newHistory)
-                    let newArr = _.filter(reverse, (item, index, arr) => {
-                      return _.findIndex(arr,item) === index; 
+                    let newHistory = _.concat(item, historyList);
+                    let newArr = _.filter(newHistory, (item, index, arr) => {
+                      return _.findIndex(arr, item) === index;
                     })
                     setHistoryLocal(newArr);
                   }}
                 >
-                  {_.get(item, 'show.length') === 2 ? (
-                    <span>
-                      {_.get(item, 'show[0]')}
-                      <span className="valueColor">{value}</span>
-                      {_.get(item, 'show[1]')}
-                    </span>
-                  ) : (
-                    _.get(item, 'show[0]')
-                  )}
-                </a>
-                <Icon
-                  title={stared ? '取消收藏' : '添加收藏'}
-                  type="star"
-                  className={`${cPrefixCls}-menus-content-menu-star`}
-                  theme={stared ? 'filled' : 'outlined'}
-                  onClick={() => {
-                    let newStars;
-                    if (stared) {
-                      newStars = _.remove(stars, (star) => {
-                        return star.path !== item.path;
-                      });
-                    } else {
-                      newStars = _.concat(stars, item);
-                    }
-                    setLocal(newStars);
-                  }}
-                />
-              </dd>
-            );
-          })}
-        </dl>
-      );
-    });
+                    {locale === 'en' ? item.nameEn : item.name}
+                  </a>
+                  <Icon
+                    title={stared ? '取消收藏' : '添加收藏'}
+                    type="star"
+                    className={`${cPrefixCls}-menus-content-menu-star`}
+                    theme={stared ? 'filled' : 'outlined'}
+                    onClick={() => {
+                      let newStars;
+                      if (stared) {
+                        newStars = _.remove(stars, (star: any) => {
+                          return star.path !== item.path;
+                        });
+                      } else {
+                        newStars = _.concat(stars, item);
+                      }
+                      setLocal(newStars);
+                    }}
+                  />
+                </dd>
+              );
+            })}
+          </dl>
+        );
+      }
+    ) : (
+      <div style={{ color: '#333', fontSize: 14, marginTop: 20 }}>
+        未找到与"<span style={{ color: '#FB4E57' }}>{queryParams}</span>
+        "相关的产品
+      </div>
+    );
   };
 
   return (
@@ -222,7 +211,15 @@ export default function HeaderMen(props: any) {
             }}
           />
         </div>
-        <StarMenus items={stars} setItems={setStars} />
+        {stars.length === 0 ? (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无收藏" />
+        ) : (
+          <StarMenus
+            items={stars}
+            setItems={setStars}
+            complicated={complicated}
+          />
+        )}
       </Sider>
       <Content
         className={`${cPrefixCls}-menus-content`}
@@ -241,54 +238,13 @@ export default function HeaderMen(props: any) {
             className={`${cPrefixCls}-menus-content-search-input`}
             placeholder="请输入关键词"
             onChange={(e) => {
-              setValue(e.target.value);
-              if (e.target.value === '') {
-                setIcon(false);
-                changeShow(historyList);
-                changeMenuShow(menus);
-              } else {
-                setIcon(true);
-                for (let i = 0; i < historyList.length; i++) {
-                  if (locale === 'en') {
-                    const en = _.get(historyList, `[${i}].nameEn`).split(
-                      e.target.value
-                    );
-                    _.set(historyList, `[${i}].show`, en);
-                  } else {
-                    const zh = _.get(historyList, `[${i}].name`).split(
-                      e.target.value
-                    );
-                    _.set(historyList, `[${i}].show`, zh);
-                  }
-                }
-                for (let i = 0; i < menus.length; i++) {
-                  for (let j = 0; j < _.get(menus[i], 'children.length'); j++) {
-                    if (locale === 'en') {
-                      const en = _.get(
-                        menus,
-                        `[${i}].children.[${j}].nameEn`,
-                        ''
-                      ).split(e.target.value);
-                      _.set(menus, `[${i}].children[${j}].show`, en);
-                    } else {
-                      const zh = _.get(
-                        menus,
-                        `[${i}].children.[${j}].name`,
-                        ''
-                      ).split(e.target.value);
-                      _.set(menus, `[${i}].children[${j}].show`, zh);
-                    }
-                  }
-                }
-              }
+              setQueryParams(e.target.value);
+              e.target.value === '' ? setIcon(false) : setIcon(true);
             }}
           />
         </div>
-        <div className={`${cPrefixCls}-menus-content-menus-history`}>
-          {renderContentMenus(historyData)}
-        </div>
         <div className={`${cPrefixCls}-menus-content-menus`}>
-          {renderContentMenus(menus)}
+          {renderContentMenus(showMenus)}
         </div>
         <Icon
           type="close"

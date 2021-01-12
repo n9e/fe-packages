@@ -59,7 +59,7 @@ const getDefaultKeys = (treeNodes: TreeNode[], selectedNode: TreeNode) => {
   return _.union(_.map(keys, (key) => String(key)));
 };
 
-const getSearchResultKeys = (treeNodes: TreeNode[], treeSearchValue: string) => {
+const getSearchResultKeys = (treeNodes: TreeNode[], _treeSearchValue: string) => {
   const keys = [] as number[];
 
   function realFind(activeNode: TreeNode) {
@@ -118,7 +118,11 @@ const Provider = ({ treeVisible = true, children, location }: Props) => {
           expandedKeys = getSearchResultKeys(treeData, state.treeSearchValue);
         }
         setState({
-          ...state, treeData, treeNodes, expandedKeys,
+          ...state,
+          treeData,
+          treeNodes,
+          expandedKeys,
+          selectedNode: _.find(treeData, { id: _.get(state, 'selectedNode.id') }) ? state.selectedNode : undefined,
         });
       };
       fetchData();

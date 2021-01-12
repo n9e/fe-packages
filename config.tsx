@@ -3,7 +3,7 @@ export const defaultPageSizeOptions = ['10', '30', '50', '100', '300', '500', '1
 
 const browser = Bowser.getParser(window.navigator.userAgent);
 export const isValidBrowser = browser.satisfies({
-  chrome: ">=70",
-  ie: ">=10"
+  chrome: '>=80',
+  edge: '>=84'
 });
 

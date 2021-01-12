@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import classnames from 'classnames';
-import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import {
   Layout,
@@ -38,11 +37,6 @@ interface Props {
 
 const userIconSrc = require('./assets/avatars.png');
 const { Header } = Layout;
-const getSymbolByLanguage = (language: string) => {
-  if (language === 'zh') return '#iconzhongwenicon';
-  if (language === 'en') return '#iconyingwenicon';
-  return '';
-};
 const normalizeTenantProjectData = (
   data: any[],
   tenantIdent?: string,
@@ -127,17 +121,12 @@ export default function index(props: Props) {
   const [menusContentVsible, setMenusContentVisible] = useState(false);
   const [feConf, setFeConf] = useState({} as any);
   const treeData = normalizeTreeData(props.belongProjects);
-  const cacheProject = _.attempt(
-    JSON.parse.bind(
-      null,
-      localStorage.getItem('icee-global-project') as string,
-    ),
-  );
   const content = <p style={{ height: 0 }}>工单</p>;
   const message = <p style={{ height: 0 }}>消息</p>;
   const text = <p style={{ height: 0 }}>文档中心</p>;
 
   const [messageCount, setMessageCount] = useState();
+  const [ticketMessageCount, setTicketMessageCount] = useState();
 
   useEffect(() => {
     auth.checkAuthenticate().then(() => {
@@ -153,14 +142,30 @@ export default function index(props: Props) {
       });
   }, []);
 
+
   useEffect(() => {
     // 获取消息的未读数量
     if (feConf.header && feConf.header.mode === 'complicated') {
       request(`${api.messageCount}?status=0`).then((count = 0) => {
         setMessageCount(count);
       });
+      request(`${api.ticketMessageCount}?limit=1000&p=1&onlyApprovePending=true`).then(res => {
+        res.total && setTicketMessageCount(res.total)
+      });
     }
   }, [feConf]);
+
+  const disabledSystems = ['mis', 'crds', 'rdb', 'ams', 'job', 'mon'];
+  const disabledSystemsBlacklist = ['/crds/rootstatistics', '/crds/api/myapi'];
+  const { pathname } = window.location;
+  const checked = _.some(disabledSystems, (item) => {
+    if (pathname.indexOf(`/${item}/`) === 0 || pathname === `/${item}`) {
+      return !_.some(disabledSystemsBlacklist, (blacklistItem) => {
+        return pathname.indexOf(blacklistItem) === 0;
+      });
+    }
+    return false;
+  });
 
   return (
     <Layout className={cPrefixCls}>
@@ -178,7 +183,7 @@ export default function index(props: Props) {
           >
             <Icon type={!menusVisible ? 'menu' : 'close'} />
           </div>
-          <Link to="/" className={`${cPrefixCls}-logo`}>
+          <a href='/' className={`${cPrefixCls}-logo`}>
             <img
               src={_.get(feConf, 'header.logo')}
               alt="logo"
@@ -187,12 +192,12 @@ export default function index(props: Props) {
               }}
             />
             {_.get(feConf, 'header.subTitle')}
-          </Link>
+          </a>
         </div>
         <div className={`${cPrefixCls}-header-right`}>
           {_.get(feConf, 'header.mode') === 'complicated' ? (
             <>
-              {props.tenantProjectVisible ? (
+              {props.tenantProjectVisible && !checked ? (
                 <TreeSelect
                   size="small"
                   showSearch
@@ -202,19 +207,18 @@ export default function index(props: Props) {
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   placeholder="请选择租户和项目"
                   treeNodeLabelProp="fullTitle"
-                  allowClear
                   treeDefaultExpandAll
                   treeNodeFilterProp="fullTitle"
                   filterTreeNode={(inputValue: string, treeNode: any) => {
                     const { fullTitle = '', path = '' } = treeNode.props;
                     return fullTitle.indexOf(inputValue) > -1 || path.indexOf(inputValue) > -1;
                   }}
-                  value={_.get(cacheProject, 'id')}
+                  value={_.get(props.selectedTenantProject, 'project.id')}
                   onChange={(_value, _label, extra) => {
                     const newSelectedTenantProject = {
                       tenant: {
                         id: _.get(extra, 'triggerNode.props.node.tenantId'),
-                        ident: _.get( extra, 'triggerNode.props.node.tenantIdent'),
+                        ident: _.get(extra, 'triggerNode.props.node.tenantIdent'),
                       },
                       project: {
                         id: _.get(extra, 'triggerNode.props.node.id'),
@@ -223,14 +227,6 @@ export default function index(props: Props) {
                       },
                     };
                     props.setSelectedTenantProject(newSelectedTenantProject);
-                    localStorage.setItem(
-                      'icee-global-tenant',
-                      JSON.stringify(newSelectedTenantProject.tenant),
-                    );
-                    localStorage.setItem(
-                      'icee-global-project',
-                      JSON.stringify(newSelectedTenantProject.project),
-                    );
                   }}
                 >
                   {renderTreeNodes(normalizeTenantProjectData(treeData))}
@@ -238,21 +234,26 @@ export default function index(props: Props) {
               ) : null}
               <div className={`${cPrefixCls}-header-right-links`}>
                 <a href="/rdb">用户中心</a>
-                <a href="/mis">运营后台</a>
+                <a href="/mis">运营中心</a>
                 <a href="/crds">资源中心</a>
-                <a href="/portal">门户</a>
+                <a href="/console">
+                  <Popover content="控制台">
+                    <svg className={`${cPrefixCls}-header-menus-icon`} aria-hidden="true">
+                      <use xlinkHref='#iconkongzhitaiicon'></use>
+                    </svg>
+                  </Popover>
+                </a>
               </div>
               <Divider
                 className={`${cPrefixCls}-header-right-divider`}
                 type="vertical"
               />
               <div className={`${cPrefixCls}-header-right-icons`}>
-                <a>
-                  <Badge dot>
-                    <Popover content={content}>
-                      <span className="iconfont icongongdanicon" />
-                    </Popover>
-                  </Badge>
+                <a className="text ticket-icon" href="/rdb/ticket/my-ticket">
+                  <Popover content={content}>
+                    <span className="iconfont icongongdanicon" />
+                  </Popover>
+                  <Badge count={ticketMessageCount} className="badge"></Badge>
                 </a>
                 <a className="text" href="/portal/message">
                   <Popover content={message}>
@@ -331,7 +332,7 @@ export default function index(props: Props) {
         <div className={`${cPrefixCls}-main`}>{props.children}</div>
         <Drawer
           placement="left"
-          width={menusContentVsible ? 1190 : 190}
+          width={menusContentVsible ? 1230 : 190}
           closable={false}
           visible={menusVisible}
           getContainer={false}
@@ -345,7 +346,7 @@ export default function index(props: Props) {
           onClose={() => {
             setMenusVisible(false);
           }}
-        >
+        > 
           <HeaderMenu
             menusContentVsible={menusContentVsible}
             setMenusContentVisible={setMenusContentVisible}

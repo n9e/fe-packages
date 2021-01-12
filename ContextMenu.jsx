@@ -60,6 +60,7 @@ export default class ContextMenu extends Component {
         position: 'fixed',
         top,
         left,
+        zIndex: 9999,
       }}
       >
         {this.props.children}

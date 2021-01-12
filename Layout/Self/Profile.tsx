@@ -69,7 +69,7 @@ class Profile extends Component<FormComponentProps & WrappedComponentProps, Stat
         <FormItem label={<FormattedMessage id="user.dispname" />} required>
           {getFieldDecorator('dispname', {
             initialValue: values.dispname,
-            rules: [{ required: true }],
+            rules: [{ required: true, message:"必填项！" }],
           })(
             <Input />,
           )}

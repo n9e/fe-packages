@@ -22,18 +22,11 @@ class Login extends Component<
 > {
   state = {
     ldapUsed: false,
+    isRender: false,
   };
   textInput: any;
 
-  async componentDidMount() {
-    this.setState({}, () => {
-      this.textInput.focus();
-    });
-  }
-
   componentWillMount() {
-    loginBackgroundAnimation.init();
-    loginBackgroundAnimation.animate();
     this.fetchData();
   }
 
@@ -45,8 +38,22 @@ class Login extends Component<
   }
 
   fetchData() {
+    const { location } = this.props;
+    const { search } = location;
+    const query = queryString.parse(search);
     request(`${api.ldap}/used`).then((res) => {
       this.setState({ ldapUsed: res });
+    });
+    // TODO: 如果开启了 sso 则自动跳转到 sso
+    const redirect = query.redirect || '/';
+    request(api.authorize + '?redirect=' + redirect).then((res) => {
+      if (res && res.redirect && res.redirect !== '/login') {
+        window.location.href = res.redirect;
+      } else {
+        loginBackgroundAnimation.init();
+        loginBackgroundAnimation.animate();
+        this.setState({ isRender: true });
+      }
     });
   }
 
@@ -65,11 +72,11 @@ class Login extends Component<
           () => {
             const query = queryString.parse(search);
             const locationState = location.state as any;
-            if (query.callback && query.sig) {
-              if (query.callback.indexOf('?') > -1) {
-                window.location.href = `${query.callback}&sig=${query.sig}`;
+            if (query.redirect && query.sig) {
+              if (query.redirect.indexOf('?') > -1) {
+                window.location.href = `${query.redirect}&sig=${query.sig}`;
               } else {
-                window.location.href = `${query.callback}?sig=${query.sig}`;
+                window.location.href = `${query.redirect}?sig=${query.sig}`;
               }
             } else if (query.redirect) {
               window.location.href = `login?redirect=${query.redirect}`;
@@ -93,7 +100,9 @@ class Login extends Component<
   render() {
     const prefixCls = 'ecmc-login';
     const { getFieldDecorator } = this.props.form!;
+    const { isRender } = this.state;
 
+    if (!isRender) return null;
     return (
       <div className={prefixCls}>
         <div className={`${prefixCls}-main-width`}>
@@ -104,14 +113,11 @@ class Login extends Component<
                   <img width={380} src={require('./assets/login-left.png')} />
                 </Col>
                 <Col span={12}>
-                  <div className={`${prefixCls}-main-right`}>
-                    <div className={`${prefixCls}-title`}>
-                      <img width="114" src="/static/logo-opaque.png" />
-                    </div>
+                  <div className={`${prefixCls}-main-right`} style={{ marginTop: 100 }}>
                     <Form onSubmit={this.handleSubmit}>
                       <FormItem>
                         {getFieldDecorator('username', {
-                          rules: [{ required: true, message: 'required' }],
+                          rules: [{ required: true,  message:"必填项！" }],
                         })(
                           <Input
                             prefix={
@@ -129,7 +135,7 @@ class Login extends Component<
                       </FormItem>
                       <FormItem>
                         {getFieldDecorator('password', {
-                          rules: [{ required: true, message: 'required' }],
+                          rules: [{ required: true,  message:"必填项！" }],
                         })(
                           <Input
                             prefix={

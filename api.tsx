@@ -19,8 +19,8 @@ function getAMSEEApi(path: string) {
 }
 
 const api = {
-  settings:getRDBApi('/auth/settings'),
-  callback:getRDBApi('/auth/v2/callback'),
+  settings: getRDBApi('/auth/settings'),
+  callback: getRDBApi('/auth/v2/callback'),
   authorize: getRDBApi('/auth/v2/authorize'),
   downloadBrowser: '/api/platform/download/browser',
   login: getRDBApi('/auth/login'),
@@ -50,11 +50,13 @@ const api = {
   resources: getRDBApi('/resources'),
   belongProjects: getRDBApi('/belong-projects'),
   permissionPoint: getRDBApi('/self/perms/global'),
+  organization: getRDBApi('/tree/orgs'),
 
   host: getAMSCEApi('/host'),
   hosts: getAMSCEApi('/hosts'),
   nethw: getAMSEEApi('/nethw'),
   nethws: getAMSEEApi('/nethws'),
+  nws: getAMSEEApi('/nws'),
   mibs: getAMSEEApi('/mibs'),
 
   cluster: getApi('ccpapi', '/cluster'),
@@ -67,6 +69,10 @@ const api = {
   fullmatch: getApi('index', '/counter/fullmatch'),
   points: getApi('transfer', '/data/ui'),
   messageCount: getApi('platform', '/msgs/self/count'),
+  ticketMessageCount: getApi('ticket', '/tickets'),
+  menus: getApi('platform', '/mis/services/cates'),
+  specgroups: getApi('billing', '/extern/specgroups'),
+  menus: getApi('platform', '/mis/services/cates'),
 };
 
 export default api;

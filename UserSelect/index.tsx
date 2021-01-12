@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Select, Input, Modal } from 'antd';
 import map from 'lodash/map';
+import get from 'lodash/get'
 import unionBy from 'lodash/unionBy';
 import isArray from 'lodash/isArray';
 import split from 'lodash/split';
+import debounce from 'lodash/debounce';
 import request from '@pkgs/request';
 import api from '@pkgs/api';
 import { UserProfile } from '../interface';
@@ -12,22 +14,25 @@ interface Props {
   batchInputEnabled?: boolean;
   mode?: any;
   optionKey?: string;
+  placeholder?: string;
   value?: any;
   onChange?: any;
+  className?: string;
+  optionLabelProp?: string;
 }
 
 export default function index(props: Props) {
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<UserProfile[]>([]);
-  const handleSearch = (value: string) => {
+  const handleSearch = debounce((value: string) => {
     if (value) {
-      request(`${api.users}?limit=1000&query=${value}`).then((res) => {
+      request(`${api.users}?limit=100&query=${value}`).then((res) => {
         setData(res.list);
       });
     } else {
       setData([]);
     }
-  };
+  }, 500)
 
   useEffect(() => {
     let isEmpty = true;
@@ -52,7 +57,7 @@ export default function index(props: Props) {
         allowClear
         showSearch
         onSearch={handleSearch}
-        placeholder="input seach text"
+        placeholder="请输入用户名"
         filterOption={false}
         notFoundContent={null}
         defaultActiveFirstOption={false}
@@ -65,8 +70,10 @@ export default function index(props: Props) {
               <Select.Option
                 key={item[(props.optionKey || 'id') as 'id']}
                 value={item[(props.optionKey || 'id') as 'id']}
+                label={get(item, 'dispname')}
               >
-                {item.dispname}({item.username})
+                <div>{get(item, 'dispname')} {get(item, 'organization') ? (get(item, 'organization')) : ''}</div>
+                <div style={{ color: '#999', fontSize: 10 }}>{item.email}</div>
               </Select.Option>
             );
           })
