@@ -47,7 +47,14 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
       if (!this.props.isroot && nav.rootVisible) {
         return false;
       }
-      if (nav.permissionPoint && !permissionPoints[nav.permissionPoint]) {
+      if (nav.permissionPoint) {
+        if (_.isString(nav.permissionPoint)) {
+          return _.includes(permissionPoints, nav.permissionPoint);
+        } else if (_.isArray(nav.permissionPoint)) {
+          return _.some(nav.permissionPoint, (item) => {
+            return _.includes(permissionPoints, item);
+          });
+        }
         return false;
       }
       return true;
@@ -120,7 +127,7 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
         );
       } else {
         if (nav.to && this.isActive(nav.to)) this.selectedKeys = [nav.to];
-        
+
         linkProps.to = {
           pathname: nav.to,
         };
