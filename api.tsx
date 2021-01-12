@@ -71,6 +71,7 @@ const api = {
   messageCount: getApi('platform', '/msgs/self/count'),
   ticketMessageCount: getApi('ticket', '/tickets'),
   menus: getApi('platform', '/mis/services/cates'),
+  specgroups: getApi('billing', '/extern/specgroups'),
 };
 
 export default api;
