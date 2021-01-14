@@ -236,6 +236,7 @@ export default function index(props: Props) {
                 <a href="/rdb">用户中心</a>
                 <a href="/mis">运营中心</a>
                 <a href="/crds">资源中心</a>
+                <a href="/bill">成本中心</a>
                 <a href="/console">
                   <Popover content="控制台">
                     <svg className={`${cPrefixCls}-header-menus-icon`} aria-hidden="true">
