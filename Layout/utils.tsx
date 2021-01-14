@@ -211,16 +211,18 @@ export function renderTreeNodes(nodes: TreeNode[], type = 'tree') {
   });
 }
 
-export function filterTreeNodes(nodes: TreeNode[], id: number) {
+export function filterTreeNodes(nodes: TreeNode[], id: number, includeSelf?: boolean) {
   let newNodes: TreeNode[] = [];
   function makeFilter(sNodes: TreeNode[]) {
     _.each(sNodes, (node) => {
-      if (node.children) {
-        if (node.id === id) {
+      if (node.id === id) {
+        if (includeSelf) {
+          newNodes = [node];
+        } else if (node.children) {
           newNodes = node.children;
-        } else {
-          makeFilter(node.children);
         }
+      } else if (node.children) {
+        makeFilter(node.children);
       }
     });
   }
