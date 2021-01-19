@@ -1,13 +1,13 @@
 import React from 'react';
 import { Modal } from 'antd';
-import * as Bowser from "bowser";
+import * as Bowser from 'bowser';
 import api from '../api';
 import './style.less';
 
 const browser = Bowser.getParser(window.navigator.userAgent);
 export const isValidBrowser = browser.satisfies({
   chrome: '>=80',
-  edge: '>=84'
+  edge: '>=84',
 });
 
 function invalidBrowserModal(downloadBrowserUrl?: { edge: string, chrome: string }) {
