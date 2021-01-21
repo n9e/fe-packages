@@ -61,6 +61,9 @@ export function fetchTagkv(selectedEndpoint, selectedMetric, endpoints, endpoint
     const dTagvKeyword = getDTagvKeyword(selectedEndpoint[0]);
     selectedEndpoint = dFilter(dTagvKeyword, selectedEndpoint[0], endpoints);
   }
+  if (_.isEmpty(selectedEndpoint)) {
+    return Promise.reject(new Error('No data'));
+  }
   return request(endpointsKey === 'endpoints' ? api.tagkv : api.tagkvPods, {
     method: 'POST',
     body: JSON.stringify({
