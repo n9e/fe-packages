@@ -198,9 +198,6 @@ class GraphConfigForm extends Component {
       const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : metricObj.selectedNid;
       const metricList = await services.fetchMetrics(endpoints, metricObj.endpoints, metricObj.endpointsKey);
       const selectedMetric = _.indexOf(metricList, metricObj.selectedMetric) > -1 ? metricObj.selectedMetric : '';
-      // if (isFirst && !selectedMetric) {
-      //   selectedMetric = metricObj.selectedMetric;
-      // }
       metricObj.metrics = metricList;
       metricObj.selectedMetric = selectedMetric;
       return metricObj;
@@ -215,13 +212,14 @@ class GraphConfigForm extends Component {
       const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : metricObj.selectedNid;
       const tagkv = await services.fetchTagkv(endpoints, metricObj.selectedMetric, metricObj.endpoints, metricObj.endpointsKey);
       let selectedTagkv = _.isEmpty(metricObj.selectedTagkv) ? _.chain(tagkv).map((item) => {
-        if (item.tagk !== 'endpoint' && item.tagk !== 'nids') return { tagk: item.tagk, tagv: ['=all'] };
+        if (item.tagk !== 'endpoint' && item.tagk !== 'nids') {
+          return { tagk: item.tagk, tagv: ['=all'] };
+        };
+        if (item.tagk === 'endpoint') {
+          return { tagk: item.tagk, tagv: metricObj.selectedEndpoint };
+        }
         return item;
       }).value() : metricObj.selectedTagkv;
-
-      if (!hasDtag(selectedTagkv)) {
-        selectedTagkv = intersectionTagkv(metricObj.selectedTagkv, tagkv);
-      }
 
       metricObj.tagkv = tagkv;
       metricObj.selectedTagkv = selectedTagkv;
@@ -229,10 +227,6 @@ class GraphConfigForm extends Component {
       if (metricObj.endpointsKey === 'nids') {
         metricObj.selectedEndpoint = _.get(_.find(tagkv, { tagk: 'nids' }), 'tagv');
       }
-      // if (metricObj.endpointsKey === 'endpoints') {
-        // console.log(metricObj.selectedEndpoint);
-        // metricObj.selectedEndpoint = _.get(_.find(tagkv, { tagk: 'endpoint' }), 'tagv');
-      // }
     } catch (e) {
       return e;
     }
@@ -375,21 +369,14 @@ class GraphConfigForm extends Component {
             },
           ];
         }
+
         if (!_.isEmpty(currentMetricObj.selectedEndpoint)) {
           await this.fetchMetrics(currentMetricObj);
-          if (currentMetricObj.selectedMetric) {
-            await this.fetchTagkv(currentMetricObj);
-            if (currentMetricObj.selectedTagkv) {
-              await this.fetchCounterList(currentMetricObj);
-            }
-          }
-        } else {
-          currentMetricObj.metrics = [];
-          currentMetricObj.selectedMetric = '';
-          currentMetricObj.tagkv = [];
-          currentMetricObj.selectedTagkv = [];
-          currentMetricObj.counterList = [];
         }
+
+        currentMetricObj.tagkv = [];
+        currentMetricObj.selectedTagkv = [];
+        currentMetricObj.counterList = [];
 
         this.setState(update(this.state, {
           graphConfig: {
