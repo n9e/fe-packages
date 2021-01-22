@@ -116,9 +116,11 @@ class ProfileForm extends Component<Props & FormProps> {
   }
 
   fetchTreeData() {
-    request(api.organization).then((res) => {
-      this.setState({ treeData: normalizeTreeData(res) });
-    });
+    if (this.props.type !== 'register') {
+      request(api.organization).then((res) => {
+        this.setState({ treeData: normalizeTreeData(res) });
+      });
+    }
   }
 
   validateFields() {

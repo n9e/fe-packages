@@ -6,11 +6,46 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "18961880",
-      "name": "title decorate",
-      "font_class": "titledecorate",
-      "unicode": "e628",
-      "unicode_decimal": 58920
+      "icon_id": "19590976",
+      "name": "成本中心",
+      "font_class": "chengbenzhongxin",
+      "unicode": "e741",
+      "unicode_decimal": 59201
+    },
+    {
+      "icon_id": "19590939",
+      "name": "计费管理",
+      "font_class": "jifeiguanli",
+      "unicode": "e73e",
+      "unicode_decimal": 59198
+    },
+    {
+      "icon_id": "19590940",
+      "name": "费用账单",
+      "font_class": "feiyongzhangdan",
+      "unicode": "e73f",
+      "unicode_decimal": 59199
+    },
+    {
+      "icon_id": "19590942",
+      "name": "规格管理",
+      "font_class": "guigeguanli",
+      "unicode": "e740",
+      "unicode_decimal": 59200
+    },
+    {
+      "icon_id": "19148247",
+      "name": "题目左边icon",
+      "font_class": "timuzuobianicon",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "19148248",
+      "name": "题目右边icon",
+      "font_class": "timuyoubianicon",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
     },
     {
       "icon_id": "18635625",
