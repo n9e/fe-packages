@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "19614998",
+      "name": "资源概览icon",
+      "font_class": "ziyuangailanicon",
+      "unicode": "e742",
+      "unicode_decimal": 59202
+    },
+    {
       "icon_id": "19590976",
       "name": "成本中心",
       "font_class": "chengbenzhongxin",
