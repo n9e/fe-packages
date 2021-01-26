@@ -73,6 +73,10 @@ const api = {
   menus: getApi('platform', '/mis/services/cates'),
   pwdRules: getApi('v1', '/account'),
   specgroups: getApi('billing', '/extern/specgroups'),
+<<<<<<< HEAD
+=======
+
+>>>>>>> ba92fe133c6557a5364bb994165af404be4a2162
 };
 
 export default api;
