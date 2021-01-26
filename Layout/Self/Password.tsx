@@ -14,19 +14,27 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
     super(props);
     this.state = {
       username: '',
-      errMessage: ''
+      errMessage: '',
+      pwdRules: '',
+      pwd_expires_at: 0,
     };
+  }
+
+  getPwdRule() {
+    request(`${api.pwdRules}/pwd-rules`).then(res => this.setState({ pwdRules: res }))
   }
 
   getUserName = () => {
     auth.checkAuthenticate().then(() => {
       const username = _.get(auth.getSelftProfile(), 'username');
-      this.setState({ username: username });
+      const pwd_expires_at = _.get(auth.getSelftProfile(), 'pwd_expires_at');
+      this.setState({ username: username, pwd_expires_at: pwd_expires_at });
     });
   }
 
   componentDidMount = () => {
-    this.getUserName()
+    this.getUserName();
+    this.getPwdRule();
   }
 
   handleSubmit = (e: React.FormEvent) => {
@@ -74,10 +82,18 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
   // }
 
   render() {
-    const { errMessage } = this.state;
+    const { errMessage, pwdRules, pwd_expires_at } = this.state;
     const { getFieldDecorator } = this.props.form;
+    const now = (new Date()).valueOf() / 1000
+    const expire = ((pwd_expires_at - now) / (3600 * 24)).toFixed(0)
     return (
       <Form layout="vertical" onSubmit={this.handleSubmit}>
+        {
+          pwd_expires_at === 0 ? null :
+            <div>
+              <Icon type="exclamation-circle" theme="filled" /> {Number(expire) > 0 ? `旧密码还有${expire}天过期` : '密码已过期！'}
+            </div>
+        }
         <FormItem label={<FormattedMessage id="password.old" />} required>
           {getFieldDecorator('oldpass', {
             rules: [{ required: true, message: '必填项！' }],
@@ -89,7 +105,7 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
             />,
           )}
         </FormItem>
-        <FormItem label={<FormattedMessage id="password.new" />} required>
+        <FormItem label={<FormattedMessage id="password.new" />} required extra={pwdRules}>
           {getFieldDecorator('newpass', {
             rules: [{ required: true, message: '必填项！' }],
           })(
