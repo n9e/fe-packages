@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Form, Input, Switch, Icon, Radio, DatePicker, Row, Col, Select, TreeSelect,
+  Form, Input, Switch, Icon, Radio, DatePicker, Row, Col, TreeSelect,
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import { FormProps } from 'antd/lib/form';
@@ -18,7 +18,6 @@ interface Props {
 }
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 const normalizeTenantOrgData = (
   data: any[],
