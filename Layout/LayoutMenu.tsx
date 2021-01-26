@@ -42,13 +42,18 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
   }
 
   getNavMenuItems(navs: MenuConfItem[], prefix: string) {
-    const { location, collapsed, permissionPoints } = this.props;
+    const { location, collapsed, permissionPoints, isroot } = this.props;
     const permissionedNavs = _.filter(navs, (nav) => {
-      if (!this.props.isroot && nav.rootVisible) {
+      if (!isroot && nav.rootVisible) {
         return false;
       }
-      if (nav.permissionPoint && !permissionPoints[nav.permissionPoint]) {
-        return false;
+      if (!isroot && nav.permissionPoint && _.isString(nav.permissionPoint)) {
+        return _.includes(Object.keys(permissionPoints), nav.permissionPoint);
+      }
+      if (!isroot && nav.permissionPoint && _.isArray(nav.permissionPoint)) {
+        return _.some(nav.permissionPoint, (item) => {
+          return _.includes(Object.keys(permissionPoints), item);
+        });
       }
       return true;
     });
@@ -120,7 +125,7 @@ class LayoutMenu extends Component<Props & RouteComponentProps & WrappedComponen
         );
       } else {
         if (nav.to && this.isActive(nav.to)) this.selectedKeys = [nav.to];
-        
+
         linkProps.to = {
           pathname: nav.to,
         };

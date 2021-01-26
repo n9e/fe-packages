@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Layout, Icon, Input } from 'antd';
+import { Layout, Icon, Input, Empty } from 'antd';
 import _ from 'lodash';
 import classnames from 'classnames';
 import queryString from 'query-string';
@@ -88,7 +88,7 @@ export default function HeaderMenu(props: any) {
               nameEn: item.code,
               children: item?.misService?.map((item: any) => ({
                 name: item.displayName,
-                path: item.applyUrl,
+                path: _.replace(item.consoleUrl, /^\//, ''),
                 nameEn: item.code,
                 icon: item.picturePath,
               })),
@@ -133,7 +133,7 @@ export default function HeaderMenu(props: any) {
           {_.map(menu.children, (item) => {
             const stared = !!_.find(stars, { name: item.name });
             const query = queryString.parseUrl(item.path);
-            _.set(query.query, 'token', accessToken)
+            _.set(query.query, 'token', accessToken);
             return (
               <dd
                 key={item.name}
@@ -212,7 +212,7 @@ export default function HeaderMenu(props: any) {
           />
         </div>
         {stars.length === 0 ? (
-          <p style={{ fontSize: 18, margin: '20px 40px' }}>暂无收藏</p>
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无收藏" />
         ) : (
           <StarMenus
             items={stars}

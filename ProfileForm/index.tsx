@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import {
-  Form, Input, Switch, Icon, Radio, DatePicker, Row, Col, Select
+  Form, Input, Switch, Icon, Radio, DatePicker, Row, Col, Select, TreeSelect,
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import { FormProps } from 'antd/lib/form';
 import _ from 'lodash';
-import UserSelect from '../UserSelect';
 import moment from 'moment';
 import request from '@pkgs/request';
 import api from '@pkgs/api';
+import UserSelect from '../UserSelect';
+import { normalizeTreeData } from '../Layout/utils';
 
 interface Props {
   type: 'post' | 'register' | 'put',
@@ -18,6 +19,83 @@ interface Props {
 
 const FormItem = Form.Item;
 const { Option } = Select;
+
+const normalizeTenantOrgData = (
+  data: any[],
+  tenantIdent?: string,
+  tenantId?: number,
+  tenantName?: string,
+): any => {
+  return _.map(data, (item) => {
+    if (item.children) {
+      return {
+        ...item,
+        tenantIdent: tenantIdent || item.ident,
+        tenantId: tenantId || item.id,
+        tenantName: tenantName || item.name,
+        children: normalizeTenantOrgData(
+          item.children,
+          tenantIdent || item.ident,
+          tenantId || item.id,
+          tenantName || item.name,
+        ),
+      };
+    }
+    return {
+      ...item,
+      tenantIdent,
+      tenantId,
+      tenantName,
+    };
+  });
+};
+const treeIcon: (node: any) => JSX.Element = (node) => (
+  <span
+    style={{
+      display: 'inline-block',
+      backgroundColor: node.icon_color,
+      width: 16,
+      height: 16,
+      lineHeight: '16px',
+      borderRadius: 16,
+      color: '#fff',
+    }}
+  >
+    {node.icon_char}
+  </span>
+);
+const renderTreeNodes = (nodes: any[]) => {
+  return _.map(nodes, (node) => {
+    if (_.isArray(node.children)) {
+      return (
+        <TreeSelect.TreeNode
+          icon={treeIcon(node)}
+          title={node.name}
+          fullTitle={`${node.tenantName}-${node.name}`}
+          key={String(node.id)}
+          value={node.id}
+          path={node.path}
+          node={node}
+          selectable={false}
+        >
+          {renderTreeNodes(node.children)}
+        </TreeSelect.TreeNode>
+      );
+    }
+    return (
+      <TreeSelect.TreeNode
+        icon={treeIcon(node)}
+        title={node.name}
+        fullTitle={`${node.tenantName}-${node.name}`}
+        key={String(node.id)}
+        value={`${node.tenantName}-${node.name}`}
+        path={node.path}
+        isLeaf={true}
+        node={node}
+      />
+    );
+  });
+};
 
 class ProfileForm extends Component<Props & FormProps> {
   static defaultProps: Props = {
@@ -38,9 +116,11 @@ class ProfileForm extends Component<Props & FormProps> {
   }
 
   fetchTreeData() {
-    request(api.organization).then((res) => {
-      this.setState({ treeData: res });
-    });
+    if (this.props.type !== 'register') {
+      request(api.organization).then((res) => {
+        this.setState({ treeData: normalizeTreeData(res) });
+      });
+    }
   }
 
   validateFields() {
@@ -199,26 +279,30 @@ class ProfileForm extends Component<Props & FormProps> {
             <Input />,
           )}
         </FormItem>
-        <FormItem label="组织">
-          {getFieldDecorator('organization', {
-            initialValue: initialValue.organization,
-          })(
-            <Select
-                placeholder="请选择组织！"
-                showSearch
-                allowClear
-                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-              >
-                {
-                  this.state.treeData?.map((item:any) => {
-                    return (
-                    <Option value={item.name} key={item.id}>{item.name}</Option>
-                    )
-                  })
-                }
-              </Select>,
-          )}
-        </FormItem>
+        {
+          type !== 'register' ?
+            <FormItem label="组织">
+              {getFieldDecorator('organization', {
+                initialValue: initialValue.organization,
+              })(
+                <TreeSelect
+                  showSearch
+                  treeIcon
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择租户和组织"
+                  treeNodeLabelProp="fullTitle"
+                  treeDefaultExpandAll
+                  treeNodeFilterProp="fullTitle"
+                  filterTreeNode={(inputValue: string, treeNode: any) => {
+                    const { fullTitle = '', path = '' } = treeNode.props;
+                    return fullTitle.indexOf(inputValue) > -1 || path.indexOf(inputValue) > -1;
+                  }}
+                >
+                  {renderTreeNodes(normalizeTenantOrgData(this.state.treeData))}
+                </TreeSelect>
+              )}
+            </FormItem> : null
+        }
         {
           type !== 'register' ?
             <>

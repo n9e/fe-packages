@@ -113,7 +113,7 @@ class Login extends Component<
                   <img width={380} src={require('./assets/login-left.png')} />
                 </Col>
                 <Col span={12}>
-                  <div className={`${prefixCls}-main-right`}>
+                  <div className={`${prefixCls}-main-right`} style={{ marginTop: 100 }}>
                     <Form onSubmit={this.handleSubmit}>
                       <FormItem>
                         {getFieldDecorator('username', {

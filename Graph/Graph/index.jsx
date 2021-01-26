@@ -195,7 +195,7 @@ export default class Graph extends Component {
       console.log(e);
       if (e.statusText === 'abort') return;
 
-      let errorText = e.err;
+      let errorText = e.err || e.message;
 
       if (e.statusText === 'error') {
         errorText = 'The network has been disconnected, please check the network';

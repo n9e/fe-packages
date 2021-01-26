@@ -156,10 +156,15 @@ export default function index(props: Props) {
   }, [feConf]);
 
   const disabledSystems = ['mis', 'crds', 'rdb', 'ams', 'job', 'mon'];
+  const disabledSystemsBlacklist = ['/crds/rootstatistics', '/crds/api/myapi'];
   const { pathname } = window.location;
   const checked = _.some(disabledSystems, (item) => {
-    const reg = new RegExp(`^/${item}(/)?$`);
-    return reg.test(pathname);
+    if (pathname.indexOf(`/${item}/`) === 0 || pathname === `/${item}`) {
+      return !_.some(disabledSystemsBlacklist, (blacklistItem) => {
+        return pathname.indexOf(blacklistItem) === 0;
+      });
+    }
+    return false;
   });
 
   return (

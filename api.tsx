@@ -19,8 +19,8 @@ function getAMSEEApi(path: string) {
 }
 
 const api = {
-  settings:getRDBApi('/auth/settings'),
-  callback:getRDBApi('/auth/v2/callback'),
+  settings: getRDBApi('/auth/settings'),
+  callback: getRDBApi('/auth/v2/callback'),
   authorize: getRDBApi('/auth/v2/authorize'),
   downloadBrowser: '/api/platform/download/browser',
   login: getRDBApi('/auth/login'),
@@ -72,6 +72,7 @@ const api = {
   ticketMessageCount: getApi('ticket', '/tickets'),
   menus: getApi('platform', '/mis/services/cates'),
   pwdRules: getApi('v1', '/account'),
+  specgroups: getApi('billing', '/extern/specgroups'),
 };
 
 export default api;

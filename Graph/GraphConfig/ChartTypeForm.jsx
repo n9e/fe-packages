@@ -66,7 +66,7 @@ function renderMapCpt(data, onChange) {
           {
             _.map(list, (item, index) => {
               return (
-                <div>
+                <div key={index}>
                   {
                     data.valueMap === 'range' ?
                       <span>
