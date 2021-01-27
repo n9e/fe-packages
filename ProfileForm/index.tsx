@@ -128,7 +128,7 @@ class ProfileForm extends Component<Props & FormProps> {
   }
 
   getPwdRule() {
-    request(`${api.pwdRules}/pwd-rules`).then(res => this.setState({ pwdRules: res }));
+    request(`${api.pwdRules}`).then(res => this.setState({ pwdRules: res }))
   }
 
   getFeConfig() {
