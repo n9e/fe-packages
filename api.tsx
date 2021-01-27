@@ -51,6 +51,9 @@ const api = {
   belongProjects: getRDBApi('/belong-projects'),
   permissionPoint: getRDBApi('/self/perms/global'),
   organization: getRDBApi('/tree/orgs'),
+  privileges: getRDBApi('/privileges'),
+  pwdRules: getRDBApi('/pwd-rules'),
+
 
   host: getAMSCEApi('/host'),
   hosts: getAMSCEApi('/hosts'),
@@ -71,7 +74,6 @@ const api = {
   messageCount: getApi('platform', '/msgs/self/count'),
   ticketMessageCount: getApi('ticket', '/tickets'),
   menus: getApi('platform', '/mis/services/cates'),
-  pwdRules: getApi('v1', '/account'),
   specgroups: getApi('billing', '/extern/specgroups'),
 
 };
