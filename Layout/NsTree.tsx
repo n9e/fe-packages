@@ -232,10 +232,14 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
   }
 
   handleNodeSelect: Handle = (context, selectedKeys: string[]) => {
-    const { treeData } = this.props;
+    const { treeData, treeNodes } = this.props;
     const currentNode = _.find(treeData, { id: _.toNumber(selectedKeys[0]) });
     if (currentNode) {
-      context.selecteTreeNode(currentNode);
+      const rootNode = getRootNodeById(treeNodes, currentNode.id);
+      context.selecteTreeNode({
+        ...currentNode,
+        org: _.get(rootNode, 'name'),
+      });
       if (_.get(context.getSelectedNode(), 'id') !== _.get(currentNode, 'id')) {
         this.props.history.replace({
           pathname: this.props.location.pathname,
