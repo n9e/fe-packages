@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Form, Input, Switch, Icon, Radio, DatePicker, Row, Col, Select, TreeSelect,
+  Form, Input, Switch, Icon, Radio, DatePicker, Row, Col, TreeSelect,
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import { FormProps } from 'antd/lib/form';
@@ -18,7 +18,6 @@ interface Props {
 }
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 const normalizeTenantOrgData = (
   data: any[],
@@ -110,9 +109,11 @@ class ProfileForm extends Component<Props & FormProps> {
     startTime: '', // 开始时间
     endTime: '', // 结束时间
     treeData: [],
+    pwdRules: ''
   };
   componentDidMount() {
     this.fetchTreeData();
+    this.getPwdRule();
   }
 
   fetchTreeData() {
@@ -121,6 +122,10 @@ class ProfileForm extends Component<Props & FormProps> {
         this.setState({ treeData: normalizeTreeData(res) });
       });
     }
+  }
+
+  getPwdRule() {
+    request(`${api.pwdRules}/pwd-rules`).then(res => this.setState({ pwdRules: res }))
   }
 
   validateFields() {
@@ -191,7 +196,7 @@ class ProfileForm extends Component<Props & FormProps> {
                   <Form.Item style={{ marginTop: '3px' }}>
                     {getFieldDecorator('active_begin', {
                       initialValue: moment(initialValue.active_begin),
-                      rules: [{ required: true, message:"必填项！" }],
+                      rules: [{ required: true, message: "必填项！" }],
                     })(
                       <DatePicker
                         onChange={this.handleStartDateChange}
@@ -208,7 +213,7 @@ class ProfileForm extends Component<Props & FormProps> {
                   <Form.Item style={{ marginTop: '3px' }}>
                     {getFieldDecorator('active_end', {
                       initialValue: moment(initialValue.active_end),
-                      rules: [{ required: true, message:"必填项！" }],
+                      rules: [{ required: true, message: "必填项！" }],
                     })(
                       <DatePicker
                         onChange={this.handleEndDateChange}
@@ -225,7 +230,7 @@ class ProfileForm extends Component<Props & FormProps> {
         <FormItem label={<FormattedMessage id="user.username" />} required>
           {getFieldDecorator('username', {
             initialValue: initialValue.username,
-            rules: [{ required: true, message:"必填项！" }],
+            rules: [{ required: true, message: "必填项！" }],
           })(
             <Input
               autoComplete="off"
@@ -237,9 +242,9 @@ class ProfileForm extends Component<Props & FormProps> {
           type === 'post' || type === 'register'
             ? (
               <>
-                <FormItem label={<FormattedMessage id="user.password" />} required>
+                <FormItem label={<FormattedMessage id="user.password" />} required extra={this.state.pwdRules}>
                   {getFieldDecorator('password', {
-                    rules: [{ required: true, message:"必填项！" }],
+                    rules: [{ required: true, message: "必填项！" }],
                   })(
                     <Input
                       type="password"
@@ -253,7 +258,7 @@ class ProfileForm extends Component<Props & FormProps> {
         <FormItem label={<FormattedMessage id="user.dispname" />} required>
           {getFieldDecorator('dispname', {
             initialValue: initialValue.dispname,
-            rules: [{ required: true, message:"必填项！" }],
+            rules: [{ required: true, message: "必填项！" }],
           })(
             <Input />,
           )}
