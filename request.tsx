@@ -164,7 +164,7 @@ export async function processResponse(response: any, isUseDefaultErrNotify: bool
 
   if (typeof data === 'object' && data.err !== '') {
     if (data.err === 'unauthorized') {
-      if (redirectToLogin && window.location.pathname !== './login') {
+      if (redirectToLogin && window.location.pathname !== '/login') {
         try {
           const redirect = window.location.pathname;
           await auth.authorize({ redirect });
@@ -173,7 +173,7 @@ export async function processResponse(response: any, isUseDefaultErrNotify: bool
         }
       }
       throw new Error('unauthorized');
-    } else if (data.err === 'forbidden') {
+    } else if (data.err === 'forbidden' || data.err === 'permission deny') {
       window.location.href = '/403';
     } else {
       if (isUseDefaultErrNotify && data.err.indexOf('can not found') === -1) {
