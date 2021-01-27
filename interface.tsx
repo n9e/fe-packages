@@ -33,6 +33,7 @@ export interface TreeNode {
   children?: TreeNode[],
   icon_color: string,
   icon_char: string,
+  org?: string,
 }
 
 export interface ResponseDat {

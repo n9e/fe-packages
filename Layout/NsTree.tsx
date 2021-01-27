@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { FormProps } from 'antd/lib/form';
 import ContextMenu from '../ContextMenu';
 import ModalControl, { ModalWrapProps } from '../ModalControl';
-import { renderTreeNodes } from './utils';
+import { renderTreeNodes, getRootNodeById } from './utils';
 import { NsTreeContext, NsTreeContextData } from './Provider';
 import { TreeNode } from '../interface';
 import clipboard from '../clipboard';
@@ -32,22 +32,28 @@ interface NodeEditorModalProps {
   type: 'create' | 'modify',
   pid?: number,
   initialValues?: Node,
+  rootNodeOfSelectedNode?: Node,
   onOk: (values: any, destroy?: () => void) => void,
 }
 
 type Handle = (context: NsTreeContextData, p2?: any) => void;
 
+interface NodeEditorModalState {
+  nodeCateData: TreeNode[];
+  selectedAdminIds: number[];
+}
+
 const FormItem = Form.Item;
 
-class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & FormProps> {
+class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & FormProps, NodeEditorModalState> {
   titleMap = {
     create: <FormattedMessage id="node.create" />,
     modify: <FormattedMessage id="node.modify" />,
   };
 
   state = {
-    nodeCateData: [] as TreeNode[],
-    selectedAdminIds: [] as number[],
+    nodeCateData: [],
+    selectedAdminIds: [],
   };
 
   componentDidMount() {
@@ -73,7 +79,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
   }
 
   handleOk = (value: string) => {
-    this.props.form!.validateFields((err, values) => {
+    this.props.form?.validateFields((err, values) => {
       if (!err) {
         this.props.onOk({
           ...values,
@@ -90,10 +96,10 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
 
   render() {
     const {
-      type, pid, initialValues, visible,
+      type, pid, initialValues, visible, rootNodeOfSelectedNode,
     } = this.props;
     const { selectedAdminIds } = this.state;
-    const { getFieldDecorator } = this.props.form!;
+    const { getFieldDecorator } = this.props.form;
     const isLeafVisible = type === 'create' && pid !== 0;
     let defaultCate = initialValues ? initialValues.cate : '';
 
@@ -108,13 +114,13 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
         footer={
           this.props.type !== 'modify' ?
             [
-              <Button onClick={this.handleCancel}>取消</Button>,
-              <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存并关闭弹层</Button>,
-              <Button type="primary" onClick={() => this.handleOk('open')} className="NsTreeModal-button">保存并继续添加</Button>
+              <Button key="cancel" onClick={this.handleCancel}>取消</Button>,
+              <Button key="saveAndClose" type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存并关闭弹层</Button>,
+              <Button key="saveAndContinue" type="primary" onClick={() => this.handleOk('open')} className="NsTreeModal-button">保存并继续添加</Button>
             ] :
             [
-              <Button onClick={this.handleCancel}>取消</Button>,
-              <Button type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存</Button>,
+              <Button key="cancel" onClick={this.handleCancel}>取消</Button>,
+              <Button key="save" type="primary" onClick={() => this.handleOk('close')} className="NsTreeModal-button">保存</Button>,
             ]
         }
         onCancel={this.handleCancel}
@@ -168,7 +174,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
                 optionFilterProp="children"
               >
                 {
-                  _.map(this.state.nodeCateData, (item) => <Select.Option key={item.ident} value={item.ident}>{item.name}({item.ident})</Select.Option>)
+                  _.map(this.state.nodeCateData, (item: any) => <Select.Option key={item.ident} value={item.ident}>{item.name}({item.ident})</Select.Option>)
                 }
               </Select>,
             )}
@@ -177,7 +183,7 @@ class NodeEditorModal extends Component<NodeEditorModalProps & ModalWrapProps & 
             {getFieldDecorator('admin_ids', {
               initialValue: selectedAdminIds,
             })(
-              <UserSelect mode="multiple" />,
+              <UserSelect mode="multiple" org={_.get(rootNodeOfSelectedNode, 'name')} />,
             )}
           </FormItem>
           <FormItem label={<FormattedMessage id="node.note" />}>
@@ -222,13 +228,18 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
     contextMenuLeft: 0,
     contextMenuType: 'createPdl',
     contextMenuSelectedNode: {},
+    contextMenuRootNodeOfSelectedNode: {},
   }
 
   handleNodeSelect: Handle = (context, selectedKeys: string[]) => {
-    const { treeData } = this.props;
+    const { treeData, treeNodes } = this.props;
     const currentNode = _.find(treeData, { id: _.toNumber(selectedKeys[0]) });
     if (currentNode) {
-      context.selecteTreeNode(currentNode);
+      const rootNode = getRootNodeById(treeNodes, currentNode.id);
+      context.selecteTreeNode({
+        ...currentNode,
+        org: _.get(rootNode, 'name'),
+      });
       if (_.get(context.getSelectedNode(), 'id') !== _.get(currentNode, 'id')) {
         this.props.history.replace({
           pathname: this.props.location.pathname,
@@ -267,7 +278,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
 
   handleCreateNode: Handle = (context) => {
     this.setState({ contextMenuVisiable: false });
-    const selectedNode = this.state.contextMenuSelectedNode as { node: TreeNode };
+    const selectedNode = this.state.contextMenuSelectedNode;
     const { id: pid } = selectedNode.node;
     let treeData = context.getTreeData();
     nodeEditorModal({
@@ -283,7 +294,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
           }),
         }).then((res: any) => {
           message.success(this.props.intl.formatMessage({ id: 'msg.create.success' }));
-          treeData = context.appendTreeNode(res, treeData as any) as any;
+          treeData = context.appendTreeNode(res, treeData);
           if (destroy) destroy();
         });
       },
@@ -298,6 +309,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
       language: this.props.intl.locale,
       type: 'modify',
       initialValues: selectedNode.node,
+      rootNodeOfSelectedNode: this.state.contextMenuRootNodeOfSelectedNode,
       onOk: (values: any, destroy: any) => {
         request(`${api.node}/${id}`, {
           method: 'PUT',
@@ -412,6 +424,7 @@ class NsTree extends Component<Props & WrappedComponentProps & RouteComponentPro
                                 contextMenuTop: e.event.clientY,
                                 contextMenuType: 'operate',
                                 contextMenuSelectedNode: e.node.props,
+                                contextMenuRootNodeOfSelectedNode: getRootNodeById(treeNodes, _.get(e.node.props, 'node.id')),
                               });
                             }}
                           >

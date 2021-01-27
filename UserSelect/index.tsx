@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Select, Input, Modal } from 'antd';
+import queryString from 'query-string';
 import map from 'lodash/map';
-import get from 'lodash/get'
+import get from 'lodash/get';
 import unionBy from 'lodash/unionBy';
 import isArray from 'lodash/isArray';
 import split from 'lodash/split';
@@ -19,20 +20,37 @@ interface Props {
   onChange?: any;
   className?: string;
   optionLabelProp?: string;
+  org?: string; // 组织、租户，目前只有部分环境需要
 }
 
 export default function index(props: Props) {
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<UserProfile[]>([]);
+  const [feConf, setFeConf] = useState<any>({});
   const handleSearch = debounce((value: string) => {
     if (value) {
-      request(`${api.users}?limit=100&query=${value}`).then((res) => {
+      const query = {
+        limit: 100,
+        query: value,
+        org: feConf.header.mode === 'complicated' && props.org ? props.org : '',
+      };
+      request(`${api.users}?${queryString.stringify(query)}`).then((res) => {
         setData(res.list);
       });
     } else {
       setData([]);
     }
-  }, 500)
+  }, 500);
+
+  useEffect(() => {
+    fetch('/static/feConfig.json')
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        setFeConf(res);
+      });
+  }, []);
 
   useEffect(() => {
     let isEmpty = true;
@@ -65,11 +83,11 @@ export default function index(props: Props) {
         {...props}
       >
         {
-          map(data, (item) => {
+          map(data, (item: any) => {
             return (
               <Select.Option
-                key={item[(props.optionKey || 'id') as 'id']}
-                value={item[(props.optionKey || 'id') as 'id']}
+                key={item[(props.optionKey || 'id')]}
+                value={item[(props.optionKey || 'id')]}
                 label={get(item, 'dispname')}
               >
                 <div>{get(item, 'dispname')} {get(item, 'organization') ? (get(item, 'organization')) : ''}</div>
@@ -104,5 +122,5 @@ export default function index(props: Props) {
           </> : null
       }
     </>
-  )
+  );
 }

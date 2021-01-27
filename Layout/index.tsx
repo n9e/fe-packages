@@ -13,6 +13,8 @@ import {
   TreeSelect,
   Popover,
 } from 'antd';
+import request from '@pkgs/request';
+import api from '@pkgs/api';
 import { normalizeTreeData } from './utils';
 import { auth } from '../Auth';
 import { prefixCls } from './config';
@@ -21,8 +23,6 @@ import Settings from './Settings';
 import './style.less';
 import './assets/iconfont/iconfont.css';
 import './assets/iconfont/iconfont.js';
-import request from '@pkgs/request';
-import api from '@pkgs/api';
 
 interface Props {
   tenantProjectVisible: boolean;
@@ -36,6 +36,7 @@ interface Props {
 }
 
 const userIconSrc = require('./assets/avatars.png');
+
 const { Header } = Layout;
 const normalizeTenantProjectData = (
   data: any[],
@@ -66,7 +67,7 @@ const normalizeTenantProjectData = (
     };
   });
 };
-const treeIcon: (node: any) => JSX.Element = (node) => (
+const treeIcon: (node: any) => React.ReactNode = node => (
   <span
     style={{
       display: 'inline-block',
@@ -107,7 +108,7 @@ const renderTreeNodes = (nodes: any[]) => {
         key={String(node.id)}
         value={node.id}
         path={node.path}
-        isLeaf={true}
+        isLeaf
         node={node}
       />
     );
@@ -119,7 +120,7 @@ export default function index(props: Props) {
   const [dispname, setDispname] = useState('');
   const [menusVisible, setMenusVisible] = useState(false);
   const [menusContentVsible, setMenusContentVisible] = useState(false);
-  const [feConf, setFeConf] = useState({} as any);
+  const [feConf, setFeConf] = useState<any>({});
   const treeData = normalizeTreeData(props.belongProjects);
   const content = <p style={{ height: 0 }}>工单</p>;
   const message = <p style={{ height: 0 }}>消息</p>;
@@ -149,8 +150,8 @@ export default function index(props: Props) {
       request(`${api.messageCount}?status=0`).then((count = 0) => {
         setMessageCount(count);
       });
-      request(`${api.ticketMessageCount}?limit=1000&p=1&onlyApprovePending=true`).then(res => {
-        res.total && setTicketMessageCount(res.total)
+      request(`${api.ticketMessageCount}?limit=1000&p=1&onlyApprovePending=true`).then((res) => {
+        if (res.total) setTicketMessageCount(res.total);
       });
     }
   }, [feConf]);
@@ -183,7 +184,7 @@ export default function index(props: Props) {
           >
             <Icon type={!menusVisible ? 'menu' : 'close'} />
           </div>
-          <a href='/' className={`${cPrefixCls}-logo`}>
+          <a href="/" className={`${cPrefixCls}-logo`}>
             <img
               src={_.get(feConf, 'header.logo')}
               alt="logo"
@@ -240,7 +241,7 @@ export default function index(props: Props) {
                 <a href="/console">
                   <Popover content="控制台">
                     <svg className={`${cPrefixCls}-header-menus-icon`} aria-hidden="true">
-                      <use xlinkHref='#iconkongzhitaiicon'></use>
+                      <use xlinkHref="#iconkongzhitaiicon" />
                     </svg>
                   </Popover>
                 </a>
@@ -254,13 +255,13 @@ export default function index(props: Props) {
                   <Popover content={content}>
                     <span className="iconfont icongongdanicon" />
                   </Popover>
-                  <Badge count={ticketMessageCount} className="badge"></Badge>
+                  <Badge count={ticketMessageCount} className="badge" />
                 </a>
                 <a className="text" href="/portal/message">
                   <Popover content={message}>
                     <span className="iconfont iconxiaoxiicon" />
                   </Popover>
-                  <Badge count={messageCount} className="badge"></Badge>
+                  <Badge count={messageCount} className="badge" />
                 </a>
                 <a href="/portal/document">
                   <Popover content={text}>
@@ -347,7 +348,7 @@ export default function index(props: Props) {
           onClose={() => {
             setMenusVisible(false);
           }}
-        > 
+        >
           <HeaderMenu
             menusContentVsible={menusContentVsible}
             setMenusContentVisible={setMenusContentVisible}

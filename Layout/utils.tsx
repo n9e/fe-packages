@@ -102,6 +102,23 @@ export function findNode(nodes: TreeNode[], node: TreeNode) {
   return findedNode;
 }
 
+export function findNodeById(nodes: TreeNode[], nid: number) {
+  let findedNode: TreeNode | undefined;
+  function findNodeReal(nodes: TreeNode[]) {
+    for (let i = 0; i < nodes.length; i++) {
+      const item = nodes[i];
+      if (item.id === nid) {
+        findedNode = item;
+        break;
+      } else if (Array.isArray(item.children)) {
+        findNodeReal(item.children);
+      }
+    }
+  }
+  findNodeReal(nodes);
+  return findedNode;
+}
+
 export function normalizeTreeData(data: TreeNode[]) {
   const treeData: TreeNode[] = [];
   let tag = 0;
@@ -255,4 +272,18 @@ export function getLeafNodes(nodes: TreeNode[], nids: number[]) {
   return nids;
 }
 
-
+export function getRootNodeById(nodes: TreeNode[], nid: number) {
+  let findedNode: TreeNode | undefined;
+  function findNodeReal(nodes: TreeNode[], nid: number) {
+    const currentNode = findNodeById(nodes, nid);
+    if (currentNode) {
+      if (currentNode.pid === 0) {
+        findedNode = currentNode;
+      } else {
+        findNodeReal(nodes, currentNode.pid);
+      }
+    }
+  }
+  findNodeReal(nodes, nid);
+  return findedNode;
+}
