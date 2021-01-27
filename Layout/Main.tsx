@@ -29,7 +29,7 @@ interface State {
   siderMenuVisible: boolean,
   collapsed: boolean,
   isMenuNecessary: boolean; // 是否需要菜单
-  permissionPoints: object;
+  permissionPoints: any;
 }
 
 const defaultCollapsed = window.localStorage.getItem('siderMenuCollapsed') === 'true' ? true : false;
@@ -110,8 +110,8 @@ class NILayout extends Component<Props & RouteComponentProps, State> {
                     context.setExpandedKeys(val);
                   }}
                 />
-                  <Splitter
-                      onResize={diff => {
+                <Splitter
+                  onResize={diff => {
                         this.setState(
                           {
                             diff,
@@ -121,7 +121,7 @@ class NILayout extends Component<Props & RouteComponentProps, State> {
                             this.sidebarWidth = this.sidebarWidth < 230 ? 230 : this.sidebarWidth;
                           },
                         );
-                      }}
+                  }}
                     />
               </Sider>
               <Content className={`${cPrefixCls}-content`} style={{ position: 'relative' }}>
