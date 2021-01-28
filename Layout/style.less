@@ -524,9 +524,9 @@ body {
     top: 13px;
   }
   .@{layout-prefix-cls}-menus-content {
-    height: calc(~"100vh - 60px") !important;
     padding: 40px;
     position: relative;
+    overflow: hidden !important;
   }
   .@{layout-prefix-cls}-menus-content-search {
     border-bottom: 1px solid #DBE0E4;
@@ -553,11 +553,12 @@ body {
     margin-top: 40px;
   }
   .@{layout-prefix-cls}-menus-content-menus {
+    height: calc(~"100vh - 170px") !important;
     margin-top: 40px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    height: 500px;
+    overflow: auto;
   }
   .@{layout-prefix-cls}-menus-content-menu-group {
     width: 250px;
