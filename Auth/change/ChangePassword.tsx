@@ -203,21 +203,21 @@ const Password: React.FC<IPasswordProps & RouteComponentProps> = (props) => {
             ) : null}
 
             <FormItem>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{ marginRight: 20 }}
-              >
-                确定
-              </Button>
               <Popconfirm
                 title="确认要取消，返回首页吗？"
-                onConfirm={() => {
-                  window.location.href = footer.home;
-                }}
+                onConfirm={() =>  props.history.push({
+                  pathname: '/portal/home',
+                })}
               >
                 <Button>取消</Button>
               </Popconfirm>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{ marginLeft: 20 }}
+              >
+                确定
+              </Button>
             </FormItem>
           </Form>
         </Card>
