@@ -48,7 +48,7 @@ const normalizeTenantOrgData = (
     };
   });
 };
-const treeIcon: (node: any) => JSX.Element = (node) => (
+const treeIcon: (node: any) => React.ReactNode = node => (
   <span
     style={{
       display: 'inline-block',
@@ -89,7 +89,7 @@ const renderTreeNodes = (nodes: any[]) => {
         key={String(node.id)}
         value={`${node.tenantName}-${node.name}`}
         path={node.path}
-        isLeaf={true}
+        isLeaf
         node={node}
       />
     );
@@ -104,18 +104,21 @@ class ProfileForm extends Component<Props & FormProps> {
   };
 
   state = {
-    tenantData: [] as any[],
     userType: 0,
     startTime: '', // 开始时间
     endTime: '', // 结束时间
     treeData: [],
-    pwdRules: ''
+    pwdRules: '',
+    feConf: {},
   };
+
   componentDidMount() {
     this.fetchTreeData();
     this.getPwdRule();
+    this.getFeConfig();
   }
 
+  // eslint-disable-next-line react/sort-comp
   fetchTreeData() {
     if (this.props.type !== 'register') {
       request(api.organization).then((res) => {
@@ -125,11 +128,19 @@ class ProfileForm extends Component<Props & FormProps> {
   }
 
   getPwdRule() {
-    request(`${api.pwdRules}/pwd-rules`).then(res => this.setState({ pwdRules: res }))
+    request(`${api.pwdRules}`).then(res => this.setState({ pwdRules: res }))
+  }
+
+  getFeConfig() {
+    fetch('/static/feConfig.json').then((res) => {
+      return res.json();
+    }).then((res) => {
+      this.setState({ feConf: res });
+    });
   }
 
   validateFields() {
-    return this.props.form!.validateFields;
+    return this.props.form?.validateFields;
   }
 
   // 开始时间选择器(监控记录日期变换)
@@ -152,9 +163,8 @@ class ProfileForm extends Component<Props & FormProps> {
     if (startTime !== '') {
       // 核心逻辑: 结束日期不能多余开始日期后90天，且不能早于开始日期
       return current > moment(startTime).add(90, 'day') || current < moment(startTime);
-    } else {
-      return null;
     }
+    return null;
   }
 
   // 开始时间可选范围
@@ -163,25 +173,24 @@ class ProfileForm extends Component<Props & FormProps> {
     if (endTime !== '') {
       // 核心逻辑: 开始日期不能晚于结束日期，且不能早于结束日期前90天
       return current < moment(endTime).subtract(90, 'day') || current > moment(endTime);
-    } else {
-      return null;
     }
+    return null;
   }
 
   render() {
     const { type, isrootVsible, initialValue } = this.props;
-    const { getFieldDecorator } = this.props.form!;
+    const { getFieldDecorator } = this.props.form;
 
     return (
-      <Form layout="vertical" >
+      <Form layout="vertical">
         {
           type !== 'register' ?
-            <FormItem label='账号类型' required>
+            <FormItem label="账号类型" required>
               {getFieldDecorator('type', {
                 initialValue: initialValue.type,
                 rules: [{ required: true }],
               })(
-                <Radio.Group defaultValue={0} disabled={type === 'put'} onChange={(e) => this.setState({ userType: e.target.value })}>
+                <Radio.Group defaultValue={0} disabled={type === 'put'} onChange={e => this.setState({ userType: e.target.value })}>
                   <Radio value={0}>长期账号</Radio>
                   <Radio value={1}>临时账号</Radio>
                 </Radio.Group>,
@@ -196,13 +205,14 @@ class ProfileForm extends Component<Props & FormProps> {
                   <Form.Item style={{ marginTop: '3px' }}>
                     {getFieldDecorator('active_begin', {
                       initialValue: moment(initialValue.active_begin),
-                      rules: [{ required: true, message: "必填项！" }],
+                      rules: [{ required: true, message: '必填项！' }],
                     })(
                       <DatePicker
                         onChange={this.handleStartDateChange}
                         disabledDate={this.handleStartDisabledDate}
                         placeholder="开始日期"
-                      />)
+                      />,
+                    )
                     }
                   </Form.Item>
                 </Col>
@@ -213,13 +223,14 @@ class ProfileForm extends Component<Props & FormProps> {
                   <Form.Item style={{ marginTop: '3px' }}>
                     {getFieldDecorator('active_end', {
                       initialValue: moment(initialValue.active_end),
-                      rules: [{ required: true, message: "必填项！" }],
+                      rules: [{ required: true, message: '必填项！' }],
                     })(
                       <DatePicker
                         onChange={this.handleEndDateChange}
                         disabledDate={this.handleEndDisabledDate}
                         placeholder="结束日期"
-                      />)
+                      />,
+                    )
                     }
                   </Form.Item>
                 </Col>
@@ -230,7 +241,7 @@ class ProfileForm extends Component<Props & FormProps> {
         <FormItem label={<FormattedMessage id="user.username" />} required>
           {getFieldDecorator('username', {
             initialValue: initialValue.username,
-            rules: [{ required: true, message: "必填项！" }],
+            rules: [{ required: true, message: '必填项！' }],
           })(
             <Input
               autoComplete="off"
@@ -244,7 +255,7 @@ class ProfileForm extends Component<Props & FormProps> {
               <>
                 <FormItem label={<FormattedMessage id="user.password" />} required extra={this.state.pwdRules}>
                   {getFieldDecorator('password', {
-                    rules: [{ required: true, message: "必填项！" }],
+                    rules: [{ required: true, message: '必填项！' }],
                   })(
                     <Input
                       type="password"
@@ -258,7 +269,7 @@ class ProfileForm extends Component<Props & FormProps> {
         <FormItem label={<FormattedMessage id="user.dispname" />} required>
           {getFieldDecorator('dispname', {
             initialValue: initialValue.dispname,
-            rules: [{ required: true, message: "必填项！" }],
+            rules: [{ required: true, message: '必填项！' }],
           })(
             <Input />,
           )}
@@ -289,6 +300,10 @@ class ProfileForm extends Component<Props & FormProps> {
             <FormItem label="组织">
               {getFieldDecorator('organization', {
                 initialValue: initialValue.organization,
+                rules: [{
+                  required: _.get(this.state.feConf, 'header.mode') === 'complicated',
+                  message: '必填项！',
+                }],
               })(
                 <TreeSelect
                   showSearch
@@ -304,7 +319,7 @@ class ProfileForm extends Component<Props & FormProps> {
                   }}
                 >
                   {renderTreeNodes(normalizeTenantOrgData(this.state.treeData))}
-                </TreeSelect>
+                </TreeSelect>,
               )}
             </FormItem> : null
         }
