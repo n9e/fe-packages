@@ -45,7 +45,7 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
 
 
   getPwdRule() {
-    request(`${api.pwdRules}/pwd-rules`).then(res => this.setState({ pwdRules: res }))
+    request(`${api.pwdRules}`).then(res => this.setState({ pwdRules: res }))
   }
 
   getUserName = () => {
@@ -77,7 +77,7 @@ class index extends Component<FormComponentProps & WrappedComponentProps> {
               ...values,
               username: username
             }),
-          }).then(() => auth.signout(() => window.location.href = '/'));
+          }, false).then(() => auth.signout(() => window.location.href = '/'));
           message.success(this.props.intl.formatMessage({ id: 'msg.modify.success' }));
         } catch (catchErr) {
           this.setState({ errMessage: catchErr.toString() });
