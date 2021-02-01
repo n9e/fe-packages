@@ -75,6 +75,7 @@ const api = {
   ticketMessageCount: getApi('ticket', '/tickets'),
   menus: getApi('platform', '/mis/services/cates'),
   specgroups: getApi('billing', '/extern/specgroups'),
+  billingManaged: getApi('billing', '/managed'),
 };
 
 export default api;

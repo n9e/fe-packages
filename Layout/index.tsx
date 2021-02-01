@@ -128,6 +128,7 @@ export default function index(props: Props) {
 
   const [messageCount, setMessageCount] = useState();
   const [ticketMessageCount, setTicketMessageCount] = useState();
+  const [billingManagedData, setBillingManagedData] = useState();
 
   useEffect(() => {
     auth.checkAuthenticate().then(() => {
@@ -145,13 +146,17 @@ export default function index(props: Props) {
 
 
   useEffect(() => {
-    // 获取消息的未读数量
     if (feConf.header && feConf.header.mode === 'complicated') {
+      // 获取消息的未读数量
       request(`${api.messageCount}?status=0`).then((count = 0) => {
         setMessageCount(count);
       });
       request(`${api.ticketMessageCount}?limit=1000&p=1&onlyApprovePending=true`).then((res) => {
         if (res.total) setTicketMessageCount(res.total);
+      });
+      // 判断成本中心是否显示
+      request(api.billingManaged).then((res) => {
+        setBillingManagedData(res);
       });
     }
   }, [feConf]);
@@ -237,7 +242,10 @@ export default function index(props: Props) {
                 <a href="/rdb">用户中心</a>
                 <a href="/mis">运营中心</a>
                 <a href="/crds">资源中心</a>
-                <a href="/bill">成本中心</a>
+                {
+                  _.includes(['root', 'admin'], _.get(billingManagedData, 'identity')) ?
+                    <a href="/bill">成本中心</a> : null
+                }
                 <a href="/console">
                   <Popover content="控制台">
                     <svg className={`${cPrefixCls}-header-menus-icon`} aria-hidden="true">
