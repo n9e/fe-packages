@@ -53,7 +53,7 @@ const api = {
   organization: getRDBApi('/tree/orgs'),
   privileges: getRDBApi('/privileges'),
   pwdRules: getRDBApi('/pwd-rules'),
-  privilegesWeights:getRDBApi('/privileges-weight'),
+  privilegesWeights:getRDBApi('/privileges-weights'),
   privilegesImport:getRDBApi('/privileges-import'),
 
 
