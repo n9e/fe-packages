@@ -29,7 +29,7 @@ export default function TenantSelect(props: IProps) {
 
   useEffect(() => {
     if (valueMode === 'mine') {
-      request(`${api.tree}/projs`).then((res) => {
+      request(`${api.nodes}?cate=tenant&inner=1`).then((res) => {
         const unTenant = [{ pid: 0, ident: '0', name: '未分配租户', cate: 'tenant' }];
         let newData = res;
         if (props.hasUnTenant) {
