@@ -195,7 +195,7 @@ class GraphConfigForm extends Component {
 
   async fetchMetrics(metricObj, isFirst = false) {
     try {
-      const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : metricObj.selectedNid;
+      const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : [metricObj.selectedNid];
       const metricList = await services.fetchMetrics(endpoints, metricObj.endpoints, metricObj.endpointsKey);
       const selectedMetric = _.indexOf(metricList, metricObj.selectedMetric) > -1 ? metricObj.selectedMetric : '';
       metricObj.metrics = metricList;
@@ -209,7 +209,7 @@ class GraphConfigForm extends Component {
 
   async fetchTagkv(metricObj) {
     try {
-      const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : metricObj.selectedNid;
+      const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : [metricObj.selectedNid];
       const tagkv = await services.fetchTagkv(endpoints, metricObj.selectedMetric, metricObj.endpoints, metricObj.endpointsKey);
       let selectedTagkv = _.isEmpty(metricObj.selectedTagkv) ? _.chain(tagkv).map((item) => {
         if (item.tagk !== 'endpoint' && item.tagk !== 'nids') {
