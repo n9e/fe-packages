@@ -209,7 +209,7 @@ class GraphConfigForm extends Component {
 
   async fetchTagkv(metricObj) {
     try {
-      const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : metricObj.selectedNid;
+      const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : [metricObj.selectedNid];
       const tagkv = await services.fetchTagkv(endpoints, metricObj.selectedMetric, metricObj.endpoints, metricObj.endpointsKey);
       let selectedTagkv = _.isEmpty(metricObj.selectedTagkv) ? _.chain(tagkv).map((item) => {
         if (item.tagk !== 'endpoint' && item.tagk !== 'nids') {
@@ -228,6 +228,7 @@ class GraphConfigForm extends Component {
         metricObj.selectedEndpoint = _.get(_.find(tagkv, { tagk: 'nids' }), 'tagv');
       }
     } catch (e) {
+      console.log(e);
       return e;
     }
   }

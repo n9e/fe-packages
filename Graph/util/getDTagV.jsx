@@ -25,12 +25,6 @@ export default function getDTagV(tagkvs, tag) {
   const firstTagv = tagv[0] || '';
   if (firstTagv.indexOf('=all') === 0) {
     newTagv = currentTagv;
-    // if (_.includes(currentTagv, '<all>')) {
-    //   // 动态全选排除<all>
-    //   newTagv = _.filter(currentTagv, o => o !== '<all>');
-    // } else {
-    //   newTagv = currentTagv;
-    // }
   } else if (firstTagv.indexOf('=+') === 0) {
     newTagv = dFilter('=+', firstTagv, currentTagv);
   } else if (firstTagv.indexOf('=-') === 0) {
