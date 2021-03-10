@@ -16,12 +16,14 @@ export default class Graph extends Component {
       yAxis: util.getYAxis({}, this.props.graphConfig),
       tooltip: {
         shared: this.props.graphConfig.shared,
+        sharedSortDirection: this.props.graphConfig.sharedSortDirection,
         formatter: (points) => {
           return util.getTooltipsContent({
             points,
             chartWidth: this.graphWrapEle.offsetWidth - 40,
             comparison: this.props.graphConfig.comparison,
             isComparison: !!_.get(this.props.graphConfig.comparison, 'length'),
+            sharedSortDirection: this.props.graphConfig.sharedSortDirection,
           });
         },
       },
@@ -44,12 +46,14 @@ export default class Graph extends Component {
         tooltip: {
           xAxis: nextProps.graphConfig.xAxis,
           shared: nextProps.graphConfig.shared,
+          sharedSortDirection: nextProps.graphConfig.sharedSortDirection,
           formatter: (points) => {
             return util.getTooltipsContent({
               points,
               chartWidth: this.graphWrapEle.offsetWidth - 40,
               comparison: nextProps.graphConfig.comparison,
               isComparison: !!_.get(nextProps.graphConfig.comparison, 'length'),
+              sharedSortDirection: nextProps.graphConfig.sharedSortDirection,
             });
           },
         },

@@ -5,10 +5,32 @@ import numeral from 'numeral';
 
 const fmt = 'YYYY-MM-DD HH:mm:ss';
 
+function sortPoints(points, isComparison) {
+	let compareGetter = _.noop;
+	try {
+		const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+		compareGetter = collator.compare;
+	} catch (e) {
+		console.error(e);
+	}
+	return points.sort((a, b) => {
+    let compareleft;
+    let compareright;
+    if (isComparison) {
+      compareleft = Number(_.get(a, 'serieOptions.comparison')) || 0;
+      compareright = Number(_.get(b, 'serieOptions.comparison')) || 0;
+    } else {
+      compareleft = _.get(a, 'serieOptions.tags');
+      compareright = _.get(a, 'serieOptions.tags');
+    }
+    return compareGetter(compareleft, compareright);
+  });
+};
+
 export default function getTooltipsContent(activeTooltipData) {
-  const { isComparison, points } = activeTooltipData;
+  const { isComparison, points, sharedSortDirection } = activeTooltipData;
   const tooltipWidth = window.innerWidth / 1.5;
-  const sortedPoints = _.orderBy(points, (point) => {
+  let sortedPoints = _.orderBy(points, (point) => {
     const { series = {} } = point;
     if (isComparison) {
       const { comparison } = series.userOptions || {};
@@ -16,6 +38,9 @@ export default function getTooltipsContent(activeTooltipData) {
     }
     return _.get(series, 'userOptions.tags');
   });
+  if (!sharedSortDirection) {
+    sortedPoints = sortPoints(points, isComparison);
+  }
   let tooltipContent = '';
 
   tooltipContent += getHeaderStr(activeTooltipData);

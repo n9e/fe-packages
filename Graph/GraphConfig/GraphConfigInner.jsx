@@ -114,6 +114,23 @@ class GraphConfigInner extends Component {
     });
   }
 
+  sharedSortDirectionChange = () => {
+    const { data, onChange } = this.props;
+    let sharedSortDirection;
+    if (!data.sharedSortDirection) {
+      sharedSortDirection = 'asc';
+    }
+    if (data.sharedSortDirection === 'asc') {
+      sharedSortDirection = 'desc';
+    }
+    if (data.sharedSortDirection === 'desc') {
+      sharedSortDirection = undefined;
+    }
+    onChange('update', data.id, {
+      sharedSortDirection,
+    });
+  }
+
   tagkvChange = (tagk, tagv) => {
     const { data, onChange } = this.props;
     const { metrics } = data;
@@ -330,6 +347,25 @@ class GraphConfigInner extends Component {
           <Checkbox checked={!!data.shared} onChange={this.sharedChange}>
             Multi
           </Checkbox>
+          {
+            data.shared ?
+              <div
+                style={{
+                  display: 'inline-block',
+                  height: '1em',
+                  lineHeight: '1em',
+                  textAlign: 'center',
+                  verticalAlign: 'top',
+                  cursor: 'pointer',
+                }}
+                onClick={this.sharedSortDirectionChange}
+                data-sub-service="didi-monitor-odin"
+                data-tip-id="shared-sort-direction"
+              >
+                <Icon type="caret-up" style={{ display: 'block', height: '.5em', color: data.sharedSortDirection === 'asc' ? '#1890ff' : '#bfbfbf' }} />
+                <Icon type="caret-down" style={{ display: 'block', height: '.5em', color: data.sharedSortDirection === 'desc' ? '#1890ff' : '#bfbfbf' }} />
+              </div> : null
+          }
         </div>
         {this.renderTagkv()}
       </div>

@@ -123,7 +123,8 @@ export default class Graph extends Component {
       nextData.yAxisMax !== thisData.yAxisMax ||
       nextData.yAxisMin !== thisData.yAxisMin ||
       nextData.timezoneOffset !== thisData.timezoneOffset ||
-      nextData.shared !== thisData.shared
+      nextData.shared !== thisData.shared ||
+      nextData.sharedSortDirection !== thisData.sharedSortDirection
     ) {
       // this.updateHighcharts('options', nextData);
     }
