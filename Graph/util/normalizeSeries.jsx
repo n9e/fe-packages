@@ -41,14 +41,14 @@ function getSerieColor(serie, serieIndex, isComparison) {
   let color;
   // 同环比固定曲线颜色
   if (isComparison && !comparison) {
-    // 今天绿色
-    color = 'rgb(67, 150, 30)';
+    // 今天蓝色
+    color = 'rgb(81, 149, 206)';
   } else if (comparison === 86400) {
-    // 昨天蓝色
-    color = 'rgb(98, 127, 202)';
+    // 昨天黄色
+    color = 'rgb(234, 184, 57)';
   } else if (comparison === 604800) {
     // 上周红色
-    color = 'rgb(238, 92, 90)';
+    color = 'rgb(226, 77, 66)';
   } else {
     const colorIndex = serieIndex % hexPalette.length;
     color = hexPalette[colorIndex];
