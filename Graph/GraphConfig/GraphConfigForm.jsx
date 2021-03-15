@@ -325,6 +325,7 @@ class GraphConfigForm extends Component {
       currentMetricObj.endpointsKey = endpointsKey;
       currentMetricObj.selectedEndpoint = [];
       currentMetricObj.tagkv = [];
+      await this.fetchEndpoints(currentMetricObj);
       await this.fetchMetrics(currentMetricObj);
       if (currentMetricObj.selectedMetric) {
         await this.fetchTagkv(currentMetricObj);

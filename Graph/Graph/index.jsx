@@ -93,6 +93,7 @@ export default class Graph extends Component {
     const nextData = nextProps.data;
     const thisData = this.props.data;
     const selectedNsChanged = !util.isEqualBy(nextData.metrics, thisData.metrics, 'selectedNid');
+    const selectedEndpointChanged = !util.isEqualBy(nextData.metrics, thisData.metrics, 'selectedEndpoint');
     const selectedMetricChanged = !util.isEqualBy(nextData.metrics, thisData.metrics, 'selectedMetric');
     const selectedTagkvChanged = !util.isEqualBy(nextData.metrics, thisData.metrics, 'selectedTagkv');
     const tagkvChanged = !util.isEqualBy(nextData.metrics, thisData.metrics, 'tagkv');
@@ -105,6 +106,7 @@ export default class Graph extends Component {
     if (
       timeChanged ||
       selectedNsChanged ||
+      selectedEndpointChanged ||
       selectedMetricChanged ||
       selectedTagkvChanged ||
       tagkvChanged ||
@@ -112,7 +114,7 @@ export default class Graph extends Component {
       aggrFuncChanged ||
       aggrGroupChanged
     ) {
-      const isFetchCounter = selectedNsChanged || selectedMetricChanged || selectedTagkvChanged || tagkvChanged;
+      const isFetchCounter = selectedNsChanged || selectedEndpointChanged || selectedMetricChanged || selectedTagkvChanged || tagkvChanged;
       this.fetchData(nextProps.data, isFetchCounter, () => {
         // this.updateHighcharts('series', nextData, series);
       });
