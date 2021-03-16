@@ -10,20 +10,19 @@ import {
   WrappedComponentProps,
 } from 'react-intl';
 import auth from './auth';
-import * as loginBackgroundAnimation from './loginBackgroundAnimation';
+// import * as loginBackgroundAnimation from './loginBackgroundAnimation';
 import request from '../request';
 import api from '../api';
 import './style.less';
 
 const FormItem = Form.Item;
 
-class Login extends Component<
-  RouteComponentProps & FormProps & WrappedComponentProps
-> {
+class Login extends Component<RouteComponentProps & FormProps & WrappedComponentProps> {
   state = {
     ldapUsed: false,
     isRender: false,
   };
+
   textInput: any;
 
   componentWillMount() {
@@ -50,8 +49,8 @@ class Login extends Component<
       if (res && res.redirect && res.redirect !== '/login') {
         window.location.href = res.redirect;
       } else {
-        loginBackgroundAnimation.init();
-        loginBackgroundAnimation.animate();
+        // loginBackgroundAnimation.init();
+        // loginBackgroundAnimation.animate();
         this.setState({ isRender: true });
       }
     });
