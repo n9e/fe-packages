@@ -20,6 +20,7 @@ import { auth } from '../Auth';
 import { prefixCls } from './config';
 import HeaderMenu from './HeaderMenu';
 import Settings from './Settings';
+import 'antd/dist/antd.less';
 import './style.less';
 import './assets/iconfont/iconfont.css';
 import './assets/iconfont/iconfont.js';
