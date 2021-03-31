@@ -194,9 +194,10 @@ class GraphConfigForm extends Component {
   }
 
   async fetchMetrics(metricObj, isFirst = false) {
+    const { indexLastHours } = this.state.graphConfig;
     try {
       const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : [metricObj.selectedNid];
-      const metricList = await services.fetchMetrics(endpoints, metricObj.endpoints, metricObj.endpointsKey);
+      const metricList = await services.fetchMetrics(endpoints, metricObj.endpoints, metricObj.endpointsKey, indexLastHours);
       const selectedMetric = _.indexOf(metricList, metricObj.selectedMetric) > -1 ? metricObj.selectedMetric : '';
       metricObj.metrics = metricList;
       metricObj.selectedMetric = selectedMetric;
@@ -208,9 +209,10 @@ class GraphConfigForm extends Component {
   }
 
   async fetchTagkv(metricObj) {
+    const { indexLastHours } = this.state.graphConfig;
     try {
       const endpoints = metricObj.endpointsKey === 'endpoints' ? metricObj.selectedEndpoint : [metricObj.selectedNid];
-      const tagkv = await services.fetchTagkv(endpoints, metricObj.selectedMetric, metricObj.endpoints, metricObj.endpointsKey);
+      const tagkv = await services.fetchTagkv(endpoints, metricObj.selectedMetric, metricObj.endpoints, metricObj.endpointsKey, indexLastHours);
       let selectedTagkv = _.isEmpty(metricObj.selectedTagkv) ? _.chain(tagkv).map((item) => {
         if (item.tagk !== 'endpoint' && item.tagk !== 'nids') {
           return { tagk: item.tagk, tagv: ['=all'] };
@@ -233,19 +235,19 @@ class GraphConfigForm extends Component {
   }
 
   async fetchCounterList(metricObj) {
+    const { indexLastHours } = this.state.graphConfig;
     try {
       let selectedEndpoint = metricObj.selectedEndpoint;
       if (hasDtag(selectedEndpoint)) {
         selectedEndpoint = _.get(_.find(metricObj.tagkv, { tagk: 'endpoint' }), 'tagv');
       }
       const counterList = await services.fetchCounterList([{
-        // selectedEndpoint: metricObj.selectedEndpoint,
         selectedMetric: metricObj.selectedMetric,
         selectedTagkv: metricObj.selectedTagkv,
         tagkv: metricObj.tagkv,
         endpointsKey: metricObj.endpointsKey,
         selectedEndpoint: selectedEndpoint,
-      }])
+      }], indexLastHours)
       metricObj.counterList = counterList.list;
       metricObj.counterListCount = counterList.count;
     } catch (e) {
@@ -570,6 +572,18 @@ class GraphConfigForm extends Component {
         },
       },
     }));
+  }
+
+  handleIndexLastHoursChange = (val) => {
+    this.setState(update(this.state, {
+      graphConfig: {
+        indexLastHours: {
+          $set: val,
+        },
+      },
+    }), () => {
+      this.fetchAllByMetric();
+    });
   }
 
   handleThresholdChange = (val) => {
@@ -914,6 +928,25 @@ class GraphConfigForm extends Component {
                   />,
                 ] : false
             }
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 3 }}
+            wrapperCol={{ span: 21 }}
+            label="索引查询"
+            style={{ marginBottom: 5 }}
+          >
+            <Select
+              style={{ width: 110 }}
+              value={graphConfig.indexLastHours}
+              onChange={this.handleIndexLastHoursChange}
+            >
+              <Option value={2}>最近 2 小时</Option>
+              <Option value={6}>最近 6 小时</Option>
+              <Option value={12}>最近 12 小时</Option>
+              <Option value={24}>最近 24 小时</Option>
+              <Option value={48}>最近 48 小时</Option>
+              <Option value={72}>最近 72 小时</Option>
+            </Select>
           </FormItem>
           <FormItem
             labelCol={{ span: 3 }}

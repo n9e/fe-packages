@@ -56,6 +56,7 @@ export const graphPropTypes = {
   yAxisMin: PropTypes.number,
   yAxisMax: PropTypes.number,
   outerChain: PropTypes.string, // 下钻连接
+  indexLastHours: PropTypes.number, // 读取最近N小时的索引数据
   // 特殊配置
   legend: PropTypes.bool,
   shared: PropTypes.bool,
@@ -87,6 +88,7 @@ export const graphDefaultConfig = {
   legend: false,
   shared: true,
   linkVisible: true,
+  indexLastHours: 24,
   metrics: [
     {
       selectedEndpoint: [],

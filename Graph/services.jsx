@@ -4,6 +4,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 import _ from 'lodash';
+import moment from 'moment';
 import request from '../request';
 import api from '../api';
 import hasDtag from './util/hasDtag';
@@ -39,7 +40,8 @@ function normalizeEndpoints(endpoints) {
   return undefined;
 }
 
-export function fetchMetrics(selectedEndpoint, endpoints, endpointsKey = 'endpoints') {
+export function fetchMetrics(selectedEndpoint, endpoints, endpointsKey = 'endpoints', indexLastHours) {
+  const now = moment();
   if (hasDtag(selectedEndpoint)) {
     const dTagvKeyword = getDTagvKeyword(selectedEndpoint[0]);
     selectedEndpoint = dFilter(dTagvKeyword, selectedEndpoint[0], endpoints);
@@ -48,6 +50,8 @@ export function fetchMetrics(selectedEndpoint, endpoints, endpointsKey = 'endpoi
     method: 'POST',
     body: JSON.stringify({
       [endpointsKey]: normalizeEndpoints(selectedEndpoint),
+      start: now.clone().subtract(indexLastHours, 'hours').unix(),
+      end: now.unix(),
     }),
   }).then((data) => {
     return _.chain(data.metrics).flattenDeep().union().sortBy((o) => {
@@ -56,7 +60,8 @@ export function fetchMetrics(selectedEndpoint, endpoints, endpointsKey = 'endpoi
   });
 }
 
-export function fetchTagkv(selectedEndpoint, selectedMetric, endpoints, endpointsKey = 'endpoints') {
+export function fetchTagkv(selectedEndpoint, selectedMetric, endpoints, endpointsKey = 'endpoints', indexLastHours) {
+  const now = moment();
   if (hasDtag(selectedEndpoint)) {
     const dTagvKeyword = getDTagvKeyword(selectedEndpoint[0]);
     selectedEndpoint = dFilter(dTagvKeyword, selectedEndpoint[0], endpoints);
@@ -69,6 +74,8 @@ export function fetchTagkv(selectedEndpoint, selectedMetric, endpoints, endpoint
     body: JSON.stringify({
       [endpointsKey]: normalizeEndpoints(selectedEndpoint),
       metrics: _.isArray(selectedMetric) ? selectedMetric : [selectedMetric],
+      start: now.clone().subtract(indexLastHours, 'hours').unix(),
+      end: now.unix(),
     }),
   }, false).then((data) => {
     let allTagkv = [];
@@ -93,12 +100,14 @@ export function fetchCounter(queryBody) {
   }, false);
 }
 
-export async function normalizeMetrics(metrics, graphConfigInnerVisible, xhrs = []) {
+export async function normalizeMetrics(metrics, graphConfigInnerVisible, indexLastHours) {
   const metricsClone = _.cloneDeep(metrics);
   let canUpdate = false;
 
   for (let m = 0; m < metricsClone.length; m++) {
-    const { selectedEndpoint, selectedNid, selectedMetric, selectedTagkv, tagkv, endpointsKey = 'endpoints' } = metricsClone[m];
+    const {
+      selectedEndpoint, selectedNid, selectedMetric, selectedTagkv, tagkv, endpointsKey = 'endpoints',
+    } = metricsClone[m];
     let { selectedEndpoint: endpoints } = metricsClone[m];
     // 加载 tagkv 规则，满足
     // 开启行级配置 或者 包含动态tag 或者 没有选择tag
@@ -111,7 +120,7 @@ export async function normalizeMetrics(metrics, graphConfigInnerVisible, xhrs = 
         endpoints = await fetchEndPoints(selectedNid);
         endpoints = _.map(endpoints, 'ident');
       }
-      const newTagkv = await fetchTagkv(_.isEmpty(selectedEndpoint) ? [_.toString(selectedNid)] : selectedEndpoint, selectedMetric, endpoints, endpointsKey);
+      const newTagkv = await fetchTagkv(_.isEmpty(selectedEndpoint) ? [_.toString(selectedNid)] : selectedEndpoint, selectedMetric, endpoints, endpointsKey, indexLastHours);
       const nids = _.get(_.find(newTagkv, { tagk: 'nids' }), 'tagv', []);
 
       metricsClone[m].tagkv = newTagkv;
@@ -128,11 +137,11 @@ export async function normalizeMetrics(metrics, graphConfigInnerVisible, xhrs = 
   };
 }
 
-export async function fetchCounterList(metrics, xhrs = []) {
+export async function fetchCounterList(metrics, indexLastHours) {
   const queryBody = [];
 
   for (let m = 0; m < metrics.length; m++) {
-    const { selectedMetric, selectedTagkv, selectedNid, tagkv, endpoints, endpointsKey = 'endpoints' } = metrics[m];
+    const { selectedMetric, selectedTagkv, tagkv, endpoints, endpointsKey = 'endpoints' } = metrics[m];
     let { selectedEndpoint } = metrics[m];
 
     if (hasDtag(selectedEndpoint)) {
@@ -156,17 +165,21 @@ export async function fetchCounterList(metrics, xhrs = []) {
       return item.tagk !== 'endpoint' && item.tagk !== 'nids';
     });
 
+    const now = moment();
+
     queryBody.push({
       [endpointsKey]: normalizeEndpoints(selectedEndpoint),
       metric: selectedMetric,
       tagkv: excludeEndPoints,
+      start: now.clone().subtract(indexLastHours, 'hours').unix(),
+      end: now.unix(),
     });
   }
 
-  return await fetchCounter(queryBody, xhrs = []);
+  return await fetchCounter(queryBody, indexLastHours);
 }
 
-export function fetchHistory(endpointCounters, xhrs = []) {
+export function fetchHistory(endpointCounters) {
   return request(api.points, {
     method: 'POST',
     body: JSON.stringify(endpointCounters),
@@ -175,7 +188,7 @@ export function fetchHistory(endpointCounters, xhrs = []) {
   });
 }
 
-export async function getHistory(endpointCounters, xhrs = []) {
+export async function getHistory(endpointCounters) {
   let sourceData = [];
   let i = 0;
   for (i; i < endpointCounters.length; i++) {

@@ -70,7 +70,6 @@ export default class Graph extends Component {
 
   constructor(props) {
     super(props);
-    this.xhrs = []; // 保存 xhr 实例，用于组件销毁的时候中断进行中的请求
     this.chartOptions = config.chart;
     this.headerHeight = 35;
     this.state = {
@@ -133,7 +132,6 @@ export default class Graph extends Component {
   }
 
   componentWillUnmount() {
-    this.abortFetchData();
     this.chart && this.chart.destroy();
   }
 
@@ -157,14 +155,12 @@ export default class Graph extends Component {
   async fetchData(graphConfig, isFetchCounter) {
     graphConfig = this.getGraphConfig(graphConfig);
 
-    this.abortFetchData();
-
     this.setState({ spinning: true });
     let { metrics } = graphConfig;
     let series = [];
 
     try {
-      const metricsResult = await services.normalizeMetrics(metrics, this.props.graphConfigInnerVisible, this.xhrs);
+      const metricsResult = await services.normalizeMetrics(metrics, this.props.graphConfigInnerVisible, graphConfig.indexLastHours);
       // eslint-disable-next-line prefer-destructuring
       metrics = metricsResult.metrics;
 
@@ -176,7 +172,7 @@ export default class Graph extends Component {
         // return;
       }
       if (isFetchCounter) {
-        this.counterList = await services.fetchCounterList(metrics, this.xhrs).then((res) => {
+        this.counterList = await services.fetchCounterList(metrics, graphConfig.indexLastHours).then((res) => {
           this.counterListCount = res.count;
           return res.list;
         });
@@ -187,7 +183,7 @@ export default class Graph extends Component {
 
       if (!errorText) {
         // get series
-        const sourceData = await services.getHistory(endpointCounters, this.xhrs);
+        const sourceData = await services.getHistory(endpointCounters);
         const treeData = _.get(this.context, 'data.treeData');
         series = util.normalizeSeries(sourceData, treeData);
       }
@@ -247,76 +243,6 @@ export default class Graph extends Component {
     return errorText;
   }
 
-  abortFetchData() {
-    _.each(this.xhrs, (xhr) => {
-      _.isFunction(_.get(xhr, 'abort')) && xhr.abort();
-    });
-    this.xhrs = [];
-  }
-
-  // initHighcharts(props, series) {
-  //   const graphConfig = this.getGraphConfig(props.data);
-  //   const chartOptions = {
-  //     timestamp: 'x',
-  //     chart: {
-  //       height: props.height,
-  //       renderTo: this.refs.graphWrapEle,
-  //     },
-  //     xAxis: graphConfig.xAxis,
-  //     yAxis: util.getYAxis({}, graphConfig),
-  //     tooltip: {
-  //       shared: graphConfig.shared,
-  //       formatter: (points) => {
-  //         return util.getTooltipsContent({
-  //           points,
-  //           chartWidth: this.refs.graphWrapEle.offsetWidth - 40,
-  //         });
-  //       },
-  //     },
-  //     series,
-  //     legend: {
-  //       enabled: false,
-  //     },
-  //     onZoom: (getZoomedSeries) => {
-  //       this.getZoomedSeries = getZoomedSeries;
-  //       this.forceUpdate();
-  //     },
-  //   };
-
-  //   if (!this.chart) {
-  //     this.props.onWillInit(chartOptions);
-  //     this.chart = new D3Graph(chartOptions);
-  //     this.props.onDidInit(this.chart, chartOptions);
-  //   }
-  // }
-
-  // updateHighcharts(type, graphConfig = this.props.data, series = this.series) {
-  //   if (!this.chart) {
-  //     this.initHighcharts(this.props, series);
-  //     return;
-  //   }
-  //   graphConfig = this.getGraphConfig(graphConfig);
-
-  //   const updateChartOptions = {
-  //     yAxis: util.getYAxis(this.chart.options.yAxis, graphConfig),
-  //     tooltip: {
-  //       xAxis: graphConfig.xAxis,
-  //       shared: graphConfig.shared,
-  //       formatter: (points) => {
-  //         return util.getTooltipsContent({
-  //           points,
-  //           chartWidth: this.refs.graphWrapEle.offsetWidth - 40,
-  //         });
-  //       },
-  //     },
-  //     series,
-  //   };
-
-  //   this.props.onWillUpdate(this.chart, updateChartOptions);
-  //   this.chart.update(updateChartOptions);
-  //   this.props.onDidUpdate(this.chart, updateChartOptions);
-  // }
-
   handleLegendRowSelectedChange = (selectedKeys, highlightedKeys) => {
     const { series } = this.state;
 
@@ -331,9 +257,7 @@ export default class Graph extends Component {
       };
     });
 
-    this.setState({ series: newSeries }, () => {
-      // this.updateHighcharts();
-    });
+    this.setState({ series: newSeries });
   }
 
   refresh = () => {
@@ -442,33 +366,6 @@ export default class Graph extends Component {
           <div style={{ height }}>
             {this.renderChart()}
           </div>
-          {/* <div style={{ height, display: !errorText ? 'none' : 'block' }}>
-            {
-              errorText ?
-                <div className="graph-errorText">
-                  {errorText}
-                </div> :
-                {
-                  chartType === 'line' ?
-                }
-            }
-          </div> */}
-          {/* <div className="graph-content" ref="graphWrapEle"
-            style={{
-              height,
-              backgroundColor: '#fff',
-              display: errorText || (chartType && chartType !== 'graph') ? 'none' : 'block',
-            }}
-          />
-          <div className="graph-content"
-            style={{
-              height,
-              backgroundColor: '#fff',
-              display: !errorText && chartType && chartType !== 'graph' ? 'block' : 'none',
-            }}
-          >
-            111
-          </div> */}
         </Spin>
         <Legend
           style={{ display: graphConfig.legend ? 'block' : 'none' }}
