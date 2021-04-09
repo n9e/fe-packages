@@ -155,7 +155,7 @@ export async function fetchCounterList(metrics, indexLastHours) {
     // 动态tag场景
     if (hasDtag(selectedTagkv)) {
       newSelectedTagkv = [];
-      _.forEach(newSelectedTagkv, (item) => {
+      _.forEach(selectedTagkv, (item) => {
         // 如果是动态全选，请求参数不用带该 tagk
         if (!_.isEqual(item.tagv, ['=all'])) {
           newSelectedTagkv.push({
