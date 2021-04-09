@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable no-return-await */
 /* eslint-disable no-return-assign */
 /* eslint-disable no-unused-vars */
@@ -153,11 +154,15 @@ export async function fetchCounterList(metrics, indexLastHours) {
 
     // 动态tag场景
     if (hasDtag(selectedTagkv)) {
-      newSelectedTagkv = _.map(newSelectedTagkv, (item) => {
-        return {
-          tagk: item.tagk,
-          tagv: getDTagV(tagkv, item),
-        };
+      newSelectedTagkv = [];
+      _.forEach(newSelectedTagkv, (item) => {
+        // 如果是动态全选，请求参数不用带该 tagk
+        if (!_.isEqual(item.tagv, ['=all'])) {
+          newSelectedTagkv.push({
+            tagk: item.tagk,
+            tagv: getDTagV(tagkv, item),
+          });
+        }
       });
     }
 

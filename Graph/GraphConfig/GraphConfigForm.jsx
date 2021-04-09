@@ -230,6 +230,7 @@ class GraphConfigForm extends Component {
         metricObj.selectedEndpoint = _.get(_.find(tagkv, { tagk: 'nids' }), 'tagv');
       }
     } catch (e) {
+      console.log(e);
       return e;
     }
   }
