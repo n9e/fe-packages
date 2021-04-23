@@ -6,10 +6,18 @@ import './style.less';
 
 const browser = Bowser.getParser(window.navigator.userAgent);
 const supportedBrowser = {
-  chrome: '>=80',
-  edge: '>=80',
-  firefox: '>=80',
-  safari: '>=13',
+  windows: {
+    chrome: '>=80',
+    edge: '>=80',
+    firefox: '>=80',
+    safari: '>=13',
+  },
+  macos: {
+    chrome: '>=80',
+    edge: '>=80',
+    firefox: '>=80',
+    safari: '>=13',
+  }
 };
 export const isValidBrowser = browser.satisfies(supportedBrowser);
 
