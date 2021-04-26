@@ -41,7 +41,7 @@ function normalizeEndpoints(endpoints) {
   return undefined;
 }
 
-export function fetchMetrics(selectedEndpoint, endpoints, endpointsKey = 'endpoints', indexLastHours) {
+export function fetchMetrics(selectedEndpoint, endpoints, endpointsKey = 'endpoints', indexLastHours, start, end) {
   const now = moment();
   if (hasDtag(selectedEndpoint)) {
     const dTagvKeyword = getDTagvKeyword(selectedEndpoint[0]);
@@ -51,8 +51,8 @@ export function fetchMetrics(selectedEndpoint, endpoints, endpointsKey = 'endpoi
     method: 'POST',
     body: JSON.stringify({
       [endpointsKey]: normalizeEndpoints(selectedEndpoint),
-      start: now.clone().subtract(indexLastHours, 'hours').unix(),
-      end: now.unix(),
+      start: indexLastHours ? now.clone().subtract(indexLastHours, 'hours').unix() : start,
+      end: end ? end : now.unix(),
     }),
   }).then((data) => {
     return _.chain(data.metrics).flattenDeep().union().sortBy((o) => {
