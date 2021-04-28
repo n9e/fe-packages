@@ -17,6 +17,10 @@ const supportedBrowser = {
     edge: '>=80',
     firefox: '>=80',
     safari: '>=13',
+  },
+  linux: {
+    chrome: '>=80',
+    firefox: '>=80',
   }
 };
 export const isValidBrowser = browser.satisfies(supportedBrowser);
