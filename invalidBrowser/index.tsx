@@ -14,7 +14,6 @@ const supportedBrowser = {
   },
   macos: {
     chrome: '>=80',
-    edge: '>=80',
     firefox: '>=80',
     safari: '>=13',
   },
